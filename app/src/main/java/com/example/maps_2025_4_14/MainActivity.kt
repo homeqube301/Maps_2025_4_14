@@ -46,5 +46,6 @@ fun MapScreen() {
             state = MarkerState(position = singapore),
             title = "Marker in Singapore"
         )
+        
     }
 }
