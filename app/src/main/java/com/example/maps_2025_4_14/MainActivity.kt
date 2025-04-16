@@ -8,11 +8,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.example.maps_2025_4_14.ui.theme.Maps_2025_4_14Theme
 import com.google.android.gms.location.*
@@ -65,6 +69,8 @@ fun MapScreen() {
 
     var selectedMarker by remember { mutableStateOf<NamedMarker?>(null) }
     var isEditPanelOpen by remember { mutableStateOf(false) }
+
+    val focusManager = LocalFocusManager.current
 
     // リアルタイム現在地取得
     LaunchedEffect(Unit) {
@@ -183,10 +189,19 @@ fun MapScreen() {
                     OutlinedTextField(
                         value = tempMarkerName,
                         onValueChange = { tempMarkerName = it },
-                        label = { Text("マーカー名") }
+                        label = { Text("マーカー名") },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                focusManager.clearFocus() // ← IME入力を確定
+                            }
+                        )
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
+
+                        focusManager.clearFocus() // ← 変換中なら確定
+
                         tempMarkerPosition?.let { pos ->
                             val newMarker = NamedMarker(position = pos, title = tempMarkerName)
                             permanentMarkers.add(newMarker)
@@ -236,13 +251,22 @@ fun MapScreen() {
                         var editedName by remember(marker) { mutableStateOf(marker.title) }
 
                     Text("マーカーを編集")
-                    OutlinedTextField(
-                        value = editedName,
-                        onValueChange = { editedName = it },
-                        label = { Text("マーカー名") }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                     OutlinedTextField(
+                         value = tempMarkerName,
+                         onValueChange = { tempMarkerName = it },
+                         label = { Text("マーカー名") },
+                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                         keyboardActions = KeyboardActions(
+                             onDone = {
+                                 focusManager.clearFocus() // ← IME入力を確定
+                             }
+                         )
+                     )
+                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
+
+                        focusManager.clearFocus() // ← 変換中なら確定
+
                         selectedMarker?.let { marker ->
                             val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                             if (index != -1) {
