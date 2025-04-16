@@ -94,6 +94,25 @@ fun MapScreen() {
         )
     }
 
+    val visibleMarkers = remember { mutableStateListOf<NamedMarker>() }
+
+    LaunchedEffect(cameraPositionState.isMoving) {
+        // マップ移動終了後に更新
+        snapshotFlow { cameraPositionState.isMoving }
+            .collect { isMoving ->
+                if (!isMoving) {
+                    // カメラが止まったときに現在の可視領域を取得
+                    val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
+                    if (bounds != null) {
+                        val filtered = permanentMarkers.filter { bounds.contains(it.position) }
+                        visibleMarkers.clear()
+                        visibleMarkers.addAll(filtered)
+                    }
+                }
+            }
+    }
+
+
     Box(modifier = Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
@@ -104,16 +123,10 @@ fun MapScreen() {
                 isPanelOpen = true
             }
         ) {
-            // 現在位置のマーカー
-            userLocation?.let { location ->
-                Marker(
-                    state = MarkerState(position = location),
-                    title = "あなたの位置"
-                )
-            }
 
-            // 永続マーカー表示
-            for (marker in permanentMarkers) {
+            // カメラの表示範囲にある永続マーカーのみ表示
+
+            for (marker in visibleMarkers) {
                 Marker(
                     state = MarkerState(position = marker.position),
                     title = marker.title,
@@ -124,7 +137,6 @@ fun MapScreen() {
                     }
                 )
             }
-
             // 一時マーカー
             tempMarkerPosition?.let { temp ->
                 Marker(
@@ -176,7 +188,14 @@ fun MapScreen() {
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
                         tempMarkerPosition?.let { pos ->
-                            permanentMarkers.add(NamedMarker(position = pos, title = tempMarkerName))
+                            val newMarker = NamedMarker(position = pos, title = tempMarkerName)
+                            permanentMarkers.add(newMarker)
+
+                            // 👇 表示範囲に入っていれば visibleMarkers にも追加！
+                            val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
+                            if (bounds != null && bounds.contains(pos)) {
+                                visibleMarkers.add(newMarker)
+                            }
                         }
                         tempMarkerPosition = null
                         tempMarkerName = ""
@@ -237,7 +256,7 @@ fun MapScreen() {
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
-                        permanentMarkers.remove(marker)
+                        visibleMarkers.remove(marker)
                         isEditPanelOpen = false
                         selectedMarker = null
                     }) {
