@@ -53,6 +53,7 @@ dependencies {
     // Google Maps 関連（libs ではなく直書き）
     implementation("com.google.android.gms:play-services-maps:19.2.0")
     implementation("com.google.maps.android:maps-compose:2.11.4")
+    implementation(libs.play.services.location)
 
 
     testImplementation(libs.junit)
