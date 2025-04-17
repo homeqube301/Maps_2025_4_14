@@ -11,7 +11,8 @@ data class NamedMarker(
     val id: String = UUID.randomUUID().toString(),
     val position: LatLngSerializable,
     val title: String,
-    val createdAt: String = ""
+    val createdAt: String = "",
+    val imageUri: String? = null // ← 画像URIを保持
 ){
     fun ensureCreatedAt(): NamedMarker {
         return if (createdAt.isBlank()) {

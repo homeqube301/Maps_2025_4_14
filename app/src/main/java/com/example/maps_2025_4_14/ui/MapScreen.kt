@@ -1,6 +1,9 @@
 package com.example.maps_2025_4_14.ui
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -28,15 +33,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.maps_2025_4_14.model.LatLngSerializable
 import com.example.maps_2025_4_14.model.NamedMarker
 import com.example.maps_2025_4_14.strage.loadMarkers
 import com.example.maps_2025_4_14.strage.saveMarkers
-import com.example.maps_2025_4_14.strage.loadMarkers
+
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -51,6 +58,8 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
+
 
 @SuppressLint("MissingPermission")
 @Composable
@@ -84,6 +93,22 @@ fun MapScreen() {
     var isEditPanelOpen by remember { mutableStateOf(false) }
 
     val focusManager = LocalFocusManager.current
+
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            selectedMarker?.let { marker ->
+                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                if (index != -1) {
+                    permanentMarkers[index] = marker.copy(imageUri = uri.toString())
+                    saveMarkers(context, permanentMarkers)
+                }
+            }
+        }
+    }
+
 
     // リアルタイム現在地取得
     LaunchedEffect(Unit) {
@@ -307,6 +332,24 @@ fun MapScreen() {
                         })                    {
                             Text("名前を更新")
                         }
+
+                        Button(onClick = {
+                            imagePickerLauncher.launch("image/*")
+                        }) {
+                            Text("画像を追加")
+                        }
+
+                        marker.imageUri?.let { uri ->
+                            Spacer(modifier = Modifier.height(16.dp))
+                            AsyncImage(
+                                model = uri,
+                                contentDescription = "マーカー画像",
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = {
                             permanentMarkers.removeIf { it.id == marker.id }
