@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -57,6 +58,11 @@ dependencies {
     // Google Maps 関連（libs ではなく直書き）
     implementation("com.google.android.gms:play-services-maps:19.2.0")
     implementation("com.google.maps.android:maps-compose:2.11.4")
+
+    implementation("androidx.datastore:datastore-preferences:1.1.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
+
     implementation(libs.play.services.location)
 
 

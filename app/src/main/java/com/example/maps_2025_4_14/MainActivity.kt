@@ -26,6 +26,45 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import java.util.UUID
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
+
+@Serializable
+data class NamedMarker(
+    val id: String = UUID.randomUUID().toString(),
+    val position: LatLngSerializable,
+    val title: String,
+    val createdAt: String = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))
+)
+
+
+@Serializable
+data class LatLngSerializable(val latitude: Double, val longitude: Double) {
+    fun toLatLng() = LatLng(latitude, longitude)
+    companion object {
+        fun from(latLng: LatLng) = LatLngSerializable(latLng.latitude, latLng.longitude)
+    }
+}
+
+fun saveMarkers(context: android.content.Context, markers: List<NamedMarker>) {
+    val prefs = context.getSharedPreferences("markers", android.content.Context.MODE_PRIVATE)
+    val json = Json.encodeToString(markers)
+    prefs.edit().putString("marker_list", json).apply()
+}
+
+fun loadMarkers(context: android.content.Context): List<NamedMarker> {
+    val prefs = context.getSharedPreferences("markers", android.content.Context.MODE_PRIVATE)
+    val json = prefs.getString("marker_list", null) ?: return emptyList()
+    return try {
+        Json.decodeFromString(json)
+    } catch (e: Exception) {
+        emptyList()
+    }
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +100,11 @@ fun MapScreen() {
 
     // 永続マーカーのリスト
     val permanentMarkers = remember { mutableStateListOf<NamedMarker>() }
+
+    LaunchedEffect(Unit) {
+        val loaded = loadMarkers(context)
+        permanentMarkers.addAll(loaded)
+    }
 
     // サイドパネルの表示フラグ
     var isPanelOpen by remember { mutableStateOf(false) }
@@ -110,7 +154,7 @@ fun MapScreen() {
                     // カメラが止まったときに現在の可視領域を取得
                     val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
                     if (bounds != null) {
-                        val filtered = permanentMarkers.filter { bounds.contains(it.position) }
+                        val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
                         visibleMarkers.clear()
                         visibleMarkers.addAll(filtered)
                     }
@@ -134,7 +178,7 @@ fun MapScreen() {
 
             for (marker in visibleMarkers) {
                 Marker(
-                    state = MarkerState(position = marker.position),
+                    state = MarkerState(position = marker.position.toLatLng()),
                     title = marker.title,
                     onClick = {
                         selectedMarker = marker
@@ -203,8 +247,11 @@ fun MapScreen() {
                         focusManager.clearFocus() // ← 変換中なら確定
 
                         tempMarkerPosition?.let { pos ->
-                            val newMarker = NamedMarker(position = pos, title = tempMarkerName)
+                            val newMarker = NamedMarker(
+                                position = LatLngSerializable.from(pos),
+                                title = tempMarkerName)
                             permanentMarkers.add(newMarker)
+                            saveMarkers(context, permanentMarkers)
 
                             // 👇 表示範囲に入っていれば visibleMarkers にも追加！
                             val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
@@ -279,6 +326,7 @@ fun MapScreen() {
                             val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                             if (index != -1) {
                                 permanentMarkers[index] = marker.copy(title = editedName)
+                                saveMarkers(context, permanentMarkers)
                             }
                             isEditPanelOpen = false
                             selectedMarker = null
@@ -289,6 +337,7 @@ fun MapScreen() {
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
                         permanentMarkers.removeIf { it.id == marker.id }
+                        saveMarkers(context, permanentMarkers)
 
                         visibleMarkers.remove(marker)
                         isEditPanelOpen = false
@@ -311,4 +360,5 @@ fun MapScreen() {
 
     }
 }
+
 
