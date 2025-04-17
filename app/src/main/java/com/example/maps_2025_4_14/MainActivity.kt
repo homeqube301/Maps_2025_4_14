@@ -251,18 +251,26 @@ fun MapScreen() {
                         var editedName by remember(marker) { mutableStateOf(marker.title) }
 
                     Text("マーカーを編集")
-                     OutlinedTextField(
-                         value = tempMarkerName,
-                         onValueChange = { tempMarkerName = it },
-                         label = { Text("マーカー名") },
-                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                         keyboardActions = KeyboardActions(
-                             onDone = {
-                                 focusManager.clearFocus() // ← IME入力を確定
-                             }
-                         )
-                     )
-                     Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "設置日時: ${marker.createdAt}",
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+
+                        OutlinedTextField(
+                            value = editedName,
+                            onValueChange = { editedName = it },
+                            label = { Text("マーカー名") },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    focusManager.clearFocus()
+                                }
+                            )
+                        )
+                    Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
 
                         focusManager.clearFocus() // ← 変換中なら確定
@@ -280,6 +288,8 @@ fun MapScreen() {
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
+                        permanentMarkers.removeIf { it.id == marker.id }
+
                         visibleMarkers.remove(marker)
                         isEditPanelOpen = false
                         selectedMarker = null
@@ -302,8 +312,3 @@ fun MapScreen() {
     }
 }
 
-data class NamedMarker(
-    val id: String = UUID.randomUUID().toString(), // 識別子
-    val position: LatLng,
-    val title: String
-)
