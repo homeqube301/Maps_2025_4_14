@@ -1,5 +1,6 @@
 package com.example.maps_2025_4_14.model
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
@@ -14,7 +15,8 @@ data class NamedMarker(
     val createdAt: String = "",
     val imageUri: String? = null, // ← 画像URIを保持
     val videoUri: String? = null,
-    val memo: String? = null
+    val memo: String? = null,
+    val colorHue: Float = BitmapDescriptorFactory.HUE_RED,
 ){
     fun ensureCreatedAt(): NamedMarker {
         return if (createdAt.isBlank()) {

@@ -37,6 +37,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -203,7 +204,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-// 検索のステート
+        // 検索のステート
         var isSearchOpen by remember { mutableStateOf(false) }
         var titleQuery by remember { mutableStateOf("") }
         var memoQuery by remember { mutableStateOf("") }
@@ -233,6 +234,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
 
         val context2 = LocalContext.current
 
+
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
@@ -252,6 +254,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                 Marker(
                     state = MarkerState(position = marker.position.toLatLng()),
                     title = marker.title,
+                    icon = BitmapDescriptorFactory.defaultMarker(marker.colorHue),
                     onClick = {
                         selectedMarker = marker
                         isEditPanelOpen = true
@@ -271,7 +274,39 @@ fun MapScreen(isPermissionGranted: Boolean) {
             }
         }
 
-// 検索ボタンとパネル
+        // 右下の追従モードボタン
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.End
+        ) {
+            Button(onClick = {
+                isFollowing = !isFollowing
+            }) {
+                Text(if (isFollowing) "追従ON" else "追従OFF")
+            }
+        }
+
+        if (isEditPanelOpen || isPanelOpen || isSearchOpen) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.001f)) // ほぼ透明
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        isEditPanelOpen = false
+                        isPanelOpen = false
+                        isSearchOpen = false
+                        selectedMarker = null
+                    }
+            )
+        }
+
+        // 検索ボタンとパネル
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -361,37 +396,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                 }
             }
         }
-        // 右下の追従モードボタン
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.End
-        ) {
-            Button(onClick = {
-                isFollowing = !isFollowing
-            }) {
-                Text(if (isFollowing) "追従ON" else "追従OFF")
-            }
-        }
 
-        if (isEditPanelOpen || isPanelOpen || isSearchOpen) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.001f)) // ほぼ透明
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        isEditPanelOpen = false
-                        isPanelOpen = false
-                        isSearchOpen = false
-                        selectedMarker = null
-                    }
-            )
-        }
 
         // 右側から出るパネル
         AnimatedVisibility(
@@ -422,6 +427,35 @@ fun MapScreen(isPermissionGranted: Boolean) {
                         )
                     )
                     Spacer(modifier = Modifier.height(16.dp))
+
+                    // 色選択の状態
+                    var selectedHue by remember { mutableStateOf(BitmapDescriptorFactory.HUE_RED) }
+
+                    Text("マーカーの色を選んでください")
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        val colorOptions = listOf(
+                            BitmapDescriptorFactory.HUE_RED to "赤",
+                            BitmapDescriptorFactory.HUE_BLUE to "青",
+                            BitmapDescriptorFactory.HUE_GREEN to "緑",
+                            BitmapDescriptorFactory.HUE_YELLOW to "黄"
+                        )
+                        colorOptions.forEach { (hue, label) ->
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                RadioButton(
+                                    selected = selectedHue == hue,
+                                    onClick = { selectedHue = hue }
+                                )
+                                Text(label)
+                            }
+                        }
+                    }
+
+
+
+                    Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
 
                         focusManager.clearFocus() // ← 変換中なら確定
@@ -432,7 +466,9 @@ fun MapScreen(isPermissionGranted: Boolean) {
                                 title = tempMarkerName,
                                 createdAt = LocalDateTime.now().format(
                                     DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-                                )
+                                ),
+                                colorHue = selectedHue
+
                             )
                             permanentMarkers.add(newMarker)
                             saveMarkers(context, permanentMarkers)
@@ -487,6 +523,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                     selectedMarker?.let { marker ->
                         var editedName by remember(marker) { mutableStateOf(marker.title) }
                         var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
+                        var selectedColorHue by remember(marker) { mutableStateOf(marker.colorHue) }
 
                         Text("マーカーを編集")
 
@@ -514,6 +551,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                                 ),
                                 modifier = Modifier.weight(1f)
                             )
+
                             Spacer(modifier = Modifier.height(8.dp))
                             Button(onClick = {
 
@@ -534,6 +572,45 @@ fun MapScreen(isPermissionGranted: Boolean) {
                             },modifier = Modifier.wrapContentWidth()
                             ) {
                                 Text("更新")
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text("マーカーの色を変更", style = MaterialTheme.typography.bodyMedium)
+
+                        val colorOptions = listOf(
+                            BitmapDescriptorFactory.HUE_RED to "赤",
+                            BitmapDescriptorFactory.HUE_BLUE to "青",
+                            BitmapDescriptorFactory.HUE_GREEN to "緑",
+                            BitmapDescriptorFactory.HUE_YELLOW to "黄"
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            colorOptions.forEach { (hue, label) ->
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    RadioButton(
+                                        selected = selectedColorHue == hue,
+                                        onClick = {
+                                            selectedColorHue = hue
+
+                                            // マーカーの色を即時変更
+                                            selectedMarker?.let { marker ->
+                                                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                                                if (index != -1) {
+                                                    val updatedMarker = marker.copy(colorHue = hue)
+                                                    permanentMarkers[index] = updatedMarker
+                                                    selectedMarker = updatedMarker // UIも更新
+                                                    updateVisibleMarkers()
+                                                    saveMarkers(context, permanentMarkers)
+                                                }
+                                            }
+                                        }
+                                    )
+                                    Text(label)
+                                }
                             }
                         }
 
