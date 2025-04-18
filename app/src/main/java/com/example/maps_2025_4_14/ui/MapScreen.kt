@@ -105,10 +105,13 @@ fun MapScreen(isPermissionGranted: Boolean) {
     ) { uri: Uri? ->
         uri?.let {
             selectedMarker?.let { marker ->
+                val updatedMarker = marker.copy(imageUri = uri.toString())
                 val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                 if (index != -1) {
-                    permanentMarkers[index] = marker.copy(imageUri = uri.toString())
+                    permanentMarkers[index] = updatedMarker
                     saveMarkers(context, permanentMarkers)
+                    // 👇 これでサイドシートを再描画
+                    selectedMarker = updatedMarker
                 }
             }
         }
@@ -144,6 +147,16 @@ fun MapScreen(isPermissionGranted: Boolean) {
     }
 
     val visibleMarkers = remember { mutableStateListOf<NamedMarker>() }
+
+    fun updateVisibleMarkers() {
+        val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
+        if (bounds != null) {
+            val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
+            visibleMarkers.clear()
+            visibleMarkers.addAll(filtered)
+        }
+    }
+
 
     LaunchedEffect(cameraPositionState.isMoving) {
         // マップ移動終了後に更新
@@ -368,19 +381,24 @@ fun MapScreen(isPermissionGranted: Boolean) {
                                     .size(200.dp)
                                     .clip(RoundedCornerShape(8.dp))
                             )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(onClick = {
+                                val updatedMarker = marker.copy(imageUri = null)
+                                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                                if (index != -1) {
+                                    permanentMarkers[index] = updatedMarker
+                                    saveMarkers(context, permanentMarkers)
+                                    selectedMarker = permanentMarkers[index] // 再選択しなおすことで反映
+                                }
+                                // selectedMarkerを更新してサイドシートを再描画
+                                //selectedMarker = updatedMarker
+                            }) {
+                                Text("画像を削除する")
+                            }
+
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(onClick = {
-                            val index = permanentMarkers.indexOfFirst { it.id == marker.id }
-                            if (index != -1) {
-                                permanentMarkers[index] = marker.copy(imageUri = null)
-                                saveMarkers(context, permanentMarkers)
-                                selectedMarker = permanentMarkers[index] // 再選択しなおすことで反映
-                            }
-                        }) {
-                            Text("画像を削除する")
-                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = {
