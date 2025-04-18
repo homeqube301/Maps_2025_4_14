@@ -1,6 +1,7 @@
 package com.example.maps_2025_4_14.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -100,22 +101,6 @@ fun MapScreen(isPermissionGranted: Boolean) {
     val focusManager = LocalFocusManager.current
 
 
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            selectedMarker?.let { marker ->
-                val updatedMarker = marker.copy(imageUri = uri.toString())
-                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
-                if (index != -1) {
-                    permanentMarkers[index] = updatedMarker
-                    saveMarkers(context, permanentMarkers)
-                    // 👇 これでサイドシートを再描画
-                    selectedMarker = updatedMarker
-                }
-            }
-        }
-    }
 
 
     // リアルタイム現在地取得
@@ -154,6 +139,30 @@ fun MapScreen(isPermissionGranted: Boolean) {
             val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
             visibleMarkers.clear()
             visibleMarkers.addAll(filtered)
+        }
+    }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+
+            context.contentResolver.takePersistableUriPermission(
+                it,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+
+            selectedMarker?.let { marker ->
+                val updatedMarker = marker.copy(imageUri = uri.toString())
+                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                if (index != -1) {
+                    permanentMarkers[index] = updatedMarker
+                    saveMarkers(context, permanentMarkers)
+                    // 👇 これでサイドシートを再描画
+                    selectedMarker = updatedMarker
+                    updateVisibleMarkers()
+                }
+            }
         }
     }
 
@@ -367,8 +376,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                         }
 
                         Button(onClick = {
-                            imagePickerLauncher.launch("image/*")
-                            updateVisibleMarkers()
+                            imagePickerLauncher.launch(arrayOf("image/*"))
                         }) {
                             Text("画像を追加")
                         }
