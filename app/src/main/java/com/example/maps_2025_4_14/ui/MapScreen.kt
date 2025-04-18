@@ -3,6 +3,7 @@ package com.example.maps_2025_4_14.ui
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
+import android.widget.VideoView
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -43,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import com.example.maps_2025_4_14.model.LatLngSerializable
 import com.example.maps_2025_4_14.model.NamedMarker
@@ -166,6 +168,32 @@ fun MapScreen(isPermissionGranted: Boolean) {
         }
     }
 
+    val mediaPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        uri?.let {
+            context.contentResolver.takePersistableUriPermission(
+                it,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+
+            val mimeType = context.contentResolver.getType(it)
+
+            selectedMarker?.let { marker ->
+                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                if (index != -1) {
+                    val updatedMarker = when {
+                        mimeType?.startsWith("image/") == true -> marker.copy(imageUri = it.toString())
+                        mimeType?.startsWith("video/") == true -> marker.copy(videoUri = it.toString())
+                        else -> marker // サポート外
+                    }
+                    permanentMarkers[index] = updatedMarker
+                    selectedMarker = updatedMarker
+                    saveMarkers(context, permanentMarkers)
+                }
+            }
+        }
+    }
 
     LaunchedEffect(cameraPositionState.isMoving) {
         // マップ移動終了後に更新
@@ -376,9 +404,9 @@ fun MapScreen(isPermissionGranted: Boolean) {
                         }
 
                         Button(onClick = {
-                            imagePickerLauncher.launch(arrayOf("image/*"))
+                            mediaPickerLauncher.launch(arrayOf("image/*", "video/*"))
                         }) {
-                            Text("画像を追加")
+                            Text("メディアを追加")
                         }
 
                         marker.imageUri?.let { uri ->
@@ -391,24 +419,59 @@ fun MapScreen(isPermissionGranted: Boolean) {
                                     .clip(RoundedCornerShape(8.dp))
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(onClick = {
-                                val updatedMarker = marker.copy(imageUri = null)
-                                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
-                                if (index != -1) {
-                                    permanentMarkers[index] = updatedMarker
-                                    saveMarkers(context, permanentMarkers)
-                                    selectedMarker = permanentMarkers[index] // 再選択しなおすことで反映
-                                    updateVisibleMarkers()
-                                }
-                                // selectedMarkerを更新してサイドシートを再描画
-                                //selectedMarker = updatedMarker
-                            }) {
-                                Text("画像を削除する")
-                            }
+                            //Spacer(modifier = Modifier.height(8.dp))
+                            //Button(onClick = {
+                            //    val updatedMarker = marker.copy(imageUri = null)
+                            //    val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                            //    if (index != -1) {
+                            //        permanentMarkers[index] = updatedMarker
+                            //        saveMarkers(context, permanentMarkers)
+                            //        selectedMarker = permanentMarkers[index] // 再選択しなおすことで反映
+                            //        updateVisibleMarkers()
+                            //    }
+                            //}) {
+                            //    Text("画像を削除する")
+                            //}
 
                         }
 
+                        selectedMarker?.videoUri?.let { videoUri ->
+                            AndroidView(
+                                factory = {
+                                    VideoView(it).apply {
+                                        setVideoURI(Uri.parse(videoUri))
+                                        setOnPreparedListener { mediaPlayer ->
+                                            mediaPlayer.isLooping = true
+                                            start()
+                                        }
+                                    }
+                                },
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                            )
+                        }
+
+                        if (selectedMarker?.imageUri != null || selectedMarker?.videoUri != null) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = {
+                                selectedMarker?.let { marker ->
+                                    val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                                    if (index != -1) {
+                                        val updatedMarker = marker.copy(
+                                            imageUri = null,
+                                            videoUri = null
+                                        )
+                                        permanentMarkers[index] = updatedMarker
+                                        selectedMarker = updatedMarker
+                                        updateVisibleMarkers()
+                                        saveMarkers(context, permanentMarkers)
+                                    }
+                                }
+                            }) {
+                                Text("メディアを削除")
+                            }
+                        }
 
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = {
@@ -426,7 +489,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                             isEditPanelOpen = false
                             selectedMarker = null
                         }) {
-                            Text("キャンセル")
+                            Text("戻る")
                         }
                     }
                 }

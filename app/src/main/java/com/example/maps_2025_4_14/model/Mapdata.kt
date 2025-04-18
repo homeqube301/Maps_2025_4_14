@@ -12,7 +12,8 @@ data class NamedMarker(
     val position: LatLngSerializable,
     val title: String,
     val createdAt: String = "",
-    val imageUri: String? = null // ← 画像URIを保持
+    val imageUri: String? = null, // ← 画像URIを保持
+    val videoUri: String? = null
 ){
     fun ensureCreatedAt(): NamedMarker {
         return if (createdAt.isBlank()) {
