@@ -25,7 +25,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -66,6 +69,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
@@ -111,8 +115,6 @@ fun MapScreen(isPermissionGranted: Boolean) {
     var isEditPanelOpen by remember { mutableStateOf(false) }
 
     val focusManager = LocalFocusManager.current
-
-
 
 
     // リアルタイム現在地取得
@@ -201,6 +203,34 @@ fun MapScreen(isPermissionGranted: Boolean) {
 
     Box(modifier = Modifier.fillMaxSize()) {
 
+// 検索のステート
+        var isSearchOpen by remember { mutableStateOf(false) }
+        var titleQuery by remember { mutableStateOf("") }
+        var memoQuery by remember { mutableStateOf("") }
+
+        val titleResults = remember { mutableStateListOf<NamedMarker>() }
+        val memoResults = remember { mutableStateListOf<NamedMarker>() }
+
+        LaunchedEffect(titleQuery, memoQuery) {
+            val lowerTitle = titleQuery.lowercase()
+            val lowerMemo = memoQuery.lowercase()
+
+            titleResults.clear()
+            memoResults.clear()
+
+            if (lowerTitle.isNotBlank()) {
+                titleResults += permanentMarkers.filter {
+                    it.title.lowercase().contains(lowerTitle)
+                }
+            }
+
+            if (lowerMemo.isNotBlank()) {
+                memoResults += permanentMarkers.filter {
+                    it.memo?.lowercase()?.contains(lowerMemo) == true
+                }
+            }
+        }
+
         val context2 = LocalContext.current
 
         GoogleMap(
@@ -234,12 +264,103 @@ fun MapScreen(isPermissionGranted: Boolean) {
                 Marker(
                     state = MarkerState(position = temp),
                     title = "一時マーカー",
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
                     draggable = false
+
                 )
             }
         }
 
+// 検索ボタンとパネル
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.End
+        ) {
+            Button(onClick = {
+                isSearchOpen = !isSearchOpen
+                titleQuery = ""
+                memoQuery = ""
+            }) {
+                Text(if (isSearchOpen) "閉じる" else "検索")
+            }
 
+            AnimatedVisibility(visible = isSearchOpen) {
+                Surface(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .background(Color.White, shape = RoundedCornerShape(8.dp))
+                        .widthIn(max = 300.dp)
+                        .padding(12.dp),
+                    shadowElevation = 4.dp
+                ) {
+                    Column {
+
+                        // マーカー名検索
+                        OutlinedTextField(
+                            value = titleQuery,
+                            onValueChange = { titleQuery = it },
+                            label = { Text("マーカー名で検索") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        LazyColumn {
+                            items(titleResults) { marker ->
+                                Text(
+                                    text = marker.title,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            selectedMarker = marker
+                                            isEditPanelOpen = true
+                                            cameraPositionState.move(
+                                                CameraUpdateFactory.newLatLngZoom(marker.position.toLatLng(), 17f)
+                                            )
+                                            isSearchOpen = false
+                                            titleQuery = ""
+                                            memoQuery = ""
+                                        }
+                                        .padding(8.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // メモ検索
+                        OutlinedTextField(
+                            value = memoQuery,
+                            onValueChange = { memoQuery = it },
+                            label = { Text("メモ内容で検索") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        LazyColumn {
+                            items(memoResults) { marker ->
+                                Text(
+                                    text = marker.title + "（メモ一致）",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            selectedMarker = marker
+                                            isEditPanelOpen = true
+                                            cameraPositionState.move(
+                                                CameraUpdateFactory.newLatLngZoom(marker.position.toLatLng(), 17f)
+                                            )
+                                            isSearchOpen = false
+                                            titleQuery = ""
+                                            memoQuery = ""
+                                        }
+                                        .padding(8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
         // 右下の追従モードボタン
         Column(
             modifier = Modifier
@@ -255,7 +376,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
             }
         }
 
-        if (isEditPanelOpen || isPanelOpen) {
+        if (isEditPanelOpen || isPanelOpen || isSearchOpen) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -266,6 +387,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                     ) {
                         isEditPanelOpen = false
                         isPanelOpen = false
+                        isSearchOpen = false
                         selectedMarker = null
                     }
             )
