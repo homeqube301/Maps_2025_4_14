@@ -1,8 +1,11 @@
 package com.example.maps_2025_4_14.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.net.Uri
+import android.util.Log
 import android.widget.VideoView
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -51,6 +54,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
+import com.example.maps_2025_4_14.R
 import com.example.maps_2025_4_14.model.LatLngSerializable
 import com.example.maps_2025_4_14.model.NamedMarker
 import com.example.maps_2025_4_14.strage.loadMarkers
@@ -63,14 +67,15 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
 
 
 @SuppressLint("MissingPermission")
@@ -195,10 +200,16 @@ fun MapScreen(isPermissionGranted: Boolean) {
 
 
     Box(modifier = Modifier.fillMaxSize()) {
+
+        val context2 = LocalContext.current
+
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            properties = MapProperties(isMyLocationEnabled = isPermissionGranted),
+            properties = MapProperties(
+                isMyLocationEnabled = isPermissionGranted,
+                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context2, R.raw.map_style)
+            ),
             onMapClick = { latLng ->
                 tempMarkerPosition = latLng
                 isPanelOpen = true
@@ -227,6 +238,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                 )
             }
         }
+
 
         // 右下の追従モードボタン
         Column(
@@ -403,6 +415,8 @@ fun MapScreen(isPermissionGranted: Boolean) {
                             }
                         }
 
+                        Spacer(modifier = Modifier.height(24.dp))
+
                         Button(onClick = {
                             mediaPickerLauncher.launch(arrayOf("image/*", "video/*"))
                         }) {
@@ -464,7 +478,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        Text("メモ（任意）", style = MaterialTheme.typography.bodyMedium)
+                        Text("メモだよ", style = MaterialTheme.typography.bodyMedium)
 
                         OutlinedTextField(
                             value = memoText,
@@ -484,8 +498,8 @@ fun MapScreen(isPermissionGranted: Boolean) {
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(150.dp)
-                                .background(Color.White),
+                                .height(150.dp),
+                                //.background(Color.White),
                             placeholder = { Text("ここにメモを書いてください") },
                             singleLine = false,
                             maxLines = 10,
