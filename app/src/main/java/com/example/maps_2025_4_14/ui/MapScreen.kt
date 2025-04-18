@@ -63,7 +63,8 @@ import java.time.format.DateTimeFormatter
 
 @SuppressLint("MissingPermission")
 @Composable
-fun MapScreen() {
+fun MapScreen(isPermissionGranted: Boolean) {
+
     val context = LocalContext.current
     val fusedLocationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
@@ -161,7 +162,7 @@ fun MapScreen() {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            properties = MapProperties(isMyLocationEnabled = true),
+            properties = MapProperties(isMyLocationEnabled = isPermissionGranted),
             onMapClick = { latLng ->
                 tempMarkerPosition = latLng
                 isPanelOpen = true

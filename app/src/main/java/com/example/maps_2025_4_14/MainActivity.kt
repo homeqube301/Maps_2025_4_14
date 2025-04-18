@@ -17,16 +17,17 @@ import android.Manifest
 class MainActivity : ComponentActivity() {
 
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    private var isPermissionGranted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 🔸 権限がない場合はリクエスト
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        isPermissionGranted = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!isPermissionGranted) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -40,12 +41,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MapScreen()
+                    // ✅ パーミッション状態を渡す
+                    MapScreen(isPermissionGranted = isPermissionGranted)
                 }
             }
         }
     }
-    // 🔸 ユーザーの応答結果を受け取る（任意でログや通知など）
+
+    // 🔄 権限の結果が返ってきたときに画面を再構成する必要あり
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -53,14 +56,22 @@ class MainActivity : ComponentActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                // 権限が許可された
-            } else {
-                // 権限が拒否された（必要であれば警告表示など）
+            isPermissionGranted = grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+
+            // 🚨 再構成するには再度 setContent を呼ぶ必要がある
+            setContent {
+                Maps_2025_4_14Theme {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        MapScreen(isPermissionGranted = isPermissionGranted)
+                    }
+                }
             }
         }
     }
 }
-
 
 
