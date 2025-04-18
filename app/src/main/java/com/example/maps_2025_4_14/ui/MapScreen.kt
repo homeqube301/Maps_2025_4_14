@@ -368,6 +368,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
 
                         Button(onClick = {
                             imagePickerLauncher.launch("image/*")
+                            updateVisibleMarkers()
                         }) {
                             Text("画像を追加")
                         }
@@ -390,6 +391,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                                     permanentMarkers[index] = updatedMarker
                                     saveMarkers(context, permanentMarkers)
                                     selectedMarker = permanentMarkers[index] // 再選択しなおすことで反映
+                                    updateVisibleMarkers()
                                 }
                                 // selectedMarkerを更新してサイドシートを再描画
                                 //selectedMarker = updatedMarker
