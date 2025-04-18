@@ -13,16 +13,21 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -144,30 +149,6 @@ fun MapScreen(isPermissionGranted: Boolean) {
         }
     }
 
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        uri?.let {
-
-            context.contentResolver.takePersistableUriPermission(
-                it,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-
-            selectedMarker?.let { marker ->
-                val updatedMarker = marker.copy(imageUri = uri.toString())
-                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
-                if (index != -1) {
-                    permanentMarkers[index] = updatedMarker
-                    saveMarkers(context, permanentMarkers)
-                    // 👇 これでサイドシートを再描画
-                    selectedMarker = updatedMarker
-                    updateVisibleMarkers()
-                }
-            }
-        }
-    }
-
     val mediaPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
@@ -189,6 +170,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                     }
                     permanentMarkers[index] = updatedMarker
                     selectedMarker = updatedMarker
+                    updateVisibleMarkers()
                     saveMarkers(context, permanentMarkers)
                 }
             }
@@ -345,6 +327,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
             }
         }
 
+
         // 右側から出るパネル(編集用)
         AnimatedVisibility(
             visible = isEditPanelOpen && selectedMarker != null,
@@ -356,14 +339,20 @@ fun MapScreen(isPermissionGranted: Boolean) {
                     .width(300.dp)
                     .fillMaxHeight()
             ) {
+
+                val scrollState = rememberScrollState()
+
                 Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
                     selectedMarker?.let { marker ->
                         var editedName by remember(marker) { mutableStateOf(marker.title) }
+                        var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
 
                         Text("マーカーを編集")
 
@@ -374,33 +363,44 @@ fun MapScreen(isPermissionGranted: Boolean) {
                         )
 
 
-                        OutlinedTextField(
-                            value = editedName,
-                            onValueChange = { editedName = it },
-                            label = { Text("マーカー名") },
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    focusManager.clearFocus()
-                                }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+
+                            OutlinedTextField(
+                                value = editedName,
+                                onValueChange = { editedName = it },
+                                label = { Text("マーカー名") },
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        focusManager.clearFocus()
+                                    }
+                                ),
+                                modifier = Modifier.weight(1f)
                             )
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Button(onClick = {
 
-                            focusManager.clearFocus() // ← 変換中なら確定
+                                focusManager.clearFocus() // ← 変換中なら確定
 
-                            selectedMarker?.let { marker ->
-                                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
-                                if (index != -1) {
-                                    permanentMarkers[index] = marker.copy(title = editedName)
-                                    saveMarkers(context, permanentMarkers)
+                                selectedMarker?.let { marker ->
+                                    val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                                    if (index != -1) {
+                                        permanentMarkers[index] = marker.copy(
+                                            title = editedName,
+                                        )
+                                        saveMarkers(context, permanentMarkers)
+                                    }
+                                    isEditPanelOpen = false
+                                    selectedMarker = null
+                                    updateVisibleMarkers()
                                 }
-                                isEditPanelOpen = false
-                                selectedMarker = null
+                            },modifier = Modifier.wrapContentWidth()
+                            ) {
+                                Text("更新")
                             }
-                        })                    {
-                            Text("名前を更新")
                         }
 
                         Button(onClick = {
@@ -419,21 +419,8 @@ fun MapScreen(isPermissionGranted: Boolean) {
                                     .clip(RoundedCornerShape(8.dp))
                             )
 
-                            //Spacer(modifier = Modifier.height(8.dp))
-                            //Button(onClick = {
-                            //    val updatedMarker = marker.copy(imageUri = null)
-                            //    val index = permanentMarkers.indexOfFirst { it.id == marker.id }
-                            //    if (index != -1) {
-                            //        permanentMarkers[index] = updatedMarker
-                            //        saveMarkers(context, permanentMarkers)
-                            //        selectedMarker = permanentMarkers[index] // 再選択しなおすことで反映
-                            //        updateVisibleMarkers()
-                            //    }
-                            //}) {
-                            //    Text("画像を削除する")
-                            //}
-
                         }
+
 
                         selectedMarker?.videoUri?.let { videoUri ->
                             AndroidView(
@@ -472,6 +459,38 @@ fun MapScreen(isPermissionGranted: Boolean) {
                                 Text("メディアを削除")
                             }
                         }
+
+
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text("メモ（任意）", style = MaterialTheme.typography.bodyMedium)
+
+                        OutlinedTextField(
+                            value = memoText,
+                            onValueChange = { newText ->
+                                memoText = newText
+
+                                selectedMarker?.let { marker ->
+                                    val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                                    if (index != -1) {
+                                        val updatedMarker = marker.copy(memo = newText)
+                                        permanentMarkers[index] = updatedMarker
+                                        selectedMarker = updatedMarker // UI更新
+                                        updateVisibleMarkers()
+                                        saveMarkers(context, permanentMarkers)
+                                    }
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .background(Color.White),
+                            placeholder = { Text("ここにメモを書いてください") },
+                            singleLine = false,
+                            maxLines = 10,
+                            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
+                        )
 
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = {

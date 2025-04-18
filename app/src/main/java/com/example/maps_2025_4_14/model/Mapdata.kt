@@ -13,7 +13,8 @@ data class NamedMarker(
     val title: String,
     val createdAt: String = "",
     val imageUri: String? = null, // ← 画像URIを保持
-    val videoUri: String? = null
+    val videoUri: String? = null,
+    val memo: String? = null
 ){
     fun ensureCreatedAt(): NamedMarker {
         return if (createdAt.isBlank()) {
