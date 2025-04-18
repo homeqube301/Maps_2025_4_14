@@ -5,6 +5,9 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +37,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -207,6 +211,21 @@ fun MapScreen(isPermissionGranted: Boolean) {
             }
         }
 
+        if (isEditPanelOpen || isPanelOpen) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.001f)) // ほぼ透明
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        isEditPanelOpen = false
+                        isPanelOpen = false
+                        selectedMarker = null
+                    }
+            )
+        }
 
         // 右側から出るパネル
         AnimatedVisibility(
@@ -349,6 +368,18 @@ fun MapScreen(isPermissionGranted: Boolean) {
                                     .size(200.dp)
                                     .clip(RoundedCornerShape(8.dp))
                             )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(onClick = {
+                            val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                            if (index != -1) {
+                                permanentMarkers[index] = marker.copy(imageUri = null)
+                                saveMarkers(context, permanentMarkers)
+                                selectedMarker = permanentMarkers[index] // 再選択しなおすことで反映
+                            }
+                        }) {
+                            Text("画像を削除する")
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
