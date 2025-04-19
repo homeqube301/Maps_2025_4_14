@@ -3,10 +3,11 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
-    id ("dagger.hilt.android.plugin")
-    kotlin("kapt")
-    //id ("com.google.devtools.ksp") version "2.0.21-1.0.20"
-    //id("com.google.devtools.ksp")
+    //id ("dagger.hilt.android.plugin")
+    id("com.google.dagger.hilt.android")
+    id("com.google.devtools.ksp")
+    //kotlin("kapt") version "2.1.20"
+
 }
 
 android {
@@ -71,8 +72,8 @@ dependencies {
     implementation(libs.play.services.location)
 
     implementation("com.google.dagger:hilt-android:2.51.1")
-    //ksp("com.google.dagger:hilt-android-compiler:2.51.1")
-    kapt("com.google.dagger:hilt-compiler:2.51.1")
+    //kapt("groupId:artifactId:version")
+    ksp("com.google.dagger:hilt-android-compiler:2.56.1")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 

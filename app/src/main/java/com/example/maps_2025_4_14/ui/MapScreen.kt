@@ -92,7 +92,6 @@ fun MapScreen(
     viewModel: PermanentMarkerViewModel = hiltViewModel()
 ) {
 
-    val permanentMarkers = viewModel.permanentMarkers
 
     val context = LocalContext.current
     val fusedLocationClient = remember {
@@ -108,6 +107,8 @@ fun MapScreen(
 
     // 永続マーカーのリスト
     //val permanentMarkers = remember { mutableStateListOf<NamedMarker>() }
+    val permanentMarkers = viewModel.permanentMarkers
+
 
     LaunchedEffect(Unit) {
         //val loaded = loadMarkers(context)

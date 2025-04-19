@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.maps_2025_4_14.strage.loadMarkers
 import com.example.maps_2025_4_14.strage.saveMarkers
 import dagger.Module
 import dagger.Provides
@@ -80,11 +81,11 @@ class MarkerRepositoryImpl @Inject constructor(
     // SharedPreferencesやファイルなどでマーカーを保存・取得する実装を行います
     override suspend fun loadMarkers(): List<NamedMarker> {
         // 例: SharedPreferencesからロード
-        return listOf()
+        return loadMarkers(context)
     }
 
     override suspend fun saveMarkers(markers: List<NamedMarker>) {
-        // 例: SharedPreferencesに保存
+        saveMarkers(context, markers)
     }
 }
 

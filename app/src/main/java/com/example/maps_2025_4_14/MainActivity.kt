@@ -14,8 +14,10 @@ import com.example.maps_2025_4_14.ui.MapScreen
 import com.example.maps_2025_4_14.ui.theme.Maps_2025_4_14Theme
 import android.Manifest
 import android.app.Application
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
