@@ -13,6 +13,8 @@ import androidx.core.content.ContextCompat
 import com.example.maps_2025_4_14.ui.MapScreen
 import com.example.maps_2025_4_14.ui.theme.Maps_2025_4_14Theme
 import android.Manifest
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
 class MainActivity : ComponentActivity() {
 
@@ -74,4 +76,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@HiltAndroidApp
+class MyApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+        // アプリケーションの初期化処理
+    }
+}
 

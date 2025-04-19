@@ -57,10 +57,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.maps_2025_4_14.R
 import com.example.maps_2025_4_14.model.LatLngSerializable
 import com.example.maps_2025_4_14.model.NamedMarker
+import com.example.maps_2025_4_14.model.PermanentMarkerViewModel
 import com.example.maps_2025_4_14.strage.loadMarkers
 import com.example.maps_2025_4_14.strage.saveMarkers
 
@@ -85,7 +87,12 @@ import java.time.format.DateTimeFormatter
 
 @SuppressLint("MissingPermission")
 @Composable
-fun MapScreen(isPermissionGranted: Boolean) {
+fun MapScreen(
+    isPermissionGranted: Boolean,
+    viewModel: PermanentMarkerViewModel = hiltViewModel()
+) {
+
+    val permanentMarkers = viewModel.permanentMarkers
 
     val context = LocalContext.current
     val fusedLocationClient = remember {
@@ -100,11 +107,13 @@ fun MapScreen(isPermissionGranted: Boolean) {
     var tempMarkerPosition by remember { mutableStateOf<LatLng?>(null) }
 
     // 永続マーカーのリスト
-    val permanentMarkers = remember { mutableStateListOf<NamedMarker>() }
+    //val permanentMarkers = remember { mutableStateListOf<NamedMarker>() }
 
     LaunchedEffect(Unit) {
-        val loaded = loadMarkers(context)
-        permanentMarkers.addAll(loaded)
+        //val loaded = loadMarkers(context)
+        //permanentMarkers.addAll(loaded)
+
+        viewModel.loadMarkers()
     }
 
     // サイドパネルの表示フラグ
@@ -176,7 +185,7 @@ fun MapScreen(isPermissionGranted: Boolean) {
                         mimeType?.startsWith("video/") == true -> marker.copy(videoUri = it.toString())
                         else -> marker // サポート外
                     }
-                    permanentMarkers[index] = updatedMarker
+                    viewModel.updateMarker(updatedMarker) // ViewModelで更新
                     selectedMarker = updatedMarker
                     updateVisibleMarkers()
                     saveMarkers(context, permanentMarkers)
