@@ -1,13 +1,26 @@
 package com.example.maps_2025_4_14.model
 
+import android.Manifest
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
+import android.content.pm.PackageManager
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.maps_2025_4_14.strage.loadMarkers
 import com.example.maps_2025_4_14.strage.saveMarkers
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,9 +28,59 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.launch
+
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@HiltViewModel
+class LocationViewModel @Inject constructor(
+    private val fusedLocationClient: FusedLocationProviderClient
+) : ViewModel() {
+
+    fun startLocationUpdates(
+        context: Context,
+        isFollowing: Boolean,
+        cameraPositionState: CameraPositionState,
+        onLocationUpdate: (LatLng) -> Unit
+    ) {
+
+        val hasPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (!hasPermission) {
+            // 権限がない場合はログに出して終了（アプリ側で別途対応する）
+            println("位置情報のパーミッションが許可されていません")
+            return
+        }
+
+        val locationRequest = LocationRequest.create().apply {
+            interval = 3000
+            fastestInterval = 2000
+            priority = Priority.PRIORITY_HIGH_ACCURACY
+        }
+
+        val callback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                val location = result.lastLocation
+                location?.let {
+                    val latLng = LatLng(it.latitude, it.longitude)
+                    onLocationUpdate(latLng)
+                    if (isFollowing) {
+                        cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
+                    }
+                }
+            }
+        }
+
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            callback,
+            context.mainLooper
+        )
+    }
+}
 
 @HiltViewModel
 class PermanentMarkerViewModel @Inject constructor(
@@ -92,6 +155,15 @@ class MarkerRepositoryImpl @Inject constructor(
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideFusedLocationProviderClient(
+        @ApplicationContext context: Context
+    ): FusedLocationProviderClient {
+        return LocationServices.getFusedLocationProviderClient(context)
+    }
+
 
     @Provides
     @Singleton

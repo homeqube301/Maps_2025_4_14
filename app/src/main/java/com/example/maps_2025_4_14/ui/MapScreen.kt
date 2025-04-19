@@ -61,6 +61,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.maps_2025_4_14.R
 import com.example.maps_2025_4_14.model.LatLngSerializable
+import com.example.maps_2025_4_14.model.LocationViewModel
 import com.example.maps_2025_4_14.model.NamedMarker
 import com.example.maps_2025_4_14.model.PermanentMarkerViewModel
 import com.example.maps_2025_4_14.strage.loadMarkers
@@ -89,18 +90,28 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun MapScreen(
     isPermissionGranted: Boolean,
-    viewModel: PermanentMarkerViewModel = hiltViewModel()
+    viewModel: PermanentMarkerViewModel = hiltViewModel(),
+    locationViewModel: LocationViewModel = hiltViewModel()
 ) {
 
 
     val context = LocalContext.current
-    val fusedLocationClient = remember {
-        LocationServices.getFusedLocationProviderClient(context)
-    }
+    //val fusedLocationClient = remember {
+    //    LocationServices.getFusedLocationProviderClient(context)
+    //}
 
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
     val cameraPositionState = rememberCameraPositionState()
     var isFollowing by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        locationViewModel.startLocationUpdates(
+            context = context,
+            isFollowing = isFollowing,
+            cameraPositionState = cameraPositionState,
+            onLocationUpdate = { userLocation = it }
+        )
+    }
 
     // タップされた位置の一時マーカー
     var tempMarkerPosition by remember { mutableStateOf<LatLng?>(null) }
@@ -128,33 +139,33 @@ fun MapScreen(
     val focusManager = LocalFocusManager.current
 
 
-    // リアルタイム現在地取得
-    LaunchedEffect(Unit) {
-        val locationRequest = LocationRequest.create().apply {
-            interval = 3000
-            fastestInterval = 2000
-            priority = Priority.PRIORITY_HIGH_ACCURACY
-        }
-
-        val callback = object : LocationCallback() {
-            override fun onLocationResult(result: LocationResult) {
-                val location = result.lastLocation
-                location?.let {
-                    val latLng = LatLng(it.latitude, it.longitude)
-                    userLocation = latLng
-                    if (isFollowing) {
-                        cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
-                    }
-                }
-            }
-        }
-
-        fusedLocationClient.requestLocationUpdates(
-            locationRequest,
-            callback,
-            context.mainLooper
-        )
-    }
+    //// リアルタイム現在地取得
+    //LaunchedEffect(Unit) {
+    //    val locationRequest = LocationRequest.create().apply {
+    //        interval = 3000
+    //        fastestInterval = 2000
+    //        priority = Priority.PRIORITY_HIGH_ACCURACY
+    //    }
+//
+    //    val callback = object : LocationCallback() {
+    //        override fun onLocationResult(result: LocationResult) {
+    //            val location = result.lastLocation
+    //            location?.let {
+    //                val latLng = LatLng(it.latitude, it.longitude)
+    //                userLocation = latLng
+    //                if (isFollowing) {
+    //                    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
+    //                }
+    //            }
+    //        }
+    //    }
+//
+    //    fusedLocationClient.requestLocationUpdates(
+    //        locationRequest,
+    //        callback,
+    //        context.mainLooper
+    //    )
+    //}
 
     val visibleMarkers = remember { mutableStateListOf<NamedMarker>() }
 
@@ -189,7 +200,7 @@ fun MapScreen(
                     viewModel.updateMarker(updatedMarker) // ViewModelで更新
                     selectedMarker = updatedMarker
                     updateVisibleMarkers()
-                    saveMarkers(context, permanentMarkers)
+                    //saveMarkers(context, permanentMarkers)
                 }
             }
         }
