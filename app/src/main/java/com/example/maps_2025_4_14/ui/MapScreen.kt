@@ -479,8 +479,8 @@ fun MapScreen(
                                 colorHue = selectedHue
 
                             )
-                            permanentMarkers.add(newMarker)
-                            saveMarkers(context, permanentMarkers)
+                            viewModel.addMarker(newMarker)
+                            //saveMarkers(context, permanentMarkers)
 
                             // 👇 表示範囲に入っていれば visibleMarkers にも追加！
                             val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
@@ -569,7 +569,7 @@ fun MapScreen(
                                 selectedMarker?.let { marker ->
                                     val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                                     if (index != -1) {
-                                        permanentMarkers[index] = marker.copy(
+                                        val updatedMarker = marker.copy(
                                             title = editedName,
                                         )
                                         saveMarkers(context, permanentMarkers)
@@ -610,10 +610,11 @@ fun MapScreen(
                                                 val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                                                 if (index != -1) {
                                                     val updatedMarker = marker.copy(colorHue = hue)
-                                                    permanentMarkers[index] = updatedMarker
+                                                    //permanentMarkers[index] = updatedMarker
+                                                    viewModel.updateMarker(updatedMarker)
                                                     selectedMarker = updatedMarker // UIも更新
                                                     updateVisibleMarkers()
-                                                    saveMarkers(context, permanentMarkers)
+                                                    //saveMarkers(context, permanentMarkers)
                                                 }
                                             }
                                         }
@@ -671,10 +672,11 @@ fun MapScreen(
                                             imageUri = null,
                                             videoUri = null
                                         )
-                                        permanentMarkers[index] = updatedMarker
+                                        //permanentMarkers[index] = updatedMarker
+                                        viewModel.updateMarker(updatedMarker)
                                         selectedMarker = updatedMarker
                                         updateVisibleMarkers()
-                                        saveMarkers(context, permanentMarkers)
+                                        //saveMarkers(context, permanentMarkers)
                                     }
                                 }
                             }) {
@@ -697,10 +699,11 @@ fun MapScreen(
                                     val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                                     if (index != -1) {
                                         val updatedMarker = marker.copy(memo = newText)
-                                        permanentMarkers[index] = updatedMarker
+                                        //permanentMarkers[index] = updatedMarker
+                                        viewModel.updateMarker(updatedMarker)
                                         selectedMarker = updatedMarker // UI更新
                                         updateVisibleMarkers()
-                                        saveMarkers(context, permanentMarkers)
+                                        //saveMarkers(context, permanentMarkers)
                                     }
                                 }
                             },
@@ -716,8 +719,9 @@ fun MapScreen(
 
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(onClick = {
-                            permanentMarkers.removeIf { it.id == marker.id }
-                            saveMarkers(context, permanentMarkers)
+                            //permanentMarkers.removeIf { it.id == marker.id }
+                            //saveMarkers(context, permanentMarkers)
+                            viewModel.removeMarker(marker.id)
 
                             visibleMarkers.remove(marker)
                             isEditPanelOpen = false

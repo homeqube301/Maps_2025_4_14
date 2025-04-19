@@ -2,15 +2,21 @@ package com.example.maps_2025_4_14.model
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.maps_2025_4_14.strage.saveMarkers
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
+
 
 @HiltViewModel
 class PermanentMarkerViewModel @Inject constructor(
@@ -30,6 +36,7 @@ class PermanentMarkerViewModel @Inject constructor(
     fun loadMarkers() {
         viewModelScope.launch {
             val loaded = markerRepository.loadMarkers() // リポジトリからマーカーを取得
+            _permanentMarkers.clear()
             _permanentMarkers.addAll(loaded)
         }
     }
@@ -49,6 +56,17 @@ class PermanentMarkerViewModel @Inject constructor(
             saveMarkers() // 更新後に保存
         }
     }
+
+    fun addMarker(marker: NamedMarker) {
+        _permanentMarkers.add(marker)
+        saveMarkers()
+    }
+
+    fun removeMarker(markerId: String) {
+        _permanentMarkers.removeAll { it.id == markerId }
+        saveMarkers()
+    }
+
 }
 
 interface MarkerRepository {
@@ -75,7 +93,8 @@ class MarkerRepositoryImpl @Inject constructor(
 object AppModule {
 
     @Provides
-    fun provideMarkerRepository(context: Context): MarkerRepository {
+    @Singleton
+    fun provideMarkerRepository(@ApplicationContext context: Context): MarkerRepository {
         return MarkerRepositoryImpl(context)
     }
 }
