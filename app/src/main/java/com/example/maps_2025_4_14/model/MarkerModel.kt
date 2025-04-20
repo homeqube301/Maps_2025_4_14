@@ -28,6 +28,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Call
 
@@ -41,12 +44,16 @@ class LocationViewModel @Inject constructor(
 
     private var locationCallback: LocationCallback? = null
 
-    // 🔁 追従状態をLiveDataで保持（Composeと連携するなら StateFlow でもOK）
-    private val _isFollowing = mutableStateOf(true)
-    val isFollowing: State<Boolean> = _isFollowing
+    // StateFlowで追従状態を管理
+    private val _isFollowing = MutableStateFlow(true)
+    val isFollowing: StateFlow<Boolean> = _isFollowing.asStateFlow()
 
     fun toggleFollowing() {
         _isFollowing.value = !_isFollowing.value
+    }
+
+    fun setFollowing(value: Boolean) {
+        _isFollowing.value = value
     }
 
 
@@ -84,13 +91,14 @@ class LocationViewModel @Inject constructor(
                     val latLng = LatLng(it.latitude, it.longitude)
                     onLocationUpdate(latLng)
 
-                    // ⬇ ViewModel内の状態を使う！
+                    // StateFlowの値を使う（現在の追従状態）
                     if (_isFollowing.value) {
                         cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
                     }
                 }
             }
         }
+
         fusedLocationClient.requestLocationUpdates(
             locationRequest,
             locationCallback!!,

@@ -42,6 +42,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -101,8 +102,7 @@ fun MapScreen(
     //    LocationServices.getFusedLocationProviderClient(context)
     //}
 
-    val locationViewModel: LocationViewModel = hiltViewModel()
-    val isFollowing by locationViewModel.isFollowing
+    val isFollowing by locationViewModel.isFollowing.collectAsState()
 
 
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
