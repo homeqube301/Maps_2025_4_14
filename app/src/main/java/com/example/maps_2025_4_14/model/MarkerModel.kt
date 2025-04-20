@@ -4,6 +4,7 @@ import android.Manifest
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
@@ -40,6 +41,15 @@ class LocationViewModel @Inject constructor(
 
     private var locationCallback: LocationCallback? = null
 
+    // 🔁 追従状態をLiveDataで保持（Composeと連携するなら StateFlow でもOK）
+    private val _isFollowing = mutableStateOf(true)
+    val isFollowing: State<Boolean> = _isFollowing
+
+    fun toggleFollowing() {
+        _isFollowing.value = !_isFollowing.value
+    }
+
+
     fun startLocationUpdates(
         context: Context,
         isFollowing: Boolean,
@@ -74,8 +84,8 @@ class LocationViewModel @Inject constructor(
                     val latLng = LatLng(it.latitude, it.longitude)
                     onLocationUpdate(latLng)
 
-                    // 🔍 isFollowingがtrueのときだけカメラを動かす
-                    if (isFollowing) {
+                    // ⬇ ViewModel内の状態を使う！
+                    if (_isFollowing.value) {
                         cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
                     }
                 }

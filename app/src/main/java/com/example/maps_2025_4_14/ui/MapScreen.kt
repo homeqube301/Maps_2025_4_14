@@ -101,9 +101,13 @@ fun MapScreen(
     //    LocationServices.getFusedLocationProviderClient(context)
     //}
 
+    val locationViewModel: LocationViewModel = hiltViewModel()
+    val isFollowing by locationViewModel.isFollowing
+
+
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
     val cameraPositionState = rememberCameraPositionState()
-    var isFollowing by remember { mutableStateOf(true) }
+    //var isFollowing by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         locationViewModel.startLocationUpdates(
@@ -121,7 +125,6 @@ fun MapScreen(
     //val permanentMarkers = remember { mutableStateListOf<NamedMarker>() }
     val permanentMarkers = viewModel.permanentMarkers
     val markerViewModel: MarkerViewModel = hiltViewModel()
-
 
     LaunchedEffect(Unit) {
         //val loaded = loadMarkers(context)
@@ -310,7 +313,7 @@ fun MapScreen(
             horizontalAlignment = Alignment.End
         ) {
             Button(onClick = {
-                isFollowing = !isFollowing
+                locationViewModel.toggleFollowing()
             }) {
                 Text(if (isFollowing) "追従中" else "追従してないよ")
             }
