@@ -31,6 +31,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Call
 
@@ -50,10 +51,6 @@ class LocationViewModel @Inject constructor(
 
     fun toggleFollowing() {
         _isFollowing.value = !_isFollowing.value
-    }
-
-    fun setFollowing(value: Boolean) {
-        _isFollowing.value = value
     }
 
 
@@ -219,25 +216,26 @@ class MarkerViewModel @Inject constructor(
     private val apiService: NominatimApiService
 ) : ViewModel() {
 
-    val selectedMarkerAddress = mutableStateOf<String?>(null)
+    private val _selectedAddress = MutableStateFlow<String>("読み込み中…")
+    val selectedAddress: StateFlow<String> = _selectedAddress
 
     fun fetchAddressForLatLng(lat: Double, lon: Double) {
-        val call = apiService.reverseGeocode(lat, lon)
+        _selectedAddress.value = "読み込み中…"
 
-        call.enqueue(object : retrofit2.Callback<NominatimResponse> {
+        apiService.reverseGeocode(lat, lon).enqueue(object : retrofit2.Callback<NominatimResponse> {
             override fun onResponse(
                 call: Call<NominatimResponse>,
                 response: retrofit2.Response<NominatimResponse>
             ) {
-                if (response.isSuccessful) {
-                    selectedMarkerAddress.value = response.body()?.display_name
+                _selectedAddress.value = if (response.isSuccessful) {
+                    response.body()?.display_name ?: "住所が見つかりません"
                 } else {
-                    selectedMarkerAddress.value = "住所の取得に失敗"
+                    "住所の取得に失敗"
                 }
             }
 
             override fun onFailure(call: Call<NominatimResponse>, t: Throwable) {
-                selectedMarkerAddress.value = "ネットワークエラー: ${t.message}"
+                _selectedAddress.value = "ネットワークエラー: ${t.message}"
             }
         })
     }

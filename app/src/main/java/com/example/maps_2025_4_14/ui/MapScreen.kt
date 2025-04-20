@@ -138,6 +138,7 @@ fun MapScreen(
 
     var tempMarkerName by remember { mutableStateOf("") }
 
+    val selectedAddress by markerViewModel.selectedAddress.collectAsState()
     var selectedMarker by remember { mutableStateOf<NamedMarker?>(null) }
     var isEditPanelOpen by remember { mutableStateOf(false) }
 
@@ -563,7 +564,7 @@ fun MapScreen(
                             style = MaterialTheme.typography.bodyMedium
                         )
 
-                        Text("住所: ${markerViewModel.selectedMarkerAddress.value ?: "読み込み中..."}")
+                        Text(text = "住所: $selectedAddress")
 
 
                         Row(
