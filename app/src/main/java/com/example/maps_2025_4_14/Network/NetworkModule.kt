@@ -30,7 +30,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideMoshi(): Moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory()) // ← ここが重要！
+        .add(KotlinJsonAdapterFactory())
         .build()
 
 

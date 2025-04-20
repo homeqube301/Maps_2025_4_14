@@ -4,6 +4,7 @@ import android.Manifest
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -221,6 +222,7 @@ class MarkerViewModel @Inject constructor(
 
     fun fetchAddressForLatLng(lat: Double, lon: Double) {
         _selectedAddress.value = "読み込み中…"
+        Log.d("MarkerViewModel", "住所取得リクエストだよーん！！: lat=$lat, lon=$lon")
 
         apiService.reverseGeocode(lat, lon).enqueue(object : retrofit2.Callback<NominatimResponse> {
             override fun onResponse(
