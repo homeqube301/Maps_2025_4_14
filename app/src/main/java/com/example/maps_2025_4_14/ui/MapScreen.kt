@@ -62,6 +62,7 @@ import coil.compose.AsyncImage
 import com.example.maps_2025_4_14.R
 import com.example.maps_2025_4_14.model.LatLngSerializable
 import com.example.maps_2025_4_14.model.LocationViewModel
+import com.example.maps_2025_4_14.model.MarkerViewModel
 import com.example.maps_2025_4_14.model.NamedMarker
 import com.example.maps_2025_4_14.model.PermanentMarkerViewModel
 import com.example.maps_2025_4_14.strage.loadMarkers
@@ -119,6 +120,7 @@ fun MapScreen(
     // 永続マーカーのリスト
     //val permanentMarkers = remember { mutableStateListOf<NamedMarker>() }
     val permanentMarkers = viewModel.permanentMarkers
+    val markerViewModel: MarkerViewModel = hiltViewModel()
 
 
     LaunchedEffect(Unit) {
@@ -278,6 +280,10 @@ fun MapScreen(
                     icon = BitmapDescriptorFactory.defaultMarker(marker.colorHue),
                     onClick = {
                         selectedMarker = marker
+                        markerViewModel.fetchAddressForLatLng(
+                            marker.position.latitude,
+                            marker.position.longitude
+                        )
                         isEditPanelOpen = true
                         true // consume click
                     }
@@ -306,7 +312,7 @@ fun MapScreen(
             Button(onClick = {
                 isFollowing = !isFollowing
             }) {
-                Text(if (isFollowing) "追従ON" else "追従OFF")
+                Text(if (isFollowing) "追従中" else "追従してないよ")
             }
         }
 
@@ -553,6 +559,8 @@ fun MapScreen(
                             modifier = Modifier.padding(vertical = 8.dp),
                             style = MaterialTheme.typography.bodyMedium
                         )
+
+                        Text("住所: ${markerViewModel.selectedMarkerAddress.value ?: "読み込み中..."}")
 
 
                         Row(

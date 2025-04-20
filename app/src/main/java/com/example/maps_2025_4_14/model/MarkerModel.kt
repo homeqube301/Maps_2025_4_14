@@ -28,6 +28,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.launch
+import retrofit2.Call
 
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,6 +37,8 @@ import javax.inject.Singleton
 class LocationViewModel @Inject constructor(
     private val fusedLocationClient: FusedLocationProviderClient
 ) : ViewModel() {
+
+    private var locationCallback: LocationCallback? = null
 
     fun startLocationUpdates(
         context: Context,
@@ -55,32 +58,52 @@ class LocationViewModel @Inject constructor(
             return
         }
 
+        stopLocationUpdates()
+
+
         val locationRequest = LocationRequest.create().apply {
             interval = 3000
             fastestInterval = 2000
             priority = Priority.PRIORITY_HIGH_ACCURACY
         }
 
-        val callback = object : LocationCallback() {
+        locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 val location = result.lastLocation
                 location?.let {
                     val latLng = LatLng(it.latitude, it.longitude)
                     onLocationUpdate(latLng)
+
+                    // 🔍 isFollowingがtrueのときだけカメラを動かす
                     if (isFollowing) {
                         cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
                     }
                 }
             }
         }
-
         fusedLocationClient.requestLocationUpdates(
             locationRequest,
-            callback,
+            locationCallback!!,
             context.mainLooper
         )
     }
+
+    fun stopLocationUpdates() {
+        locationCallback?.let {
+            fusedLocationClient.removeLocationUpdates(it)
+            locationCallback = null
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // ViewModelが破棄されるときにも解除
+        stopLocationUpdates()
+    }
+
+
 }
+
 
 @HiltViewModel
 class PermanentMarkerViewModel @Inject constructor(
@@ -169,5 +192,35 @@ object AppModule {
     @Singleton
     fun provideMarkerRepository(@ApplicationContext context: Context): MarkerRepository {
         return MarkerRepositoryImpl(context)
+    }
+}
+
+
+@HiltViewModel
+class MarkerViewModel @Inject constructor(
+    private val apiService: NominatimApiService
+) : ViewModel() {
+
+    val selectedMarkerAddress = mutableStateOf<String?>(null)
+
+    fun fetchAddressForLatLng(lat: Double, lon: Double) {
+        val call = apiService.reverseGeocode(lat, lon)
+
+        call.enqueue(object : retrofit2.Callback<NominatimResponse> {
+            override fun onResponse(
+                call: Call<NominatimResponse>,
+                response: retrofit2.Response<NominatimResponse>
+            ) {
+                if (response.isSuccessful) {
+                    selectedMarkerAddress.value = response.body()?.display_name
+                } else {
+                    selectedMarkerAddress.value = "住所の取得に失敗"
+                }
+            }
+
+            override fun onFailure(call: Call<NominatimResponse>, t: Throwable) {
+                selectedMarkerAddress.value = "ネットワークエラー: ${t.message}"
+            }
+        })
     }
 }
