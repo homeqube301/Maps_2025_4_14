@@ -1,4 +1,4 @@
-package com.example.maps_2025_4_14.ui.theme
+package com.example.maps20250414.ui.theme
 
 import android.app.Activity
 import android.os.Build
@@ -34,7 +34,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun Maps_2025_4_14Theme(
+fun Maps20250414Theme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,

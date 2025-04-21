@@ -1,7 +1,7 @@
-package com.example.maps_2025_4_14.strage
+package com.example.maps20250414.strage
 
 import android.util.Log
-import com.example.maps_2025_4_14.model.NamedMarker
+import com.example.maps20250414.model.NamedMarker
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

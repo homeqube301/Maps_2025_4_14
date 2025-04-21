@@ -1,4 +1,4 @@
-package com.example.maps_2025_4_14
+package com.example.maps20250414
 
 import org.junit.Test
 

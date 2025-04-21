@@ -1,4 +1,4 @@
-package com.example.maps_2025_4_14.ui.theme
+package com.example.maps20250414.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

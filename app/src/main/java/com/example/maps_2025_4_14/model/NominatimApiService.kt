@@ -1,10 +1,13 @@
-package com.example.maps_2025_4_14.model
+package com.example.maps20250414.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.Call
+import retrofit2.http.Body
+import retrofit2.http.Header
+import retrofit2.http.POST
 
 @JsonClass(generateAdapter = true)
 data class NominatimResponse(
@@ -20,3 +23,11 @@ interface NominatimApiService {
         @Query("format") format: String = "json"
     ): Call<NominatimResponse>
 }
+
+//interface OpenAiApiService {
+//    @POST("v1/embeddings")
+//    fun getEmbedding(
+//        @Header("Authorization") apiKey: String,
+//        @Body request: EmbeddingRequest
+//    ): Call<EmbeddingResponse>
+//}

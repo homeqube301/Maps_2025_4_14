@@ -1,4 +1,4 @@
-package com.example.maps_2025_4_14
+package com.example.maps20250414
 
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -10,8 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.maps_2025_4_14.ui.MapScreen
-import com.example.maps_2025_4_14.ui.theme.Maps_2025_4_14Theme
+import com.example.maps20250414.ui.MapScreen
+import com.example.maps20250414.ui.theme.Maps20250414Theme
 import android.Manifest
 import android.app.Application
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            Maps_2025_4_14Theme {
+            Maps20250414Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() {
 
             // 🚨 再構成するには再度 setContent を呼ぶ必要がある
             setContent {
-                Maps_2025_4_14Theme {
+                Maps20250414Theme {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background

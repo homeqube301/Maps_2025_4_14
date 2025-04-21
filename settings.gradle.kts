@@ -28,5 +28,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Maps_2025_4_14"
+rootProject.name = "Maps20250414"
 include(":app")

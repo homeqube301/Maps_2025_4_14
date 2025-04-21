@@ -1,4 +1,4 @@
-package com.example.maps_2025_4_14.ui
+package com.example.maps20250414.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -56,18 +56,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.example.maps_2025_4_14.R
-import com.example.maps_2025_4_14.model.LatLngSerializable
-import com.example.maps_2025_4_14.model.LocationViewModel
-import com.example.maps_2025_4_14.model.MarkerViewModel
-import com.example.maps_2025_4_14.model.NamedMarker
-import com.example.maps_2025_4_14.model.PermanentMarkerViewModel
-import com.example.maps_2025_4_14.strage.loadMarkers
-import com.example.maps_2025_4_14.strage.saveMarkers
+import com.example.maps20250414.R
+import com.example.maps20250414.model.LatLngSerializable
+import com.example.maps20250414.model.LocationViewModel
+import com.example.maps20250414.model.MarkerViewModel
+import com.example.maps20250414.model.NamedMarker
+import com.example.maps20250414.model.PermanentMarkerViewModel
+import com.example.maps20250414.strage.loadMarkers
+import com.example.maps20250414.strage.saveMarkers
+import com.example.maps20250414.ui.theme.Maps20250414Theme
 
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -86,6 +88,16 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
+
+@SuppressLint("MissingPermission")
+@Preview
+@Composable
+private fun MapScreenPreview() {
+    Maps20250414Theme {
+
+    }
+}
 
 
 @SuppressLint("MissingPermission")
@@ -220,7 +232,8 @@ fun MapScreen(
                     // カメラが止まったときに現在の可視領域を取得
                     val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
                     if (bounds != null) {
-                        val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
+                        val filtered =
+                            permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
                         visibleMarkers.clear()
                         visibleMarkers.addAll(filtered)
                     }
@@ -382,7 +395,10 @@ fun MapScreen(
                                             selectedMarker = marker
                                             isEditPanelOpen = true
                                             cameraPositionState.move(
-                                                CameraUpdateFactory.newLatLngZoom(marker.position.toLatLng(), 17f)
+                                                CameraUpdateFactory.newLatLngZoom(
+                                                    marker.position.toLatLng(),
+                                                    17f
+                                                )
                                             )
                                             isSearchOpen = false
                                             titleQuery = ""
@@ -413,7 +429,10 @@ fun MapScreen(
                                             selectedMarker = marker
                                             isEditPanelOpen = true
                                             cameraPositionState.move(
-                                                CameraUpdateFactory.newLatLngZoom(marker.position.toLatLng(), 17f)
+                                                CameraUpdateFactory.newLatLngZoom(
+                                                    marker.position.toLatLng(),
+                                                    17f
+                                                )
                                             )
                                             isSearchOpen = false
                                             titleQuery = ""
@@ -547,7 +566,7 @@ fun MapScreen(
                     modifier = Modifier
                         .padding(16.dp)
                         .verticalScroll(scrollState),
-                verticalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
@@ -586,23 +605,25 @@ fun MapScreen(
                             )
 
                             Spacer(modifier = Modifier.height(8.dp))
-                            Button(onClick = {
+                            Button(
+                                onClick = {
 
-                                focusManager.clearFocus() // ← 変換中なら確定
+                                    focusManager.clearFocus() // ← 変換中なら確定
 
-                                selectedMarker?.let { marker ->
-                                    val index = permanentMarkers.indexOfFirst { it.id == marker.id }
-                                    if (index != -1) {
-                                        val updatedMarker = marker.copy(
-                                            title = editedName,
-                                        )
-                                        saveMarkers(context, permanentMarkers)
+                                    selectedMarker?.let { marker ->
+                                        val index =
+                                            permanentMarkers.indexOfFirst { it.id == marker.id }
+                                        if (index != -1) {
+                                            val updatedMarker = marker.copy(
+                                                title = editedName,
+                                            )
+                                            saveMarkers(context, permanentMarkers)
+                                        }
+                                        isEditPanelOpen = false
+                                        selectedMarker = null
+                                        updateVisibleMarkers()
                                     }
-                                    isEditPanelOpen = false
-                                    selectedMarker = null
-                                    updateVisibleMarkers()
-                                }
-                            },modifier = Modifier.wrapContentWidth()
+                                }, modifier = Modifier.wrapContentWidth()
                             ) {
                                 Text("更新")
                             }
@@ -631,7 +652,8 @@ fun MapScreen(
 
                                             // マーカーの色を即時変更
                                             selectedMarker?.let { marker ->
-                                                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                                                val index =
+                                                    permanentMarkers.indexOfFirst { it.id == marker.id }
                                                 if (index != -1) {
                                                     val updatedMarker = marker.copy(colorHue = hue)
                                                     //permanentMarkers[index] = updatedMarker
@@ -734,7 +756,7 @@ fun MapScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(150.dp),
-                                //.background(Color.White),
+                            //.background(Color.White),
                             placeholder = { Text("ここにメモを書いてください") },
                             singleLine = false,
                             maxLines = 10,

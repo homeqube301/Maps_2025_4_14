@@ -11,11 +11,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.maps_2025_4_14"
+    namespace = "com.example.maps20250414"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.maps_2025_4_14"
+        applicationId = "com.example.maps20250414"
         minSdk = 27
         targetSdk = 35
         versionCode = 1

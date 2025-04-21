@@ -1,4 +1,4 @@
-package com.example.maps_2025_4_14.model
+package com.example.maps20250414.model
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng

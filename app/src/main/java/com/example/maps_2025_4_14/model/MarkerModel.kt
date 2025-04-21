@@ -1,4 +1,4 @@
-package com.example.maps_2025_4_14.model
+package com.example.maps20250414.model
 
 import android.Manifest
 import android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -12,8 +12,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.maps_2025_4_14.strage.loadMarkers
-import com.example.maps_2025_4_14.strage.saveMarkers
+import com.example.maps20250414.strage.loadMarkers
+import com.example.maps20250414.strage.saveMarkers
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
