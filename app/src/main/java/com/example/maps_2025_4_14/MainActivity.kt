@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
             isPermissionGranted = grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED
 
-            // 🚨 再構成するには再度 setContent を呼ぶ必要がある
+            // 再構成するには再度 setContent を呼ぶ必要がある
             setContent {
                 Maps20250414Theme {
                     Surface(

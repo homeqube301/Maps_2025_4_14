@@ -8,6 +8,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.VideoView
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -90,17 +91,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
-@SuppressLint("MissingPermission")
-@Preview
-@Composable
-private fun MapScreenPreview() {
-    Maps20250414Theme {
 
-    }
-}
-
-
-@SuppressLint("MissingPermission")
+//@SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
     isPermissionGranted: Boolean,
