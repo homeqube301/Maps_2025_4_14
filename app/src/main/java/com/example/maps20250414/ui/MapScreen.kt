@@ -81,7 +81,7 @@ import java.time.format.DateTimeFormatter
 fun MapScreen(
     isPermissionGranted: Boolean,
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
-    locationViewModel: LocationViewModel = hiltViewModel()
+    locationViewModel: LocationViewModel = hiltViewModel(),
 ) {
 
 
@@ -245,7 +245,7 @@ fun MapScreen(
             }
         }
 
-        val context2 = LocalContext.current
+        //val context2 = LocalContext.current
 
 
         GoogleMap(
@@ -253,7 +253,7 @@ fun MapScreen(
             cameraPositionState = cameraPositionState,
             properties = MapProperties(
                 isMyLocationEnabled = isPermissionGranted,
-                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context2, R.raw.map_style)
+                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
             ),
             onMapClick = { latLng ->
                 tempMarkerPosition = latLng

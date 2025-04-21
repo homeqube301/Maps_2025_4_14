@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.maps20250414.strage.loadMarkers
 import com.example.maps20250414.strage.saveMarkers
+//import com.example.maps20250414.strage.MarkerStrage
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -117,7 +118,10 @@ class LocationViewModel @Inject constructor(
 @HiltViewModel
 class PermanentMarkerViewModel @Inject constructor(
     private val markerRepository: MarkerRepository // 依存関係としてリポジトリを注入
+
 ) : ViewModel() {
+
+
 
     // 永続マーカーのリスト
     private val _permanentMarkers = mutableStateListOf<NamedMarker>()
@@ -170,12 +174,15 @@ interface MarkerRepository {
     suspend fun saveMarkers(markers: List<NamedMarker>)
 }
 
+
+
 class MarkerRepositoryImpl @Inject constructor(
-    private val context: Context
+    private val context: Context,
+
 ) : MarkerRepository {
-    // SharedPreferencesやファイルなどでマーカーを保存・取得する実装を行います
+
     override suspend fun loadMarkers(): List<NamedMarker> {
-        // 例: SharedPreferencesからロード
+
         return loadMarkers(context)
     }
 
