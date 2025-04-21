@@ -17,7 +17,7 @@ data class NamedMarker(
     val videoUri: String? = null,
     val memo: String? = null,
     val colorHue: Float = BitmapDescriptorFactory.HUE_RED,
-){
+) {
     fun ensureCreatedAt(): NamedMarker {
         return if (createdAt.isBlank()) {
             this.copy(
@@ -33,6 +33,7 @@ data class NamedMarker(
 @Serializable
 data class LatLngSerializable(val latitude: Double, val longitude: Double) {
     fun toLatLng() = LatLng(latitude, longitude)
+
     companion object {
         fun from(latLng: LatLng) = LatLngSerializable(latLng.latitude, latLng.longitude)
     }

@@ -5,14 +5,11 @@ import com.squareup.moshi.JsonClass
 import retrofit2.http.GET
 import retrofit2.http.Query
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.Header
-import retrofit2.http.POST
 
 @JsonClass(generateAdapter = true)
 data class NominatimResponse(
-    @Json(name = "display_name")
-    val display_name: String
+    @Json(name = "displayName")
+    val displayName: String
 )
 
 interface NominatimApiService {

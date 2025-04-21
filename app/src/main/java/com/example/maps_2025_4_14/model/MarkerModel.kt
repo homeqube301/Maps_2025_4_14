@@ -1,15 +1,11 @@
 package com.example.maps20250414.model
 
 import android.Manifest
-import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.maps20250414.strage.loadMarkers
@@ -32,12 +28,12 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Call
 
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 @HiltViewModel
 class LocationViewModel @Inject constructor(
@@ -63,8 +59,7 @@ class LocationViewModel @Inject constructor(
     ) {
 
         val hasPermission = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            context, Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
         if (!hasPermission) {
@@ -98,9 +93,7 @@ class LocationViewModel @Inject constructor(
         }
 
         fusedLocationClient.requestLocationUpdates(
-            locationRequest,
-            locationCallback!!,
-            context.mainLooper
+            locationRequest, locationCallback!!, context.mainLooper
         )
     }
 
@@ -226,11 +219,10 @@ class MarkerViewModel @Inject constructor(
 
         apiService.reverseGeocode(lat, lon).enqueue(object : retrofit2.Callback<NominatimResponse> {
             override fun onResponse(
-                call: Call<NominatimResponse>,
-                response: retrofit2.Response<NominatimResponse>
+                call: Call<NominatimResponse>, response: retrofit2.Response<NominatimResponse>
             ) {
                 _selectedAddress.value = if (response.isSuccessful) {
-                    response.body()?.display_name ?: "住所が見つかりません"
+                    response.body()?.displayName ?: "住所が見つかりません"
                 } else {
                     "住所の取得に失敗"
                 }

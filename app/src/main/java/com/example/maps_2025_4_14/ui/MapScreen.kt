@@ -1,14 +1,9 @@
 package com.example.maps20250414.ui
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.net.Uri
-import android.util.Log
 import android.widget.VideoView
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -57,7 +52,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -68,28 +62,18 @@ import com.example.maps20250414.model.LocationViewModel
 import com.example.maps20250414.model.MarkerViewModel
 import com.example.maps20250414.model.NamedMarker
 import com.example.maps20250414.model.PermanentMarkerViewModel
-import com.example.maps20250414.strage.loadMarkers
 import com.example.maps20250414.strage.saveMarkers
-import com.example.maps20250414.ui.theme.Maps20250414Theme
-
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapEffect
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
 
 
 //@SuppressLint("MissingPermission")
@@ -118,8 +102,7 @@ fun MapScreen(
             context = context,
             isFollowing = isFollowing,
             cameraPositionState = cameraPositionState,
-            onLocationUpdate = { userLocation = it }
-        )
+            onLocationUpdate = { userLocation = it })
     }
 
     // タップされた位置の一時マーカー
@@ -193,8 +176,7 @@ fun MapScreen(
     ) { uri: Uri? ->
         uri?.let {
             context.contentResolver.takePersistableUriPermission(
-                it,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                it, Intent.FLAG_GRANT_READ_URI_PERMISSION
             )
 
             val mimeType = context.contentResolver.getType(it)
@@ -218,8 +200,7 @@ fun MapScreen(
 
     LaunchedEffect(cameraPositionState.isMoving) {
         // マップ移動終了後に更新
-        snapshotFlow { cameraPositionState.isMoving }
-            .collect { isMoving ->
+        snapshotFlow { cameraPositionState.isMoving }.collect { isMoving ->
                 if (!isMoving) {
                     // カメラが止まったときに現在の可視領域を取得
                     val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
@@ -277,8 +258,7 @@ fun MapScreen(
             onMapClick = { latLng ->
                 tempMarkerPosition = latLng
                 isPanelOpen = true
-            }
-        ) {
+            }) {
 
             // カメラの表示範囲にある永続マーカーのみ表示
 
@@ -290,13 +270,11 @@ fun MapScreen(
                     onClick = {
                         selectedMarker = marker
                         markerViewModel.fetchAddressForLatLng(
-                            marker.position.latitude,
-                            marker.position.longitude
+                            marker.position.latitude, marker.position.longitude
                         )
                         isEditPanelOpen = true
                         true // consume click
-                    }
-                )
+                    })
             }
             // 一時マーカー
             tempMarkerPosition?.let { temp ->
@@ -330,16 +308,14 @@ fun MapScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.001f)) // ほぼ透明
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        isEditPanelOpen = false
-                        isPanelOpen = false
-                        isSearchOpen = false
-                        selectedMarker = null
-                    }
-            )
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }) {
+                    isEditPanelOpen = false
+                    isPanelOpen = false
+                    isSearchOpen = false
+                    selectedMarker = null
+                })
         }
 
         // 検索ボタンとパネル
@@ -364,8 +340,7 @@ fun MapScreen(
                         .padding(top = 8.dp)
                         .background(Color.White, shape = RoundedCornerShape(8.dp))
                         .widthIn(max = 300.dp)
-                        .padding(12.dp),
-                    shadowElevation = 4.dp
+                        .padding(12.dp), shadowElevation = 4.dp
                 ) {
                     Column {
 
@@ -388,16 +363,14 @@ fun MapScreen(
                                             isEditPanelOpen = true
                                             cameraPositionState.move(
                                                 CameraUpdateFactory.newLatLngZoom(
-                                                    marker.position.toLatLng(),
-                                                    17f
+                                                    marker.position.toLatLng(), 17f
                                                 )
                                             )
                                             isSearchOpen = false
                                             titleQuery = ""
                                             memoQuery = ""
                                         }
-                                        .padding(8.dp)
-                                )
+                                        .padding(8.dp))
                             }
                         }
 
@@ -422,16 +395,14 @@ fun MapScreen(
                                             isEditPanelOpen = true
                                             cameraPositionState.move(
                                                 CameraUpdateFactory.newLatLngZoom(
-                                                    marker.position.toLatLng(),
-                                                    17f
+                                                    marker.position.toLatLng(), 17f
                                                 )
                                             )
                                             isSearchOpen = false
                                             titleQuery = ""
                                             memoQuery = ""
                                         }
-                                        .padding(8.dp)
-                                )
+                                        .padding(8.dp))
                             }
                         }
                     }
@@ -442,12 +413,10 @@ fun MapScreen(
 
         // 右側から出るパネル
         AnimatedVisibility(
-            visible = isPanelOpen,
-            modifier = Modifier.align(Alignment.CenterEnd)
+            visible = isPanelOpen, modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             Surface(
-                tonalElevation = 4.dp,
-                modifier = Modifier
+                tonalElevation = 4.dp, modifier = Modifier
                     .width(300.dp)
                     .fillMaxHeight()
             ) {
@@ -465,9 +434,7 @@ fun MapScreen(
                         keyboardActions = KeyboardActions(
                             onDone = {
                                 focusManager.clearFocus() // ← IME入力を確定
-                            }
-                        )
-                    )
+                            }))
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // 色選択の状態
@@ -487,9 +454,7 @@ fun MapScreen(
                         colorOptions.forEach { (hue, label) ->
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 RadioButton(
-                                    selected = selectedHue == hue,
-                                    onClick = { selectedHue = hue }
-                                )
+                                    selected = selectedHue == hue, onClick = { selectedHue = hue })
                                 Text(label)
                             }
                         }
@@ -546,8 +511,7 @@ fun MapScreen(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             Surface(
-                tonalElevation = 4.dp,
-                modifier = Modifier
+                tonalElevation = 4.dp, modifier = Modifier
                     .width(300.dp)
                     .fillMaxHeight()
             ) {
@@ -591,10 +555,8 @@ fun MapScreen(
                                 keyboardActions = KeyboardActions(
                                     onDone = {
                                         focusManager.clearFocus()
-                                    }
-                                ),
-                                modifier = Modifier.weight(1f)
-                            )
+                                    }),
+                                modifier = Modifier.weight(1f))
 
                             Spacer(modifier = Modifier.height(8.dp))
                             Button(
@@ -638,8 +600,7 @@ fun MapScreen(
                             colorOptions.forEach { (hue, label) ->
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     RadioButton(
-                                        selected = selectedColorHue == hue,
-                                        onClick = {
+                                        selected = selectedColorHue == hue, onClick = {
                                             selectedColorHue = hue
 
                                             // マーカーの色を即時変更
@@ -655,8 +616,7 @@ fun MapScreen(
                                                     //saveMarkers(context, permanentMarkers)
                                                 }
                                             }
-                                        }
-                                    )
+                                        })
                                     Text(label)
                                 }
                             }
@@ -693,8 +653,7 @@ fun MapScreen(
                                             start()
                                         }
                                     }
-                                },
-                                modifier = Modifier
+                                }, modifier = Modifier
                                     .size(200.dp)
                                     .clip(RoundedCornerShape(8.dp))
                             )
@@ -707,8 +666,7 @@ fun MapScreen(
                                     val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                                     if (index != -1) {
                                         val updatedMarker = marker.copy(
-                                            imageUri = null,
-                                            videoUri = null
+                                            imageUri = null, videoUri = null
                                         )
                                         //permanentMarkers[index] = updatedMarker
                                         viewModel.updateMarker(updatedMarker)
