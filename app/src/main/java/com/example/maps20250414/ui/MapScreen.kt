@@ -1,34 +1,12 @@
 package com.example.maps20250414.ui
 
-import android.content.Intent
-import android.net.Uri
-import android.widget.VideoView
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,25 +18,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
-import coil.compose.AsyncImage
 import com.example.maps20250414.R
 import com.example.maps20250414.model.LocationViewModel
 import com.example.maps20250414.model.MarkerViewModel
 import com.example.maps20250414.model.NamedMarker
 import com.example.maps20250414.model.PermanentMarkerViewModel
-import com.example.maps20250414.strage.saveMarkers
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Tile
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
@@ -135,27 +108,40 @@ class MapViewModel() : ViewModel() {
 
 
         if (!lowerTitle.isNullOrBlank()) {
-            val Tilefiltered = permanentMarkers.filter {
+            val TileFiltered = permanentMarkers.filter {
                 it.title.lowercase().contains(lowerTitle)
             }
-            _uiState.update { it.copy(titleResults = Tilefiltered) }
+            _uiState.update { it.copy(titleResults = TileFiltered) }
         }
         if (!lowerMemo.isNullOrBlank()) {
-            val Memofiltered = permanentMarkers.filter {
+            val MemoFiltered = permanentMarkers.filter {
                 it.title.lowercase().contains(lowerMemo)
             }
-            _uiState.update { it.copy(memoResults = Memofiltered) }
+            _uiState.update { it.copy(memoResults = MemoFiltered) }
         }
-
-
-
-//        if (!lowerMemo.isNullOrBlank()) {
-//            memoResults += permanentMarkers.filter {
-//                it.memo?.lowercase()?.contains(lowerMemo) == true
-//            }
-//        }
     }
-
+    fun updateVisibleMarkers(
+        cameraPositionState:CameraPositionState,
+        permanentMarkers: List<NamedMarker>
+    ) {
+        val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
+        if (bounds != null) {
+            val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
+            //uiState.visibleMarkers.clear()
+            //uiState.visibleMarkers.addAll(filtered)
+            //uiState.copy(visibleMarkers = filtered)
+            _uiState.update { it.copy(visibleMarkers = filtered) }
+        }
+    }
+    fun removeVisibleMarkers(
+        marker: NamedMarker
+    ) {
+        _uiState.update {
+            it.copy(
+                visibleMarkers = it.visibleMarkers.filter { m -> m != marker }
+            )
+        }
+    }
 }
 
 
@@ -262,45 +248,7 @@ fun MapScreen(
 
     //val visibleMarkers = remember { mutableStateListOf<NamedMarker>() }
 
-    fun updateVisibleMarkers() {
-        val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
-        if (bounds != null) {
-            val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
-            //uiState.visibleMarkers.clear()
-            //uiState.visibleMarkers.addAll(filtered)
-            uiState.copy(visibleMarkers = filtered)
-        }
-    }
 
-    val mediaPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument()
-    ) { uri: Uri? ->
-        uri?.let {
-            context.contentResolver.takePersistableUriPermission(
-                it, Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-
-            val mimeType = context.contentResolver.getType(it)
-
-            uiState.selectedMarker?.let { marker ->
-                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
-                if (index != -1) {
-                    val updatedMarker = when {
-                        mimeType?.startsWith("image/") == true -> marker.copy(imageUri = it.toString())
-                        mimeType?.startsWith("video/") == true -> marker.copy(videoUri = it.toString())
-                        else -> marker // サポート外
-                    }
-                    viewModel.updateMarker(updatedMarker) // ViewModelで更新
-
-                    mapViewModel.changeSelectedMarker(updatedMarker)
-
-                    //selectedMarker = updatedMarker
-                    updateVisibleMarkers()
-                    //saveMarkers(context, permanentMarkers)
-                }
-            }
-        }
-    }
 
     LaunchedEffect(cameraPositionState.isMoving) {
         // マップ移動終了後に更新
@@ -349,7 +297,7 @@ fun MapScreen(
 
             // カメラの表示範囲にある永続マーカーのみ表示
 
-            for (marker in visibleMarkers) {
+            for (marker in uiState.visibleMarkers) {
                 Marker(
                     state = MarkerState(position = marker.position.toLatLng()),
                     title = marker.title,
@@ -431,7 +379,8 @@ fun MapScreen(
 
         // 右側から出るパネル
         AnimatedVisibility(
-            visible = uiState.isPanelOpen, modifier = Modifier.align(Alignment.CenterEnd)
+            visible = uiState.isPanelOpen,
+            modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             SetMarkerPanel(
                 tempMarkerName = null,
@@ -443,238 +392,15 @@ fun MapScreen(
 
         // 右側から出るパネル(編集用)
         AnimatedVisibility(
-            visible = isEditPanelOpen && selectedMarker != null,
+            visible = uiState.isEditPanelOpen && uiState.selectedMarker != null,
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
-            Surface(
-                tonalElevation = 4.dp, modifier = Modifier
-                    .width(300.dp)
-                    .fillMaxHeight()
-            ) {
-
-                val scrollState = rememberScrollState()
-
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .verticalScroll(scrollState),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    selectedMarker?.let { marker ->
-                        var editedName by remember(marker) { mutableStateOf(marker.title) }
-                        var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
-                        var selectedColorHue by remember(marker) { mutableStateOf(marker.colorHue) }
-
-                        Text("マーカーを編集")
-
-                        Text(
-                            text = "設置日時: ${marker.createdAt}",
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-
-                        Text(text = "住所: $selectedAddress")
-
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-
-                            OutlinedTextField(
-                                value = editedName,
-                                onValueChange = { editedName = it },
-                                label = { Text("マーカー名") },
-                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                                keyboardActions = KeyboardActions(
-                                    onDone = {
-                                        focusManager.clearFocus()
-                                    }),
-                                modifier = Modifier.weight(1f)
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(
-                                onClick = {
-
-                                    focusManager.clearFocus() // ← 変換中なら確定
-
-                                    selectedMarker?.let { marker ->
-                                        val index =
-                                            permanentMarkers.indexOfFirst { it.id == marker.id }
-                                        if (index != -1) {
-                                            val updatedMarker = marker.copy(
-                                                title = editedName,
-                                            )
-                                            saveMarkers(context, permanentMarkers)
-                                        }
-                                        isEditPanelOpen = false
-                                        selectedMarker = null
-                                        updateVisibleMarkers()
-                                    }
-                                }, modifier = Modifier.wrapContentWidth()
-                            ) {
-                                Text("更新")
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text("マーカーの色を変更", style = MaterialTheme.typography.bodyMedium)
-
-                        val colorOptions = listOf(
-                            BitmapDescriptorFactory.HUE_RED to "赤",
-                            BitmapDescriptorFactory.HUE_BLUE to "青",
-                            BitmapDescriptorFactory.HUE_GREEN to "緑",
-                            BitmapDescriptorFactory.HUE_YELLOW to "黄"
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceAround,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            colorOptions.forEach { (hue, label) ->
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    RadioButton(
-                                        selected = selectedColorHue == hue, onClick = {
-                                            selectedColorHue = hue
-
-                                            // マーカーの色を即時変更
-                                            selectedMarker?.let { marker ->
-                                                val index =
-                                                    permanentMarkers.indexOfFirst { it.id == marker.id }
-                                                if (index != -1) {
-                                                    val updatedMarker =
-                                                        marker.copy(colorHue = hue)
-                                                    //permanentMarkers[index] = updatedMarker
-                                                    viewModel.updateMarker(updatedMarker)
-                                                    selectedMarker = updatedMarker // UIも更新
-                                                    updateVisibleMarkers()
-                                                    //saveMarkers(context, permanentMarkers)
-                                                }
-                                            }
-                                        })
-                                    Text(label)
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        Button(onClick = {
-                            mediaPickerLauncher.launch(arrayOf("image/*", "video/*"))
-                        }) {
-                            Text("メディアを追加")
-                        }
-
-                        marker.imageUri?.let { uri ->
-                            Spacer(modifier = Modifier.height(16.dp))
-                            AsyncImage(
-                                model = uri,
-                                contentDescription = "マーカー画像",
-                                modifier = Modifier
-                                    .size(200.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                            )
-
-                        }
-
-
-                        selectedMarker?.videoUri?.let { videoUri ->
-                            AndroidView(
-                                factory = {
-                                    VideoView(it).apply {
-                                        setVideoURI(Uri.parse(videoUri))
-                                        setOnPreparedListener { mediaPlayer ->
-                                            mediaPlayer.isLooping = true
-                                            start()
-                                        }
-                                    }
-                                }, modifier = Modifier
-                                    .size(200.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                            )
-                        }
-
-                        if (selectedMarker?.imageUri != null || selectedMarker?.videoUri != null) {
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = {
-                                selectedMarker?.let { marker ->
-                                    val index =
-                                        permanentMarkers.indexOfFirst { it.id == marker.id }
-                                    if (index != -1) {
-                                        val updatedMarker = marker.copy(
-                                            imageUri = null, videoUri = null
-                                        )
-                                        //permanentMarkers[index] = updatedMarker
-                                        viewModel.updateMarker(updatedMarker)
-                                        selectedMarker = updatedMarker
-                                        updateVisibleMarkers()
-                                        //saveMarkers(context, permanentMarkers)
-                                    }
-                                }
-                            }) {
-                                Text("メディアを削除")
-                            }
-                        }
-
-
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text("メモだよ", style = MaterialTheme.typography.bodyMedium)
-
-                        OutlinedTextField(
-                            value = memoText,
-                            onValueChange = { newText ->
-                                memoText = newText
-
-                                selectedMarker?.let { marker ->
-                                    val index =
-                                        permanentMarkers.indexOfFirst { it.id == marker.id }
-                                    if (index != -1) {
-                                        val updatedMarker = marker.copy(memo = newText)
-                                        //permanentMarkers[index] = updatedMarker
-                                        viewModel.updateMarker(updatedMarker)
-                                        selectedMarker = updatedMarker // UI更新
-                                        updateVisibleMarkers()
-                                        //saveMarkers(context, permanentMarkers)
-                                    }
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(150.dp),
-                            //.background(Color.White),
-                            placeholder = { Text("ここにメモを書いてください") },
-                            singleLine = false,
-                            maxLines = 10,
-                            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = {
-                            //permanentMarkers.removeIf { it.id == marker.id }
-                            //saveMarkers(context, permanentMarkers)
-                            viewModel.removeMarker(marker.id)
-
-                            visibleMarkers.remove(marker)
-                            isEditPanelOpen = false
-                            selectedMarker = null
-                        }) {
-                            Text("削除する")
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = {
-                            isEditPanelOpen = false
-                            selectedMarker = null
-                        }) {
-                            Text("戻る")
-                        }
-                    }
-                }
-            }
+            EditPanel(
+                focusManager = focusManager,
+                permanentMarkers = permanentMarkers,
+                context = context,
+                cameraPositionState = cameraPositionState
+                )
         }
 
 
