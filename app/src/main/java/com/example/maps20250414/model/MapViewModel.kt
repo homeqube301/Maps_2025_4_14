@@ -113,12 +113,17 @@ class MapViewModel() : ViewModel() {
     }
 
     fun addVisibleMarkers(newMarker: NamedMarker) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                visibleMarkers = currentState.visibleMarkers + newMarker
-            )
+        _uiState.update {
+            it.copy(visibleMarkers = it.visibleMarkers + newMarker)
         }
     }
+
+    fun addAllVisibleMarkers(marker: List<NamedMarker>) {
+        _uiState.update {
+            it.copy(visibleMarkers = it.visibleMarkers + marker)
+        }
+    }
+
 
     fun changePanelOpen(isOpen: Boolean) {
         _uiState.update { it.copy(isPanelOpen = isOpen) }

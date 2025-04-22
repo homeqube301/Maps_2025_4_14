@@ -35,6 +35,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.flow.update
 
 
 //@SuppressLint("MissingPermission")
@@ -102,7 +103,8 @@ fun MapScreen(
                         permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
                     //visibleMarkers.clear()
                     //visibleMarkers.addAll(filtered)
-                    uiState.copy(visibleMarkers = filtered)
+                    //uiState.copy(visibleMarkers = filtered)
+                    mapViewModel.addAllVisibleMarkers(filtered)
                 }
             }
         }
