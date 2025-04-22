@@ -4,7 +4,7 @@ import com.example.maps20250414.model.NamedMarker
 import com.google.android.gms.maps.model.LatLng
 
 data class MapsUiState(
-    val isPermissionGranted: Boolean = false,
+    val isPermissionGranted: Boolean = true,
     val isPanelOpen: Boolean = false,
     val tempMarkerName: String? = null,
     val selectedAddress: String? = null,

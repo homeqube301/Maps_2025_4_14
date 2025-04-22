@@ -43,7 +43,8 @@ fun SetMarkerPanel(
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
     tempMarkerName: String?,
     cameraPositionState: CameraPositionState,
-    focusManager: FocusManager
+    focusManager: FocusManager,
+    onClose: () -> Unit
 ){
     val uiState by mapViewModel.uiState.collectAsState()
     Surface(
@@ -58,7 +59,7 @@ fun SetMarkerPanel(
         ) {
             Text("マーカー名を入力してください")
             OutlinedTextField(
-                value = tempMarkerName ?: "",
+                value = uiState.tempMarkerName ?: "",
                 onValueChange = {
                     //tempMarkerName = it
                     mapViewModel.changeTempMarkerName(it)
@@ -121,7 +122,7 @@ fun SetMarkerPanel(
                         cameraPositionState.projection?.visibleRegion?.latLngBounds
                     if (bounds != null && bounds.contains(pos)) {
                         //visibleMarkers.add(newMarker)
-                        uiState.visibleMarkers + newMarker
+                        mapViewModel.addVisibleMarkers(newMarker)
                     }
                 }
                 //tempMarkerPosition = null
@@ -143,9 +144,12 @@ fun SetMarkerPanel(
                 mapViewModel.changeIsPanelOpen()
 
             }) {
-                Text("キャンセル")
+                Column {
+                    Button(onClick = { onClose() }) {
+                        Text("閉じる")
+                    }
+                }
             }
         }
     }
-
 }

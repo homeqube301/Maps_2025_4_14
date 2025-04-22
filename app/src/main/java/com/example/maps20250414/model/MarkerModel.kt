@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.maps20250414.strage.loadMarkers
@@ -38,15 +39,14 @@ import javax.inject.Singleton
 
 @HiltViewModel
 class LocationViewModel @Inject constructor(
-    private val fusedLocationClient: FusedLocationProviderClient
+    private val fusedLocationClient: FusedLocationProviderClient,
 ) : ViewModel() {
 
 
     private var locationCallback: LocationCallback? = null
 
     // StateFlowで追従状態を管理
-    private val _isFollowing = MutableStateFlow(true)
-    val isFollowing: StateFlow<Boolean> = _isFollowing.asStateFlow()
+    private val _isFollowing = MutableStateFlow(false)
 
     fun toggleFollowing() {
         _isFollowing.value = !_isFollowing.value

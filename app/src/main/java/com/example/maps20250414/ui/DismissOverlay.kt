@@ -6,6 +6,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,6 +18,7 @@ import com.example.maps20250414.model.MapViewModel
 fun DismissOverlay(
     mapViewModel: MapViewModel = hiltViewModel()
 ) {
+    val uiState by mapViewModel.uiState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -29,9 +32,14 @@ fun DismissOverlay(
 //                isPanelOpen = false
 //                isSearchOpen = false
 //                selectedMarker = null
-                mapViewModel.changeIsEditPanelOpen()
-                mapViewModel.changeIsPanelOpen()
-                mapViewModel.changeIsSearchOpen()
+                if (uiState.isPanelOpen){
+                    mapViewModel.changeIsPanelOpen()
+                }else if (uiState.isSearchOpen){
+                    mapViewModel.changeIsSearchOpen()
+                }else if (uiState.isEditPanelOpen){
+                    mapViewModel.changeIsEditPanelOpen()
+                }
+
                 mapViewModel.changeSelectedMarker(null)
             }
     )

@@ -42,7 +42,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 fun MapScreen(
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
-    mapViewModel: MapViewModel = hiltViewModel()
+    mapViewModel: MapViewModel = hiltViewModel(),
+
 ) {
 
     val uiState by mapViewModel.uiState.collectAsState()
@@ -174,7 +175,7 @@ fun MapScreen(
             horizontalAlignment = Alignment.End
         ) {
             Button(onClick = {
-                //locationViewModel.toggleFollowing()
+                locationViewModel.toggleFollowing()
                 mapViewModel.changeIsFollowing()
             }) {
                 Text(if (uiState.isFollowing) "追従中" else "追従してないよ")
@@ -225,7 +226,10 @@ fun MapScreen(
             SetMarkerPanel(
                 tempMarkerName = null,
                 cameraPositionState = cameraPositionState,
-                focusManager = focusManager
+                focusManager = focusManager,
+                onClose = {
+                    mapViewModel.changePanelOpen(false)
+                }
             )
         }
 

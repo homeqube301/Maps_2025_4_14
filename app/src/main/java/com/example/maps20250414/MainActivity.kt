@@ -13,6 +13,8 @@ import com.example.maps20250414.ui.MapScreen
 import com.example.maps20250414.ui.theme.Maps20250414Theme
 import android.Manifest
 import android.app.Application
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 

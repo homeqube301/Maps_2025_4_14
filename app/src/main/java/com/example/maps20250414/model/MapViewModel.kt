@@ -22,7 +22,7 @@ class MapViewModel() : ViewModel() {
     }
 
     fun changeIsPanelOpen() {
-        _uiState.update { it.copy(isPanelOpen = !it.isFollowing) }
+        _uiState.update { it.copy(isPanelOpen = !it.isPanelOpen) }
     }
 
     fun changeIsSearchOpen() {
@@ -99,6 +99,9 @@ class MapViewModel() : ViewModel() {
             _uiState.update { it.copy(visibleMarkers = filtered) }
         }
     }
+
+
+
     fun removeVisibleMarkers(
         marker: NamedMarker
     ) {
@@ -107,5 +110,17 @@ class MapViewModel() : ViewModel() {
                 visibleMarkers = it.visibleMarkers.filter { m -> m != marker }
             )
         }
+    }
+
+    fun addVisibleMarkers(newMarker: NamedMarker) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                visibleMarkers = currentState.visibleMarkers + newMarker
+            )
+        }
+    }
+
+    fun changePanelOpen(isOpen: Boolean) {
+        _uiState.update { it.copy(isPanelOpen = isOpen) }
     }
 }
