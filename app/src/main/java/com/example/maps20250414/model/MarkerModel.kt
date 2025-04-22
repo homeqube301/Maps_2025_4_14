@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.maps20250414.strage.loadMarkers
 import com.example.maps20250414.strage.saveMarkers
+import com.example.maps20250414.ui.MapsUiState
 //import com.example.maps20250414.strage.MarkerStrage
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -29,6 +30,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Call
 
@@ -40,6 +42,7 @@ import javax.inject.Singleton
 class LocationViewModel @Inject constructor(
     private val fusedLocationClient: FusedLocationProviderClient
 ) : ViewModel() {
+
 
     private var locationCallback: LocationCallback? = null
 
@@ -123,6 +126,7 @@ class PermanentMarkerViewModel @Inject constructor(
 
 
 
+
     // 永続マーカーのリスト
     private val _permanentMarkers = mutableStateListOf<NamedMarker>()
     val permanentMarkers: List<NamedMarker> get() = _permanentMarkers
@@ -131,6 +135,7 @@ class PermanentMarkerViewModel @Inject constructor(
         // 初期化時にマーカーを読み込む
         loadMarkers()
     }
+
 
     // 永続マーカーをロード
     fun loadMarkers() {
@@ -141,7 +146,9 @@ class PermanentMarkerViewModel @Inject constructor(
         }
     }
 
-    // 永続マーカーを保存
+
+
+        // 永続マーカーを保存
     fun saveMarkers() {
         viewModelScope.launch {
             markerRepository.saveMarkers(_permanentMarkers)

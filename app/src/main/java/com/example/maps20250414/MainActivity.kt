@@ -45,7 +45,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     // ✅ パーミッション状態を渡す
-                    MapScreen(isPermissionGranted = isPermissionGranted)
+                    //MapScreen(isPermissionGranted = isPermissionGranted)
+                    MapScreen()
                 }
             }
         }
@@ -58,22 +59,6 @@ class MainActivity : ComponentActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            isPermissionGranted = grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-
-            // 再構成するには再度 setContent を呼ぶ必要がある
-            setContent {
-                Maps20250414Theme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        MapScreen(isPermissionGranted = isPermissionGranted)
-                    }
-                }
-            }
-        }
     }
 }
 

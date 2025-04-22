@@ -21,10 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -48,13 +45,16 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
 import coil.compose.AsyncImage
 import com.example.maps20250414.R
 import com.example.maps20250414.model.LatLngSerializable
@@ -63,34 +63,247 @@ import com.example.maps20250414.model.MarkerViewModel
 import com.example.maps20250414.model.NamedMarker
 import com.example.maps20250414.model.PermanentMarkerViewModel
 import com.example.maps20250414.strage.saveMarkers
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
+
+class MapViewModel() : ViewModel() {
+    private val _uiState = MutableStateFlow(MapsUiState())
+    val uiState: StateFlow<MapsUiState> = _uiState
+
+    fun changeIsFollowing() {
+        _uiState.update { it.copy(isFollowing = !it.isFollowing) }
+    }
+
+
+    fun changeIsEditPanelOpen() {
+        _uiState.update { it.copy(isEditPanelOpen = !it.isEditPanelOpen) }
+    }
+
+    fun changeIsPanelOpen() {
+        _uiState.update { it.copy(isPanelOpen = !it.isFollowing) }
+    }
+
+    fun changeIsSearchOpen() {
+        _uiState.update { it.copy(isSearchOpen = !it.isSearchOpen) }
+    }
+
+    fun changeTitleQuery(
+        Answer:String
+    ) {
+        _uiState.update { it.copy(titleQuery = Answer) }
+    }
+    fun changeMemoQuery(
+        Answer:String
+    ) {
+        _uiState.update { it.copy(memoQuery = Answer) }
+    }
+
+
+
+    fun changeSelectedMarker(
+        updateMarker: NamedMarker?
+    ) {
+        _uiState.update { it.copy(selectedMarker = updateMarker) }
+    }
+
+    fun changeTempMarkerName(
+        Answer: String?
+    ) {
+        _uiState.update { it.copy(tempMarkerName = Answer) }
+    }
+
+
+}
+
+
+data class MapsUiState(
+    val isPermissionGranted: Boolean = false,
+    val isPanelOpen: Boolean = false,
+    val tempMarkerName: String? = null,
+    val selectedAddress: String? = null,
+    val selectedMarker: NamedMarker? = null,
+    val isEditPanelOpen: Boolean = false,
+    val isFollowing: Boolean = false,
+    val userLocation: LatLng? = null,
+    val tempMarkerPosition: LatLng? = null,
+
+    // 検索のステート
+//    var isSearchOpen by remember { mutableStateOf(false) }
+//    var titleQuery by remember { mutableStateOf("") }
+//    var memoQuery by remember { mutableStateOf("") }
+//
+//    val titleResults = remember { mutableStateListOf<NamedMarker>() }
+//    val memoResults = remember { mutableStateListOf<NamedMarker>() }
+    // 検索のステート
+    val isSearchOpen: Boolean = false,
+    val titleQuery:String?  = null,
+    val memoQuery :String? = null,
+
+    val titleResults:List<NamedMarker> = emptyList(),
+    val memoResults:List<NamedMarker> = emptyList(),
+
+)
+
+@Composable
+fun SetMarkerPanel(
+    mapViewModel: MapViewModel = hiltViewModel(),
+    viewModel: PermanentMarkerViewModel = hiltViewModel(),
+    tempMarkerName: String?,
+    cameraPositionState: CameraPositionState,
+    focusManager: FocusManager
+){
+    val uiState by mapViewModel.uiState.collectAsState()
+    Surface(
+        tonalElevation = 4.dp, modifier = Modifier
+            .width(300.dp)
+            .fillMaxHeight()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("マーカー名を入力してください")
+            OutlinedTextField(
+                value = tempMarkerName ?: "",
+                onValueChange = {
+                    //tempMarkerName = it
+                    mapViewModel.changeTempMarkerName(it)
+                                },
+                label = { Text("マーカー名") },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus() // ← IME入力を確定
+                    })
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 色選択の状態
+            var selectedHue by remember { mutableStateOf(BitmapDescriptorFactory.HUE_RED) }
+
+            Text("マーカーの色を選んでください")
+            Row(
+                horizontalArrangement = Arrangement.SpaceAround,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val colorOptions = listOf(
+                    BitmapDescriptorFactory.HUE_RED to "赤",
+                    BitmapDescriptorFactory.HUE_BLUE to "青",
+                    BitmapDescriptorFactory.HUE_GREEN to "緑",
+                    BitmapDescriptorFactory.HUE_YELLOW to "黄"
+                )
+                colorOptions.forEach { (hue, label) ->
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        RadioButton(
+                            selected = selectedHue == hue,
+                            onClick = { selectedHue = hue })
+                        Text(label)
+                    }
+                }
+            }
+
+
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = {
+
+                focusManager.clearFocus() // ← 変換中なら確定
+
+                uiState.tempMarkerPosition?.let { pos ->
+                    val newMarker = NamedMarker(
+                        position = LatLngSerializable.from(pos),
+                        title = tempMarkerName,
+                        createdAt = LocalDateTime.now().format(
+                            DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+                        ),
+                        colorHue = selectedHue
+
+                    )
+                    viewModel.addMarker(newMarker)
+                    //saveMarkers(context, permanentMarkers)
+
+                    // 👇 表示範囲に入っていれば visibleMarkers にも追加！
+                    val bounds =
+                        cameraPositionState.projection?.visibleRegion?.latLngBounds
+                    if (bounds != null && bounds.contains(pos)) {
+                        visibleMarkers.add(newMarker)
+                    }
+                }
+                tempMarkerPosition = null
+                tempMarkerName = ""
+                isPanelOpen = false
+            }) {
+                Text("マーカーを設置する")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = {
+                tempMarkerPosition = null
+                tempMarkerName = ""
+                isPanelOpen = false
+            }) {
+                Text("キャンセル")
+            }
+        }
+    }
+
+}
+
+@Composable
+fun DismissOverlay(
+    mapViewModel: MapViewModel = hiltViewModel()
+) {
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.001f)) // ほぼ透明なオーバーレイ
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+//                isEditPanelOpen = false
+//                isPanelOpen = false
+//                isSearchOpen = false
+//                selectedMarker = null
+                mapViewModel.changeIsEditPanelOpen()
+                mapViewModel.changeIsPanelOpen()
+                mapViewModel.changeIsSearchOpen()
+                mapViewModel.changeSelectedMarker(null)
+            }
+    )
+}
 
 
 //@SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
-    isPermissionGranted: Boolean,
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
+    mapViewModel: MapViewModel = hiltViewModel()
 ) {
 
+    val uiState by mapViewModel.uiState.collectAsState()
 
     val context = LocalContext.current
     //val fusedLocationClient = remember {
     //    LocationServices.getFusedLocationProviderClient(context)
     //}
 
-    val isFollowing by locationViewModel.isFollowing.collectAsState()
+    //val isFollowing by locationViewModel.isFollowing.collectAsState()
 
 
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
@@ -100,7 +313,7 @@ fun MapScreen(
     LaunchedEffect(Unit) {
         locationViewModel.startLocationUpdates(
             context = context,
-            isFollowing = isFollowing,
+            isFollowing = uiState.isFollowing,
             cameraPositionState = cameraPositionState,
             onLocationUpdate = { userLocation = it })
     }
@@ -121,13 +334,6 @@ fun MapScreen(
     }
 
     // サイドパネルの表示フラグ
-    var isPanelOpen by remember { mutableStateOf(false) }
-
-    var tempMarkerName by remember { mutableStateOf("") }
-
-    val selectedAddress by markerViewModel.selectedAddress.collectAsState()
-    var selectedMarker by remember { mutableStateOf<NamedMarker?>(null) }
-    var isEditPanelOpen by remember { mutableStateOf(false) }
 
     val focusManager = LocalFocusManager.current
 
@@ -181,7 +387,7 @@ fun MapScreen(
 
             val mimeType = context.contentResolver.getType(it)
 
-            selectedMarker?.let { marker ->
+                uiState.selectedMarker?.let { marker ->
                 val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                 if (index != -1) {
                     val updatedMarker = when {
@@ -190,7 +396,10 @@ fun MapScreen(
                         else -> marker // サポート外
                     }
                     viewModel.updateMarker(updatedMarker) // ViewModelで更新
-                    selectedMarker = updatedMarker
+
+                    mapViewModel.changeSelectedMarker(updatedMarker)
+
+                    //selectedMarker = updatedMarker
                     updateVisibleMarkers()
                     //saveMarkers(context, permanentMarkers)
                 }
@@ -201,29 +410,22 @@ fun MapScreen(
     LaunchedEffect(cameraPositionState.isMoving) {
         // マップ移動終了後に更新
         snapshotFlow { cameraPositionState.isMoving }.collect { isMoving ->
-                if (!isMoving) {
-                    // カメラが止まったときに現在の可視領域を取得
-                    val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
-                    if (bounds != null) {
-                        val filtered =
-                            permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
-                        visibleMarkers.clear()
-                        visibleMarkers.addAll(filtered)
-                    }
+            if (!isMoving) {
+                // カメラが止まったときに現在の可視領域を取得
+                val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
+                if (bounds != null) {
+                    val filtered =
+                        permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
+                    visibleMarkers.clear()
+                    visibleMarkers.addAll(filtered)
                 }
             }
+        }
     }
 
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        // 検索のステート
-        var isSearchOpen by remember { mutableStateOf(false) }
-        var titleQuery by remember { mutableStateOf("") }
-        var memoQuery by remember { mutableStateOf("") }
-
-        val titleResults = remember { mutableStateListOf<NamedMarker>() }
-        val memoResults = remember { mutableStateListOf<NamedMarker>() }
 
         LaunchedEffect(titleQuery, memoQuery) {
             val lowerTitle = titleQuery.lowercase()
@@ -252,12 +454,13 @@ fun MapScreen(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = MapProperties(
-                isMyLocationEnabled = isPermissionGranted,
+                isMyLocationEnabled = uiState.isPermissionGranted,
                 mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
             ),
             onMapClick = { latLng ->
                 tempMarkerPosition = latLng
-                isPanelOpen = true
+                   //uiState.isPanelOpen = true
+                    mapViewModel.changeIsPanelOpen()
             }) {
 
             // カメラの表示範囲にある永続マーカーのみ表示
@@ -268,11 +471,13 @@ fun MapScreen(
                     title = marker.title,
                     icon = BitmapDescriptorFactory.defaultMarker(marker.colorHue),
                     onClick = {
-                        selectedMarker = marker
+                        //selectedMarker = marker
+                        mapViewModel.changeSelectedMarker(marker)
                         markerViewModel.fetchAddressForLatLng(
                             marker.position.latitude, marker.position.longitude
                         )
-                        isEditPanelOpen = true
+                        //isEditPanelOpen = true
+                        mapViewModel.changeIsEditPanelOpen()
                         true // consume click
                     })
             }
@@ -297,25 +502,15 @@ fun MapScreen(
             horizontalAlignment = Alignment.End
         ) {
             Button(onClick = {
-                locationViewModel.toggleFollowing()
+                //locationViewModel.toggleFollowing()
+                mapViewModel.changeIsFollowing()
             }) {
-                Text(if (isFollowing) "追従中" else "追従してないよ")
+                Text(if (uiState.isFollowing) "追従中" else "追従してないよ")
             }
         }
 
-        if (isEditPanelOpen || isPanelOpen || isSearchOpen) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.001f)) // ほぼ透明
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }) {
-                    isEditPanelOpen = false
-                    isPanelOpen = false
-                    isSearchOpen = false
-                    selectedMarker = null
-                })
+        if (uiState.isEditPanelOpen || uiState.isPanelOpen || uiState.isSearchOpen) {
+            DismissOverlay()
         }
 
         // 検索ボタンとパネル
@@ -327,181 +522,38 @@ fun MapScreen(
             horizontalAlignment = Alignment.End
         ) {
             Button(onClick = {
-                isSearchOpen = !isSearchOpen
-                titleQuery = ""
-                memoQuery = ""
+                mapViewModel.changeIsSearchOpen()
+                mapViewModel.changeTitleQuery("")
+                mapViewModel.changeMemoQuery("")
+
             }) {
-                Text(if (isSearchOpen) "閉じる" else "検索")
-            }
-
-            AnimatedVisibility(visible = isSearchOpen) {
-                Surface(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .background(Color.White, shape = RoundedCornerShape(8.dp))
-                        .widthIn(max = 300.dp)
-                        .padding(12.dp), shadowElevation = 4.dp
-                ) {
-                    Column {
-
-                        // マーカー名検索
-                        OutlinedTextField(
-                            value = titleQuery,
-                            onValueChange = { titleQuery = it },
-                            label = { Text("マーカー名で検索") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        LazyColumn {
-                            items(titleResults) { marker ->
-                                Text(
-                                    text = marker.title,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            selectedMarker = marker
-                                            isEditPanelOpen = true
-                                            cameraPositionState.move(
-                                                CameraUpdateFactory.newLatLngZoom(
-                                                    marker.position.toLatLng(), 17f
-                                                )
-                                            )
-                                            isSearchOpen = false
-                                            titleQuery = ""
-                                            memoQuery = ""
-                                        }
-                                        .padding(8.dp))
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        // メモ検索
-                        OutlinedTextField(
-                            value = memoQuery,
-                            onValueChange = { memoQuery = it },
-                            label = { Text("メモ内容で検索") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        LazyColumn {
-                            items(memoResults) { marker ->
-                                Text(
-                                    text = marker.title + "（メモ一致）",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            selectedMarker = marker
-                                            isEditPanelOpen = true
-                                            cameraPositionState.move(
-                                                CameraUpdateFactory.newLatLngZoom(
-                                                    marker.position.toLatLng(), 17f
-                                                )
-                                            )
-                                            isSearchOpen = false
-                                            titleQuery = ""
-                                            memoQuery = ""
-                                        }
-                                        .padding(8.dp))
-                            }
-                        }
-                    }
-                }
+                Text(if (uiState.isSearchOpen) "閉じる" else "検索")
             }
         }
 
+        // 検索パネル
+        if (uiState.isSearchOpen) {
+            SearchMaker(
+                titleQuery = "",
+                memoQuery = "",
+                titleResults = emptyList(),
+                memoResults = emptyList(),
+                onMarkerNameChanged = { },
+                onMemoNameChanged = {},
+                onMarkerTapped = {},
+                onMemoTapped = {}
+            )
+        }
 
         // 右側から出るパネル
         AnimatedVisibility(
-            visible = isPanelOpen, modifier = Modifier.align(Alignment.CenterEnd)
+            visible = uiState.isPanelOpen, modifier = Modifier.align(Alignment.CenterEnd)
         ) {
-            Surface(
-                tonalElevation = 4.dp, modifier = Modifier
-                    .width(300.dp)
-                    .fillMaxHeight()
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("マーカー名を入力してください")
-                    OutlinedTextField(
-                        value = tempMarkerName,
-                        onValueChange = { tempMarkerName = it },
-                        label = { Text("マーカー名") },
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                focusManager.clearFocus() // ← IME入力を確定
-                            }))
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // 色選択の状態
-                    var selectedHue by remember { mutableStateOf(BitmapDescriptorFactory.HUE_RED) }
-
-                    Text("マーカーの色を選んでください")
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        val colorOptions = listOf(
-                            BitmapDescriptorFactory.HUE_RED to "赤",
-                            BitmapDescriptorFactory.HUE_BLUE to "青",
-                            BitmapDescriptorFactory.HUE_GREEN to "緑",
-                            BitmapDescriptorFactory.HUE_YELLOW to "黄"
-                        )
-                        colorOptions.forEach { (hue, label) ->
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                RadioButton(
-                                    selected = selectedHue == hue, onClick = { selectedHue = hue })
-                                Text(label)
-                            }
-                        }
-                    }
-
-
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = {
-
-                        focusManager.clearFocus() // ← 変換中なら確定
-
-                        tempMarkerPosition?.let { pos ->
-                            val newMarker = NamedMarker(
-                                position = LatLngSerializable.from(pos),
-                                title = tempMarkerName,
-                                createdAt = LocalDateTime.now().format(
-                                    DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-                                ),
-                                colorHue = selectedHue
-
-                            )
-                            viewModel.addMarker(newMarker)
-                            //saveMarkers(context, permanentMarkers)
-
-                            // 👇 表示範囲に入っていれば visibleMarkers にも追加！
-                            val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
-                            if (bounds != null && bounds.contains(pos)) {
-                                visibleMarkers.add(newMarker)
-                            }
-                        }
-                        tempMarkerPosition = null
-                        tempMarkerName = ""
-                        isPanelOpen = false
-                    }) {
-                        Text("マーカーを設置する")
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = {
-                        tempMarkerPosition = null
-                        tempMarkerName = ""
-                        isPanelOpen = false
-                    }) {
-                        Text("キャンセル")
-                    }
-                }
-            }
+            SetMarkerPanel(
+                tempMarkerName = null,
+                cameraPositionState = cameraPositionState,
+                focusManager = focusManager
+            )
         }
 
 
@@ -556,7 +608,8 @@ fun MapScreen(
                                     onDone = {
                                         focusManager.clearFocus()
                                     }),
-                                modifier = Modifier.weight(1f))
+                                modifier = Modifier.weight(1f)
+                            )
 
                             Spacer(modifier = Modifier.height(8.dp))
                             Button(
@@ -608,7 +661,8 @@ fun MapScreen(
                                                 val index =
                                                     permanentMarkers.indexOfFirst { it.id == marker.id }
                                                 if (index != -1) {
-                                                    val updatedMarker = marker.copy(colorHue = hue)
+                                                    val updatedMarker =
+                                                        marker.copy(colorHue = hue)
                                                     //permanentMarkers[index] = updatedMarker
                                                     viewModel.updateMarker(updatedMarker)
                                                     selectedMarker = updatedMarker // UIも更新
@@ -663,7 +717,8 @@ fun MapScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(onClick = {
                                 selectedMarker?.let { marker ->
-                                    val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                                    val index =
+                                        permanentMarkers.indexOfFirst { it.id == marker.id }
                                     if (index != -1) {
                                         val updatedMarker = marker.copy(
                                             imageUri = null, videoUri = null
@@ -692,7 +747,8 @@ fun MapScreen(
                                 memoText = newText
 
                                 selectedMarker?.let { marker ->
-                                    val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                                    val index =
+                                        permanentMarkers.indexOfFirst { it.id == marker.id }
                                     if (index != -1) {
                                         val updatedMarker = marker.copy(memo = newText)
                                         //permanentMarkers[index] = updatedMarker
@@ -740,3 +796,6 @@ fun MapScreen(
 
     }
 }
+
+
+
