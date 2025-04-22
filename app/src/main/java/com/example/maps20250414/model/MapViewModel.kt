@@ -35,6 +35,21 @@ class MapViewModel() : ViewModel() {
         _uiState.update { it.copy(titleQuery = Answer) }
     }
 
+    fun changeOnMemoQuery(
+        query: String,
+        permanentMarkers: List<NamedMarker>
+    ) {
+        val filtered = permanentMarkers.filter {
+            it.title.contains(query, ignoreCase = true)
+        }
+        _uiState.update {
+            it.copy(
+                titleQuery = query,
+                titleResults = filtered
+            )
+        }
+    }
+
     fun changeMemoQuery(
         Answer: String
     ) {

@@ -158,6 +158,7 @@ fun EditPanel(
                                     val updatedMarker = marker.copy(
                                         title = editedName,
                                     )
+                                    viewModel.updateMarker(updatedMarker)
                                     saveMarkers(context, permanentMarkers)
                                 }
                                 //isEditPanelOpen = false

@@ -217,7 +217,9 @@ fun MapScreen(
                 onMarkerNameChanged = { },
                 onMemoNameChanged = {},
                 onMarkerTapped = {},
-                onMemoTapped = {}
+                onMemoTapped = {},
+                cameraPositionState = cameraPositionState,
+                permanentMarkers = permanentMarkers
             )
         }
 
