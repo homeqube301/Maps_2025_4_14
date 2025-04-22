@@ -6,9 +6,6 @@ import android.widget.VideoView
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,19 +41,15 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import coil.compose.AsyncImage
 import com.example.maps20250414.R
-import com.example.maps20250414.model.LatLngSerializable
 import com.example.maps20250414.model.LocationViewModel
 import com.example.maps20250414.model.MarkerViewModel
 import com.example.maps20250414.model.NamedMarker
@@ -66,7 +58,7 @@ import com.example.maps20250414.strage.saveMarkers
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.maps.android.compose.CameraPositionState
+import com.google.android.gms.maps.model.Tile
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
@@ -75,8 +67,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 class MapViewModel() : ViewModel() {
@@ -101,16 +91,16 @@ class MapViewModel() : ViewModel() {
     }
 
     fun changeTitleQuery(
-        Answer:String
+        Answer: String
     ) {
         _uiState.update { it.copy(titleQuery = Answer) }
     }
+
     fun changeMemoQuery(
-        Answer:String
+        Answer: String
     ) {
         _uiState.update { it.copy(memoQuery = Answer) }
     }
-
 
 
     fun changeSelectedMarker(
@@ -125,6 +115,46 @@ class MapViewModel() : ViewModel() {
         _uiState.update { it.copy(tempMarkerName = Answer) }
     }
 
+    fun changeTempMarkerPosition(
+        Answer: LatLng?
+    ) {
+        _uiState.update { it.copy(tempMarkerPosition = Answer) }
+    }
+
+
+    fun UpdateSearchList(
+        titleQuery: String?,
+        memoQuery: String?,
+        permanentMarkers: List<NamedMarker>,
+    ) {
+        val lowerTitle = titleQuery?.lowercase()
+        val lowerMemo = memoQuery?.lowercase()
+
+        _uiState.update { it.copy(titleResults = emptyList()) }
+        _uiState.update { it.copy(memoResults = emptyList()) }
+
+
+        if (!lowerTitle.isNullOrBlank()) {
+            val Tilefiltered = permanentMarkers.filter {
+                it.title.lowercase().contains(lowerTitle)
+            }
+            _uiState.update { it.copy(titleResults = Tilefiltered) }
+        }
+        if (!lowerMemo.isNullOrBlank()) {
+            val Memofiltered = permanentMarkers.filter {
+                it.title.lowercase().contains(lowerMemo)
+            }
+            _uiState.update { it.copy(memoResults = Memofiltered) }
+        }
+
+
+
+//        if (!lowerMemo.isNullOrBlank()) {
+//            memoResults += permanentMarkers.filter {
+//                it.memo?.lowercase()?.contains(lowerMemo) == true
+//            }
+//        }
+    }
 
 }
 
@@ -140,152 +170,15 @@ data class MapsUiState(
     val userLocation: LatLng? = null,
     val tempMarkerPosition: LatLng? = null,
 
-    // 検索のステート
-//    var isSearchOpen by remember { mutableStateOf(false) }
-//    var titleQuery by remember { mutableStateOf("") }
-//    var memoQuery by remember { mutableStateOf("") }
-//
-//    val titleResults = remember { mutableStateListOf<NamedMarker>() }
-//    val memoResults = remember { mutableStateListOf<NamedMarker>() }
-    // 検索のステート
     val isSearchOpen: Boolean = false,
-    val titleQuery:String?  = null,
-    val memoQuery :String? = null,
+    val titleQuery: String? = null,
+    val memoQuery: String? = null,
 
-    val titleResults:List<NamedMarker> = emptyList(),
-    val memoResults:List<NamedMarker> = emptyList(),
+    val titleResults: List<NamedMarker> = emptyList(),
+    val memoResults: List<NamedMarker> = emptyList(),
+    val visibleMarkers: List<NamedMarker> = emptyList(),
 
-)
-
-@Composable
-fun SetMarkerPanel(
-    mapViewModel: MapViewModel = hiltViewModel(),
-    viewModel: PermanentMarkerViewModel = hiltViewModel(),
-    tempMarkerName: String?,
-    cameraPositionState: CameraPositionState,
-    focusManager: FocusManager
-){
-    val uiState by mapViewModel.uiState.collectAsState()
-    Surface(
-        tonalElevation = 4.dp, modifier = Modifier
-            .width(300.dp)
-            .fillMaxHeight()
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("マーカー名を入力してください")
-            OutlinedTextField(
-                value = tempMarkerName ?: "",
-                onValueChange = {
-                    //tempMarkerName = it
-                    mapViewModel.changeTempMarkerName(it)
-                                },
-                label = { Text("マーカー名") },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus() // ← IME入力を確定
-                    })
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 色選択の状態
-            var selectedHue by remember { mutableStateOf(BitmapDescriptorFactory.HUE_RED) }
-
-            Text("マーカーの色を選んでください")
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                val colorOptions = listOf(
-                    BitmapDescriptorFactory.HUE_RED to "赤",
-                    BitmapDescriptorFactory.HUE_BLUE to "青",
-                    BitmapDescriptorFactory.HUE_GREEN to "緑",
-                    BitmapDescriptorFactory.HUE_YELLOW to "黄"
-                )
-                colorOptions.forEach { (hue, label) ->
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        RadioButton(
-                            selected = selectedHue == hue,
-                            onClick = { selectedHue = hue })
-                        Text(label)
-                    }
-                }
-            }
-
-
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-
-                focusManager.clearFocus() // ← 変換中なら確定
-
-                uiState.tempMarkerPosition?.let { pos ->
-                    val newMarker = NamedMarker(
-                        position = LatLngSerializable.from(pos),
-                        title = tempMarkerName,
-                        createdAt = LocalDateTime.now().format(
-                            DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-                        ),
-                        colorHue = selectedHue
-
-                    )
-                    viewModel.addMarker(newMarker)
-                    //saveMarkers(context, permanentMarkers)
-
-                    // 👇 表示範囲に入っていれば visibleMarkers にも追加！
-                    val bounds =
-                        cameraPositionState.projection?.visibleRegion?.latLngBounds
-                    if (bounds != null && bounds.contains(pos)) {
-                        visibleMarkers.add(newMarker)
-                    }
-                }
-                tempMarkerPosition = null
-                tempMarkerName = ""
-                isPanelOpen = false
-            }) {
-                Text("マーカーを設置する")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                tempMarkerPosition = null
-                tempMarkerName = ""
-                isPanelOpen = false
-            }) {
-                Text("キャンセル")
-            }
-        }
-    }
-
-}
-
-@Composable
-fun DismissOverlay(
-    mapViewModel: MapViewModel = hiltViewModel()
-) {
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.001f)) // ほぼ透明なオーバーレイ
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) {
-//                isEditPanelOpen = false
-//                isPanelOpen = false
-//                isSearchOpen = false
-//                selectedMarker = null
-                mapViewModel.changeIsEditPanelOpen()
-                mapViewModel.changeIsPanelOpen()
-                mapViewModel.changeIsSearchOpen()
-                mapViewModel.changeSelectedMarker(null)
-            }
     )
-}
 
 
 //@SuppressLint("MissingPermission")
@@ -297,6 +190,7 @@ fun MapScreen(
 ) {
 
     val uiState by mapViewModel.uiState.collectAsState()
+
 
     val context = LocalContext.current
     //val fusedLocationClient = remember {
@@ -366,14 +260,15 @@ fun MapScreen(
     //    )
     //}
 
-    val visibleMarkers = remember { mutableStateListOf<NamedMarker>() }
+    //val visibleMarkers = remember { mutableStateListOf<NamedMarker>() }
 
     fun updateVisibleMarkers() {
         val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
         if (bounds != null) {
             val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
-            visibleMarkers.clear()
-            visibleMarkers.addAll(filtered)
+            //uiState.visibleMarkers.clear()
+            //uiState.visibleMarkers.addAll(filtered)
+            uiState.copy(visibleMarkers = filtered)
         }
     }
 
@@ -387,7 +282,7 @@ fun MapScreen(
 
             val mimeType = context.contentResolver.getType(it)
 
-                uiState.selectedMarker?.let { marker ->
+            uiState.selectedMarker?.let { marker ->
                 val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                 if (index != -1) {
                     val updatedMarker = when {
@@ -416,8 +311,9 @@ fun MapScreen(
                 if (bounds != null) {
                     val filtered =
                         permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
-                    visibleMarkers.clear()
-                    visibleMarkers.addAll(filtered)
+                    //visibleMarkers.clear()
+                    //visibleMarkers.addAll(filtered)
+                    uiState.copy(visibleMarkers = filtered)
                 }
             }
         }
@@ -427,24 +323,12 @@ fun MapScreen(
     Box(modifier = Modifier.fillMaxSize()) {
 
 
-        LaunchedEffect(titleQuery, memoQuery) {
-            val lowerTitle = titleQuery.lowercase()
-            val lowerMemo = memoQuery.lowercase()
-
-            titleResults.clear()
-            memoResults.clear()
-
-            if (lowerTitle.isNotBlank()) {
-                titleResults += permanentMarkers.filter {
-                    it.title.lowercase().contains(lowerTitle)
-                }
-            }
-
-            if (lowerMemo.isNotBlank()) {
-                memoResults += permanentMarkers.filter {
-                    it.memo?.lowercase()?.contains(lowerMemo) == true
-                }
-            }
+        LaunchedEffect(uiState.titleQuery, uiState.memoQuery) {
+            mapViewModel.UpdateSearchList(
+                uiState.titleQuery,
+                uiState.memoQuery,
+                permanentMarkers,
+            )
         }
 
         //val context2 = LocalContext.current
@@ -459,8 +343,8 @@ fun MapScreen(
             ),
             onMapClick = { latLng ->
                 tempMarkerPosition = latLng
-                   //uiState.isPanelOpen = true
-                    mapViewModel.changeIsPanelOpen()
+                //uiState.isPanelOpen = true
+                mapViewModel.changeIsPanelOpen()
             }) {
 
             // カメラの表示範囲にある永続マーカーのみ表示
