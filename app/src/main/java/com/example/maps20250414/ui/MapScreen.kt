@@ -22,149 +22,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import com.example.maps20250414.R
 import com.example.maps20250414.model.LocationViewModel
+import com.example.maps20250414.model.MapViewModel
 import com.example.maps20250414.model.MarkerViewModel
-import com.example.maps20250414.model.NamedMarker
 import com.example.maps20250414.model.PermanentMarkerViewModel
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
-
-
-class MapViewModel() : ViewModel() {
-    private val _uiState = MutableStateFlow(MapsUiState())
-    val uiState: StateFlow<MapsUiState> = _uiState
-
-    fun changeIsFollowing() {
-        _uiState.update { it.copy(isFollowing = !it.isFollowing) }
-    }
-
-
-    fun changeIsEditPanelOpen() {
-        _uiState.update { it.copy(isEditPanelOpen = !it.isEditPanelOpen) }
-    }
-
-    fun changeIsPanelOpen() {
-        _uiState.update { it.copy(isPanelOpen = !it.isFollowing) }
-    }
-
-    fun changeIsSearchOpen() {
-        _uiState.update { it.copy(isSearchOpen = !it.isSearchOpen) }
-    }
-
-    fun changeTitleQuery(
-        Answer: String
-    ) {
-        _uiState.update { it.copy(titleQuery = Answer) }
-    }
-
-    fun changeMemoQuery(
-        Answer: String
-    ) {
-        _uiState.update { it.copy(memoQuery = Answer) }
-    }
-
-
-    fun changeSelectedMarker(
-        updateMarker: NamedMarker?
-    ) {
-        _uiState.update { it.copy(selectedMarker = updateMarker) }
-    }
-
-    fun changeTempMarkerName(
-        Answer: String?
-    ) {
-        _uiState.update { it.copy(tempMarkerName = Answer) }
-    }
-
-    fun changeTempMarkerPosition(
-        Answer: LatLng?
-    ) {
-        _uiState.update { it.copy(tempMarkerPosition = Answer) }
-    }
-
-
-    fun UpdateSearchList(
-        titleQuery: String?,
-        memoQuery: String?,
-        permanentMarkers: List<NamedMarker>,
-    ) {
-        val lowerTitle = titleQuery?.lowercase()
-        val lowerMemo = memoQuery?.lowercase()
-
-        _uiState.update { it.copy(titleResults = emptyList()) }
-        _uiState.update { it.copy(memoResults = emptyList()) }
-
-
-        if (!lowerTitle.isNullOrBlank()) {
-            val TileFiltered = permanentMarkers.filter {
-                it.title.lowercase().contains(lowerTitle)
-            }
-            _uiState.update { it.copy(titleResults = TileFiltered) }
-        }
-        if (!lowerMemo.isNullOrBlank()) {
-            val MemoFiltered = permanentMarkers.filter {
-                it.title.lowercase().contains(lowerMemo)
-            }
-            _uiState.update { it.copy(memoResults = MemoFiltered) }
-        }
-    }
-    fun updateVisibleMarkers(
-        cameraPositionState:CameraPositionState,
-        permanentMarkers: List<NamedMarker>
-    ) {
-        val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
-        if (bounds != null) {
-            val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
-            //uiState.visibleMarkers.clear()
-            //uiState.visibleMarkers.addAll(filtered)
-            //uiState.copy(visibleMarkers = filtered)
-            _uiState.update { it.copy(visibleMarkers = filtered) }
-        }
-    }
-    fun removeVisibleMarkers(
-        marker: NamedMarker
-    ) {
-        _uiState.update {
-            it.copy(
-                visibleMarkers = it.visibleMarkers.filter { m -> m != marker }
-            )
-        }
-    }
-}
-
-
-data class MapsUiState(
-    val isPermissionGranted: Boolean = false,
-    val isPanelOpen: Boolean = false,
-    val tempMarkerName: String? = null,
-    val selectedAddress: String? = null,
-    val selectedMarker: NamedMarker? = null,
-    val isEditPanelOpen: Boolean = false,
-    val isFollowing: Boolean = false,
-    val userLocation: LatLng? = null,
-    val tempMarkerPosition: LatLng? = null,
-
-    val isSearchOpen: Boolean = false,
-    val titleQuery: String? = null,
-    val memoQuery: String? = null,
-
-    val titleResults: List<NamedMarker> = emptyList(),
-    val memoResults: List<NamedMarker> = emptyList(),
-    val visibleMarkers: List<NamedMarker> = emptyList(),
-
-    )
 
 
 //@SuppressLint("MissingPermission")
@@ -217,36 +87,6 @@ fun MapScreen(
 
     val focusManager = LocalFocusManager.current
 
-
-    //// リアルタイム現在地取得
-    //LaunchedEffect(Unit) {
-    //    val locationRequest = LocationRequest.create().apply {
-    //        interval = 3000
-    //        fastestInterval = 2000
-    //        priority = Priority.PRIORITY_HIGH_ACCURACY
-    //    }
-//
-    //    val callback = object : LocationCallback() {
-    //        override fun onLocationResult(result: LocationResult) {
-    //            val location = result.lastLocation
-    //            location?.let {
-    //                val latLng = LatLng(it.latitude, it.longitude)
-    //                userLocation = latLng
-    //                if (isFollowing) {
-    //                    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
-    //                }
-    //            }
-    //        }
-    //    }
-//
-    //    fusedLocationClient.requestLocationUpdates(
-    //        locationRequest,
-    //        callback,
-    //        context.mainLooper
-    //    )
-    //}
-
-    //val visibleMarkers = remember { mutableStateListOf<NamedMarker>() }
 
 
 

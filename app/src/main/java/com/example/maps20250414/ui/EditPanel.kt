@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.maps20250414.model.MapViewModel
 import com.example.maps20250414.model.NamedMarker
 import com.example.maps20250414.model.PermanentMarkerViewModel
 import com.example.maps20250414.strage.saveMarkers

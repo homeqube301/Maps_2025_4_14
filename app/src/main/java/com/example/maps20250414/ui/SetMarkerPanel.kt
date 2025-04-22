@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.maps20250414.model.LatLngSerializable
+import com.example.maps20250414.model.MapViewModel
 import com.example.maps20250414.model.NamedMarker
 import com.example.maps20250414.model.PermanentMarkerViewModel
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
