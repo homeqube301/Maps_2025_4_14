@@ -40,12 +40,12 @@ class MapViewModel() : ViewModel() {
         permanentMarkers: List<NamedMarker>
     ) {
         val filtered = permanentMarkers.filter {
-            it.title.contains(query, ignoreCase = true)
+            it.memo?.contains(query, ignoreCase = true) == true
         }
         _uiState.update {
             it.copy(
-                titleQuery = query,
-                titleResults = filtered
+                memoQuery = query,
+                memoResults = filtered
             )
         }
     }
