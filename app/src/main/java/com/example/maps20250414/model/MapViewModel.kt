@@ -54,6 +54,7 @@ class MapViewModel() : ViewModel() {
         _uiState.update { it.copy(tempMarkerName = Answer) }
     }
 
+
     fun changeTempMarkerPosition(
         Answer: LatLng?
     ) {
@@ -86,6 +87,7 @@ class MapViewModel() : ViewModel() {
             _uiState.update { it.copy(memoResults = MemoFiltered) }
         }
     }
+
     fun updateVisibleMarkers(
         cameraPositionState: CameraPositionState,
         permanentMarkers: List<NamedMarker>
@@ -99,7 +101,6 @@ class MapViewModel() : ViewModel() {
             _uiState.update { it.copy(visibleMarkers = filtered) }
         }
     }
-
 
 
     fun removeVisibleMarkers(
@@ -117,6 +118,7 @@ class MapViewModel() : ViewModel() {
             it.copy(visibleMarkers = it.visibleMarkers + newMarker)
         }
     }
+
 
     fun addAllVisibleMarkers(marker: List<NamedMarker>) {
         _uiState.update {

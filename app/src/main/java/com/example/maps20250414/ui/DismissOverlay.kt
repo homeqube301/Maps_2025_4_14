@@ -32,11 +32,11 @@ fun DismissOverlay(
 //                isPanelOpen = false
 //                isSearchOpen = false
 //                selectedMarker = null
-                if (uiState.isPanelOpen){
+                if (uiState.isPanelOpen) {
                     mapViewModel.changeIsPanelOpen()
-                }else if (uiState.isSearchOpen){
+                } else if (uiState.isSearchOpen) {
                     mapViewModel.changeIsSearchOpen()
-                }else if (uiState.isEditPanelOpen){
+                } else if (uiState.isEditPanelOpen) {
                     mapViewModel.changeIsEditPanelOpen()
                 }
 

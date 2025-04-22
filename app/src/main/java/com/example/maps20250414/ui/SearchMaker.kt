@@ -15,12 +15,17 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.maps20250414.model.LatLngSerializable
+import com.example.maps20250414.model.MapViewModel
 import com.example.maps20250414.model.NamedMarker
+import com.example.maps20250414.model.PermanentMarkerViewModel
 
 @Composable
 fun SearchMaker(
@@ -32,7 +37,9 @@ fun SearchMaker(
     onMarkerTapped: (NamedMarker) -> Unit,
     onMemoNameChanged: (String) -> Unit,
     onMemoTapped: (NamedMarker) -> Unit,
+    mapViewModel: MapViewModel = hiltViewModel(),
 ) {
+    val uiState by mapViewModel.uiState.collectAsState()
     Surface(
         modifier = Modifier
             .padding(top = 8.dp)

@@ -45,7 +45,7 @@ fun MapScreen(
     locationViewModel: LocationViewModel = hiltViewModel(),
     mapViewModel: MapViewModel = hiltViewModel(),
 
-) {
+    ) {
 
     val uiState by mapViewModel.uiState.collectAsState()
 
@@ -71,7 +71,7 @@ fun MapScreen(
     }
 
     // タップされた位置の一時マーカー
-    var tempMarkerPosition by remember { mutableStateOf<LatLng?>(null) }
+    //var tempMarkerPosition by remember { mutableStateOf<LatLng?>(null) }
 
     // 永続マーカーのリスト
     //val permanentMarkers = remember { mutableStateListOf<NamedMarker>() }
@@ -133,7 +133,8 @@ fun MapScreen(
                 mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
             ),
             onMapClick = { latLng ->
-                tempMarkerPosition = latLng
+                //tempMarkerPosition = latLng
+                mapViewModel.changeTempMarkerPosition(latLng)
                 //uiState.isPanelOpen = true
                 mapViewModel.changeIsPanelOpen()
             }) {
@@ -157,7 +158,7 @@ fun MapScreen(
                     })
             }
             // 一時マーカー
-            tempMarkerPosition?.let { temp ->
+            uiState.tempMarkerPosition?.let { temp ->
                 Marker(
                     state = MarkerState(position = temp),
                     title = "一時マーカー",
@@ -246,7 +247,7 @@ fun MapScreen(
                 permanentMarkers = permanentMarkers,
                 context = context,
                 cameraPositionState = cameraPositionState
-                )
+            )
         }
 
 

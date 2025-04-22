@@ -123,8 +123,6 @@ class PermanentMarkerViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-
-
     // 永続マーカーのリスト
     private val _permanentMarkers = mutableStateListOf<NamedMarker>()
     val permanentMarkers: List<NamedMarker> get() = _permanentMarkers
@@ -145,8 +143,7 @@ class PermanentMarkerViewModel @Inject constructor(
     }
 
 
-
-        // 永続マーカーを保存
+    // 永続マーカーを保存
     fun saveMarkers() {
         viewModelScope.launch {
             markerRepository.saveMarkers(_permanentMarkers)
@@ -180,11 +177,10 @@ interface MarkerRepository {
 }
 
 
-
 class MarkerRepositoryImpl @Inject constructor(
     private val context: Context,
 
-) : MarkerRepository {
+    ) : MarkerRepository {
 
     override suspend fun loadMarkers(): List<NamedMarker> {
 

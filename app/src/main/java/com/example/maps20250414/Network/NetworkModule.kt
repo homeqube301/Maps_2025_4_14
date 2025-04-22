@@ -21,7 +21,10 @@ object NetworkModule {
     fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
-                .header("User-Agent", "YourAppName/1.0 (your.email@example.com)") // ← Nominatimの利用規約に準拠
+                .header(
+                    "User-Agent",
+                    "YourAppName/1.0 (your.email@example.com)"
+                ) // ← Nominatimの利用規約に準拠
                 .build()
             chain.proceed(request)
         }

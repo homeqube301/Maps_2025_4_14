@@ -1,5 +1,6 @@
 package com.example.maps20250414.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,7 +46,7 @@ fun SetMarkerPanel(
     cameraPositionState: CameraPositionState,
     focusManager: FocusManager,
     onClose: () -> Unit
-){
+) {
     val uiState by mapViewModel.uiState.collectAsState()
     Surface(
         tonalElevation = 4.dp, modifier = Modifier
@@ -107,7 +108,7 @@ fun SetMarkerPanel(
                 uiState.tempMarkerPosition?.let { pos ->
                     val newMarker = NamedMarker(
                         position = LatLngSerializable.from(pos),
-                        title = tempMarkerName ?: "",
+                        title = uiState.tempMarkerName ?: "",
                         createdAt = LocalDateTime.now().format(
                             DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
                         ),
@@ -117,12 +118,14 @@ fun SetMarkerPanel(
                     viewModel.addMarker(newMarker)
                     //saveMarkers(context, permanentMarkers)
 
-                    // 👇 表示範囲に入っていれば visibleMarkers にも追加！
+                    //Log.e("loadMarkers", "ここまではきてるよ！！")
+
+                    //表示範囲に入っていれば visibleMarkers にも追加！
                     val bounds =
                         cameraPositionState.projection?.visibleRegion?.latLngBounds
                     if (bounds != null && bounds.contains(pos)) {
                         //visibleMarkers.add(newMarker)
-                        mapViewModel.addVisibleMarkers(newMarker)
+                        mapViewModel.addAllVisibleMarkers(listOf(newMarker))
                     }
                 }
                 //tempMarkerPosition = null
@@ -142,13 +145,9 @@ fun SetMarkerPanel(
                 mapViewModel.changeTempMarkerPosition(null)
                 mapViewModel.changeTempMarkerName(null)
                 mapViewModel.changeIsPanelOpen()
-
+                onClose()
             }) {
-                Column {
-                    Button(onClick = { onClose() }) {
-                        Text("閉じる")
-                    }
-                }
+                Text("閉じる")
             }
         }
     }

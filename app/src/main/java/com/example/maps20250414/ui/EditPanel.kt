@@ -124,8 +124,9 @@ fun EditPanel(
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                Text(text = "住所: $uiState.selectedAddress")
-
+                Text(
+                    text = "住所: ${uiState.selectedAddress ?: "住所が取得できませんでした"}"
+                )
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
