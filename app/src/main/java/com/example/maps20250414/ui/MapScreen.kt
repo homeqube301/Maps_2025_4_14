@@ -27,6 +27,7 @@ import com.example.maps20250414.model.LocationViewModel
 import com.example.maps20250414.model.MapViewModel
 import com.example.maps20250414.model.MarkerViewModel
 import com.example.maps20250414.model.PermanentMarkerViewModel
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -210,16 +211,34 @@ fun MapScreen(
         // 検索パネル
         if (uiState.isSearchOpen) {
             SearchMaker(
-                titleQuery = "",
-                memoQuery = "",
-                titleResults = emptyList(),
-                memoResults = emptyList(),
-                onMarkerNameChanged = { },
-                onMemoNameChanged = {},
-                onMarkerTapped = {},
-                onMemoTapped = {},
+//                titleQuery = "",
+//                memoQuery = "",
+//                titleResults = emptyList(),
+//                memoResults = emptyList(),
+//                onMarkerNameChanged = { },
+//                onMemoNameChanged = {},
+//                onMarkerTapped = {},
+//                onMemoTapped = {},
                 cameraPositionState = cameraPositionState,
-                permanentMarkers = permanentMarkers,
+                uiState = uiState,
+                onTitleQueryChanged = { mapViewModel.changeTitleQuery(it) },
+                onMemoQueryChanged = { mapViewModel.changeMemoQuery(it) },
+                onMarkerTapped = { marker ->
+                    mapViewModel.changeSelectedMarker(marker)
+                    mapViewModel.changeIsEditPanelOpen()
+                    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(marker.position.toLatLng(), 17f))
+                    mapViewModel.changeIsSearchOpen()
+                    mapViewModel.changeTitleQuery("")
+                    mapViewModel.changeMemoQuery("")
+                },
+                onMemoTapped = { marker ->
+                    mapViewModel.changeSelectedMarker(marker)
+                    mapViewModel.changeIsEditPanelOpen()
+                    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(marker.position.toLatLng(), 17f))
+                    mapViewModel.changeIsSearchOpen()
+                    mapViewModel.changeTitleQuery("")
+                    mapViewModel.changeMemoQuery("")
+                },
             )
         }
 
