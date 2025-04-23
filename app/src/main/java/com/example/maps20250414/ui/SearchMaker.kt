@@ -33,7 +33,6 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 
-
 @Composable
 fun SearchMaker(
 //    titleQuery: String,
@@ -48,7 +47,7 @@ fun SearchMaker(
     cameraPositionState: CameraPositionState,
     uiState: MapsUiState,
 
-) {
+    ) {
 
     Surface(
         modifier = Modifier
@@ -212,8 +211,20 @@ fun SearchMaker(
 @Composable
 fun PreviewSearchMaker() {
     val dummyMarkers = listOf(
-        NamedMarker(id = "1", title = "東京タワー", memo = "夜景がきれい", position = LatLngSerializable(35.3606, 138.7274), colorHue = 0f),
-        NamedMarker(id = "2", title = "スカイツリー", memo = "観光地", position = LatLngSerializable(35.6252, 139.2430), colorHue = 120f)
+        NamedMarker(
+            id = "1",
+            title = "東京タワー",
+            memo = "夜景がきれい",
+            position = LatLngSerializable(35.3606, 138.7274),
+            colorHue = 0f
+        ),
+        NamedMarker(
+            id = "2",
+            title = "スカイツリー",
+            memo = "観光地",
+            position = LatLngSerializable(35.6252, 139.2430),
+            colorHue = 120f
+        )
     )
     val dummyState = MapsUiState(
         titleQuery = "東京",

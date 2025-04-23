@@ -226,7 +226,12 @@ fun MapScreen(
                 onMarkerTapped = { marker ->
                     mapViewModel.changeSelectedMarker(marker)
                     mapViewModel.changeIsEditPanelOpen()
-                    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(marker.position.toLatLng(), 17f))
+                    cameraPositionState.move(
+                        CameraUpdateFactory.newLatLngZoom(
+                            marker.position.toLatLng(),
+                            17f
+                        )
+                    )
                     mapViewModel.changeIsSearchOpen()
                     mapViewModel.changeTitleQuery("")
                     mapViewModel.changeMemoQuery("")
@@ -234,7 +239,12 @@ fun MapScreen(
                 onMemoTapped = { marker ->
                     mapViewModel.changeSelectedMarker(marker)
                     mapViewModel.changeIsEditPanelOpen()
-                    cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(marker.position.toLatLng(), 17f))
+                    cameraPositionState.move(
+                        CameraUpdateFactory.newLatLngZoom(
+                            marker.position.toLatLng(),
+                            17f
+                        )
+                    )
                     mapViewModel.changeIsSearchOpen()
                     mapViewModel.changeTitleQuery("")
                     mapViewModel.changeMemoQuery("")
