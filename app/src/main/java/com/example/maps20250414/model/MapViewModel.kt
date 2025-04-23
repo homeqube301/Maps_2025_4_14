@@ -35,20 +35,20 @@ class MapViewModel() : ViewModel() {
         _uiState.update { it.copy(titleQuery = Answer) }
     }
 
-    fun changeOnMemoQuery(
-        query: String,
-        permanentMarkers: List<NamedMarker>
-    ) {
-        val filtered = permanentMarkers.filter {
-            it.memo?.contains(query, ignoreCase = true) == true
-        }
-        _uiState.update {
-            it.copy(
-                memoQuery = query,
-                memoResults = filtered
-            )
-        }
-    }
+//    fun changeOnMemoQuery(
+//        query: String,
+//        permanentMarkers: List<NamedMarker>
+//    ) {
+//        val filtered = permanentMarkers.filter {
+//            it.memo?.contains(query, ignoreCase = true) == true
+//        }
+//        _uiState.update {
+//            it.copy(
+//                memoQuery = query,
+//                memoResults = filtered
+//            )
+//        }
+//    }
 
     fun changeMemoQuery(
         Answer: String
@@ -89,17 +89,23 @@ class MapViewModel() : ViewModel() {
         _uiState.update { it.copy(memoResults = emptyList()) }
 
 
-        if (!lowerTitle.isNullOrBlank()) {
-            val TileFiltered = permanentMarkers.filter {
+        val titleFiltered = if (!lowerTitle.isNullOrBlank()) {
+            permanentMarkers.filter {
                 it.title.lowercase().contains(lowerTitle)
             }
-            _uiState.update { it.copy(titleResults = TileFiltered) }
-        }
-        if (!lowerMemo.isNullOrBlank()) {
-            val MemoFiltered = permanentMarkers.filter {
-                it.title.lowercase().contains(lowerMemo)
+        } else emptyList()
+
+        val memoFiltered = if (!lowerMemo.isNullOrBlank()) {
+            permanentMarkers.filter {
+                it.memo?.lowercase()?.contains(lowerMemo) == true
             }
-            _uiState.update { it.copy(memoResults = MemoFiltered) }
+        } else emptyList()
+
+        _uiState.update {
+            it.copy(
+                titleResults = titleFiltered,
+                memoResults = memoFiltered
+            )
         }
     }
 

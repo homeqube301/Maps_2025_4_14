@@ -99,9 +99,9 @@ fun SearchMaker(
             OutlinedTextField(
                 value = uiState.memoQuery ?: "",
                 onValueChange = {
-                    mapViewModel.changeOnMemoQuery(
+                    mapViewModel.changeMemoQuery(
                         it,
-                        permanentMarkers = permanentMarkers
+                        //permanentMarkers
                     )
                 },
                 label = { Text("メモ内容で検索") },
