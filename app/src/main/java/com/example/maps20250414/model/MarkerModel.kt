@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.maps20250414.data.MapsUiState
 import com.example.maps20250414.strage.loadMarkers
 import com.example.maps20250414.strage.saveMarkers
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -30,7 +29,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import javax.inject.Inject
@@ -208,16 +206,9 @@ class MarkerViewModel @Inject constructor(
     private val _selectedAddress = MutableStateFlow("読み込み中…")
 
     val selectedAddress: StateFlow<String> = _selectedAddress
-    private val _uiState = MutableStateFlow(MapsUiState())
-    //val uiState: StateFlow<MapsUiState> = _uiState
-
-    private fun changeSelectedAdress(adress: String) {
-        _uiState.update { it.copy(selectedAddress = adress) }
-    }
 
     fun fetchAddressForLatLng(lat: Double, lon: Double) {
         _selectedAddress.value = "読み込み中…"
-        changeSelectedAdress(_selectedAddress.toString())
 
         Log.d("MarkerViewModel", "住所取得リクエストだよーん！！: lat=$lat, lon=$lon")
 

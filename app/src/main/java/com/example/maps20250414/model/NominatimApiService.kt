@@ -8,8 +8,8 @@ import retrofit2.http.Query
 
 @JsonClass(generateAdapter = true)
 data class NominatimResponse(
-    @Json(name = "displayName")
-    val displayName: String
+    @Json(name = "display_Name")
+    val displayName: String? = null,
 )
 
 interface NominatimApiService {

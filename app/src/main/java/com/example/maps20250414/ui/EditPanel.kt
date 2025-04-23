@@ -142,6 +142,7 @@ fun EditPanel(
 
                 Text(
                     text = "住所: ${address.ifBlank { "住所が取得できませんでした" }}"
+                    //text = "住所: ${uiState.selectedAddress?.ifBlank { "住所が取得できませんでした" }}"
                 )
 
                 Row(

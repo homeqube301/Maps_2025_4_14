@@ -62,12 +62,12 @@ dependencies {
     implementation(libs.androidx.material3)
 
     // Google Maps 関連（libs ではなく直書き）
-    implementation("com.google.android.gms:play-services-maps:19.2.0")
-    implementation("com.google.maps.android:maps-compose:2.11.4")
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.compose)
 
-    implementation("androidx.datastore:datastore-preferences:1.1.4")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
-    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation(libs.androidx.datastore.preferences)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
