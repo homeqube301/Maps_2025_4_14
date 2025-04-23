@@ -26,6 +26,7 @@ import com.example.maps20250414.R
 import com.example.maps20250414.model.LocationViewModel
 import com.example.maps20250414.model.MapViewModel
 import com.example.maps20250414.model.MarkerViewModel
+import com.example.maps20250414.model.NamedMarker
 import com.example.maps20250414.model.PermanentMarkerViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -218,7 +219,7 @@ fun MapScreen(
 //                onMemoNameChanged = {},
 //                onMarkerTapped = {},
 //                onMemoTapped = {},
-                cameraPositionState = cameraPositionState,
+                //cameraPositionState = cameraPositionState,
                 uiState = uiState,
                 onTitleQueryChanged = { mapViewModel.changeTitleQuery(it) },
                 onMemoQueryChanged = { mapViewModel.changeMemoQuery(it) },
@@ -273,11 +274,49 @@ fun MapScreen(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             EditPanel(
-                focusManager = focusManager,
+                uiState = uiState,
                 permanentMarkers = permanentMarkers,
+                focusManager = focusManager,
                 context = context,
-                cameraPositionState = cameraPositionState
+                onMarkerUpdate = { updatedMarker ->
+                    viewModel.updateMarker(updatedMarker)
+                    mapViewModel.changeSelectedMarker(updatedMarker)
+                    mapViewModel.updateVisibleMarkers(cameraPositionState, permanentMarkers)
+                },
+                onMarkerDelete = { marker ->
+                    viewModel.removeMarker(marker.id)
+                    mapViewModel.removeVisibleMarkers(marker)
+                    mapViewModel.changeSelectedMarker(null)
+                    mapViewModel.changeIsEditPanelOpen()
+                },
+                onPanelClose = {
+                    mapViewModel.changeIsEditPanelOpen()
+                    mapViewModel.changeSelectedMarker(null)
+                },
+                onMediaPicked = { marker, uri, mimeType ->
+                    val updatedMarker = when {
+                        mimeType?.startsWith("image/") == true -> marker.copy(imageUri = uri.toString())
+                        mimeType?.startsWith("video/") == true -> marker.copy(videoUri = uri.toString())
+                        else -> marker
+                    }
+                    viewModel.updateMarker(updatedMarker)
+                    mapViewModel.changeSelectedMarker(updatedMarker)
+                    mapViewModel.updateVisibleMarkers(cameraPositionState, permanentMarkers)
+                },
+                onMediaDelete = { marker ->
+                    val updatedMarker = marker.copy(imageUri = null, videoUri = null)
+                    viewModel.updateMarker(updatedMarker)
+                    mapViewModel.changeSelectedMarker(updatedMarker)
+                    mapViewModel.updateVisibleMarkers(cameraPositionState, permanentMarkers)
+                }
             )
+
+//            EditPanel(
+//                focusManager = focusManager,
+//                permanentMarkers = permanentMarkers,
+//                context = context,
+//                cameraPositionState = cameraPositionState
+//            )
         }
 
 

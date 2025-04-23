@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.maps20250414.data.MapsUiState
 import com.example.maps20250414.model.MapViewModel
 import com.example.maps20250414.model.NamedMarker
 import com.example.maps20250414.model.PermanentMarkerViewModel
@@ -52,14 +53,20 @@ import com.google.maps.android.compose.CameraPositionState
 
 @Composable
 fun EditPanel(
-    mapViewModel: MapViewModel = hiltViewModel(),
-    viewModel: PermanentMarkerViewModel = hiltViewModel(),
+    uiState: MapsUiState,
+    onMarkerUpdate: (NamedMarker) -> Unit,
+    onMarkerDelete: (NamedMarker) -> Unit,
+    onPanelClose: () -> Unit,
     permanentMarkers: List<NamedMarker>,
     focusManager: FocusManager,
     context: Context,
-    cameraPositionState: CameraPositionState
+    onMediaPicked: (NamedMarker, Uri, String?) -> Unit,
+    onMediaDelete: (NamedMarker) -> Unit
+
+    //mapViewModel: MapViewModel = hiltViewModel(),
+    //viewModel: PermanentMarkerViewModel = hiltViewModel(),
 ) {
-    val uiState by mapViewModel.uiState.collectAsState()
+    //val uiState by mapViewModel.uiState.collectAsState()
 
     val mediaPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -74,20 +81,22 @@ fun EditPanel(
             uiState.selectedMarker?.let { marker ->
                 val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                 if (index != -1) {
-                    val updatedMarker = when {
-                        mimeType?.startsWith("image/") == true -> marker.copy(imageUri = it.toString())
-                        mimeType?.startsWith("video/") == true -> marker.copy(videoUri = it.toString())
-                        else -> marker // サポート外
-                    }
-                    viewModel.updateMarker(updatedMarker) // ViewModelで更新
+                    onMediaPicked(marker, uri, mimeType)
+//                    val updatedMarker = when {
+//                        mimeType?.startsWith("image/") == true -> marker.copy(imageUri = it.toString())
+//                        mimeType?.startsWith("video/") == true -> marker.copy(videoUri = it.toString())
+//                        else -> marker // サポート外
+//                    }
 
-                    mapViewModel.changeSelectedMarker(updatedMarker)
-
-                    //selectedMarker = updatedMarker
-                    mapViewModel.updateVisibleMarkers(
-                        cameraPositionState,
-                        permanentMarkers
-                    )
+//                    viewModel.updateMarker(updatedMarker) // ViewModelで更新
+//
+//                    mapViewModel.changeSelectedMarker(updatedMarker)
+//
+//                    //selectedMarker = updatedMarker
+//                    mapViewModel.updateVisibleMarkers(
+//                        cameraPositionState,
+//                        permanentMarkers
+//                    )
                     //saveMarkers(context, permanentMarkers)
                 }
             }
@@ -158,17 +167,19 @@ fun EditPanel(
                                     val updatedMarker = marker.copy(
                                         title = editedName,
                                     )
-                                    viewModel.updateMarker(updatedMarker)
+                                    //viewModel.updateMarker(updatedMarker)
+                                    onMarkerUpdate(updatedMarker)
                                     saveMarkers(context, permanentMarkers)
                                 }
                                 //isEditPanelOpen = false
                                 //selectedMarker = null
-                                mapViewModel.updateVisibleMarkers(
-                                    cameraPositionState,
-                                    permanentMarkers
-                                )
-                                mapViewModel.changeIsEditPanelOpen()
-                                mapViewModel.changeSelectedMarker(null)
+//                                mapViewModel.updateVisibleMarkers(
+//                                    cameraPositionState,
+//                                    permanentMarkers
+//                                )
+                                onPanelClose()
+//                                mapViewModel.changeIsEditPanelOpen()
+//                                mapViewModel.changeSelectedMarker(null)
 
                             }
                         }, modifier = Modifier.wrapContentWidth()
@@ -205,13 +216,14 @@ fun EditPanel(
                                             val updatedMarker =
                                                 marker.copy(colorHue = hue)
                                             //permanentMarkers[index] = updatedMarker
-                                            viewModel.updateMarker(updatedMarker)
-                                            //selectedMarker = updatedMarker // UIも更新
-                                            mapViewModel.changeSelectedMarker(updatedMarker)
-                                            mapViewModel.updateVisibleMarkers(
-                                                cameraPositionState,
-                                                permanentMarkers
-                                            )
+//                                            viewModel.updateMarker(updatedMarker)
+//                                            //selectedMarker = updatedMarker // UIも更新
+//                                            mapViewModel.changeSelectedMarker(updatedMarker)
+//                                            mapViewModel.updateVisibleMarkers(
+//                                                cameraPositionState,
+//                                                permanentMarkers
+//                                            )
+                                            onMarkerUpdate(updatedMarker)
                                             //saveMarkers(context, permanentMarkers)
                                         }
                                     }
@@ -265,17 +277,19 @@ fun EditPanel(
                             val index =
                                 permanentMarkers.indexOfFirst { it.id == marker.id }
                             if (index != -1) {
-                                val updatedMarker = marker.copy(
-                                    imageUri = null, videoUri = null
-                                )
+                                onMediaDelete(marker)
+//                                val updatedMarker = marker.copy(
+//                                    imageUri = null, videoUri = null
+//                                )
                                 //permanentMarkers[index] = updatedMarker
-                                viewModel.updateMarker(updatedMarker)
-                                //selectedMarker = updatedMarker
-                                mapViewModel.changeSelectedMarker(updatedMarker)
-                                mapViewModel.updateVisibleMarkers(
-                                    cameraPositionState,
-                                    permanentMarkers
-                                )
+//                                viewModel.updateMarker(updatedMarker)
+//                                //selectedMarker = updatedMarker
+//                                mapViewModel.changeSelectedMarker(updatedMarker)
+//                                mapViewModel.updateVisibleMarkers(
+//                                    cameraPositionState,
+//                                    permanentMarkers
+//                                )
+
                                 //saveMarkers(context, permanentMarkers)
                             }
                         }
@@ -301,13 +315,14 @@ fun EditPanel(
                             if (index != -1) {
                                 val updatedMarker = marker.copy(memo = newText)
                                 //permanentMarkers[index] = updatedMarker
-                                viewModel.updateMarker(updatedMarker)
-                                //selectedMarker = updatedMarker // UI更新
-                                mapViewModel.changeSelectedMarker(updatedMarker)
-                                mapViewModel.updateVisibleMarkers(
-                                    cameraPositionState,
-                                    permanentMarkers
-                                )
+//                                viewModel.updateMarker(updatedMarker)
+//                                //selectedMarker = updatedMarker // UI更新
+//                                mapViewModel.changeSelectedMarker(updatedMarker)
+//                                mapViewModel.updateVisibleMarkers(
+//                                    cameraPositionState,
+//                                    permanentMarkers
+//                                )
+                                onMarkerUpdate(updatedMarker)
                                 //saveMarkers(context, permanentMarkers)
                             }
                         }
@@ -326,12 +341,12 @@ fun EditPanel(
                 Button(onClick = {
                     //permanentMarkers.removeIf { it.id == marker.id }
                     //saveMarkers(context, permanentMarkers)
-                    viewModel.removeMarker(marker.id)
-
-                    //visibleMarkers.remove(marker)
-                    mapViewModel.removeVisibleMarkers(marker)
-                    mapViewModel.changeIsEditPanelOpen()
-                    mapViewModel.changeSelectedMarker(null)
+                    onMarkerDelete(marker)
+//                    viewModel.removeMarker(marker.id)
+//                    //visibleMarkers.remove(marker)
+//                    mapViewModel.removeVisibleMarkers(marker)
+//                    mapViewModel.changeIsEditPanelOpen()
+//                    mapViewModel.changeSelectedMarker(null)
                     //isEditPanelOpen = false
                     //selectedMarker = null
                 }) {
@@ -341,8 +356,9 @@ fun EditPanel(
                 Button(onClick = {
                     //isEditPanelOpen = false
                     //selectedMarker = null
-                    mapViewModel.changeIsEditPanelOpen()
-                    mapViewModel.changeSelectedMarker(null)
+                    onPanelClose()
+//                    mapViewModel.changeIsEditPanelOpen()
+//                    mapViewModel.changeSelectedMarker(null)
                 }) {
                     Text("戻る")
                 }

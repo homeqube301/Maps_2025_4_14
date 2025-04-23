@@ -22,8 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.example.maps20250414.data.MapsUiState
 import com.example.maps20250414.model.LatLngSerializable
 import com.example.maps20250414.model.NamedMarker
-import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.compose.rememberCameraPositionState
 
 
 @Composable
@@ -32,7 +30,6 @@ fun SearchMaker(
     onMemoTapped: (NamedMarker) -> Unit,
     onTitleQueryChanged: (String) -> Unit,
     onMemoQueryChanged: (String) -> Unit,
-    cameraPositionState: CameraPositionState,
     uiState: MapsUiState,
 
     ) {
@@ -64,22 +61,6 @@ fun SearchMaker(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                //selectedMarker = marker
-                                //isEditPanelOpen = true
-//                                mapViewModel.changeSelectedMarker(marker)
-//                                mapViewModel.changeIsEditPanelOpen()
-//
-//                                cameraPositionState.move(
-//                                    CameraUpdateFactory.newLatLngZoom(
-//                                        marker.position.toLatLng(), 17f
-//                                    )
-//                                )
-//                                //isSearchOpen = false
-//                                mapViewModel.changeIsSearchOpen()
-//                                //titleQuery = ""
-//                                //memoQuery = ""
-//                                mapViewModel.changeTitleQuery("")
-//                                mapViewModel.changeMemoQuery("")
                                 onMarkerTapped(marker)
                             }
                             .padding(8.dp))
@@ -106,19 +87,6 @@ fun SearchMaker(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                //selectedMarker = marker
-                                //isEditPanelOpen = true
-//                                mapViewModel.changeSelectedMarker(marker)
-//                                mapViewModel.changeIsEditPanelOpen()
-//                                cameraPositionState.move(
-//                                    CameraUpdateFactory.newLatLngZoom(
-//                                        marker.position.toLatLng(), 17f
-//                                    )
-//                                )
-//                                //isSearchOpen = false
-//                                mapViewModel.changeIsSearchOpen()
-//                                mapViewModel.changeTitleQuery("")
-//                                mapViewModel.changeMemoQuery("")
                                 onMemoTapped(marker)
                             }
                             .padding(8.dp))
@@ -128,72 +96,6 @@ fun SearchMaker(
     }
 }
 
-
-//    val uiState by mapViewModel.uiState.collectAsState()
-//
-//    Surface(
-//        modifier = Modifier
-//            .padding(top = 8.dp)
-//            .background(Color.White, shape = RoundedCornerShape(8.dp))
-//            .widthIn(max = 300.dp)
-//            .padding(12.dp),
-//        shadowElevation = 4.dp
-//    ) {
-//        Column {
-//
-//            // マーカー名検索
-//            OutlinedTextField(
-//                value = uiState.titleQuery ?: "",
-//                onValueChange = {
-//                    mapViewModel.changeTitleQuery(it)
-//                },
-//                label = { Text("マーカー名で検索") },
-//                modifier = Modifier.fillMaxWidth()
-//            )
-//
-//            LazyColumn {
-//                items(uiState.titleResults) { marker ->
-//                    Text(
-//                        text = marker.title,
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .clickable {
-//                                onMarkerTapped(marker)
-//                            }
-//                            .padding(8.dp)
-//                    )
-//                }
-//            }
-//
-//            Spacer(modifier = Modifier.height(16.dp))
-//
-//            // メモ検索
-//            OutlinedTextField(
-//                value = uiState.memoQuery ?: "",
-//                onValueChange = {
-//                    mapViewModel.changeMemoQuery(it)
-//                },
-//                    //onMemoNameChanged,
-//                label = { Text("メモ内容で検索") },
-//                modifier = Modifier.fillMaxWidth()
-//            )
-//
-//            LazyColumn {
-//                items(uiState.memoResults) { marker ->
-//                    Text(
-//                        text = marker.title + "（メモ一致）",
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .clickable {
-//                                onMemoTapped(marker)
-//                            }
-//                            .padding(8.dp)
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
 
 @Preview(showBackground = true)
 @Composable
@@ -228,38 +130,6 @@ fun PreviewSearchMaker() {
         onMemoQueryChanged = {},
         onMarkerTapped = {},
         onMemoTapped = {},
-        cameraPositionState = rememberCameraPositionState()
     )
 }
 
-//@Preview
-//@Composable
-//fun SearchMakerPreview() {
-//    SearchMaker(
-//        titleQuery = "",
-//        memoQuery = "",
-//        titleResults = listOf(
-//            NamedMarker(
-//                position = LatLngSerializable(
-//                    latitude = 35.681236,
-//                    longitude = 139.767125
-//                ),
-//                title = "マーカー1",
-//            ),
-//        ),
-//        memoResults = listOf(
-//            NamedMarker(
-//                position = LatLngSerializable(
-//                    latitude = 35.681236,
-//                    longitude = 139.767125
-//                ),
-//                title = "マーカー1",
-//            ),
-//        ),
-//        onMarkerNameChanged = {},
-//        onMarkerTapped = {},
-//        onMemoNameChanged = {},
-//        onMemoTapped = {},
-//        cameraPositionState = 1
-//    )
-//}
