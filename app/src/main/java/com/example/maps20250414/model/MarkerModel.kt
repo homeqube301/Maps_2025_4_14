@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.maps20250414.strage.loadMarkers
@@ -29,7 +28,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Call
 
@@ -55,7 +53,6 @@ class LocationViewModel @Inject constructor(
 
     fun startLocationUpdates(
         context: Context,
-        isFollowing: Boolean,
         cameraPositionState: CameraPositionState,
         onLocationUpdate: (LatLng) -> Unit
     ) {
@@ -73,11 +70,11 @@ class LocationViewModel @Inject constructor(
         stopLocationUpdates()
 
 
-        val locationRequest = LocationRequest.create().apply {
-            interval = 3000
-            fastestInterval = 2000
-            priority = Priority.PRIORITY_HIGH_ACCURACY
-        }
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY, 3000L // 3秒間隔
+        )
+            .setMinUpdateIntervalMillis(2000L)     // 最短2秒間隔
+            .build()
 
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
@@ -99,7 +96,7 @@ class LocationViewModel @Inject constructor(
         )
     }
 
-    fun stopLocationUpdates() {
+    private fun stopLocationUpdates() {
         locationCallback?.let {
             fusedLocationClient.removeLocationUpdates(it)
             locationCallback = null
@@ -144,7 +141,7 @@ class PermanentMarkerViewModel @Inject constructor(
 
 
     // 永続マーカーを保存
-    fun saveMarkers() {
+    private fun saveMarkers() {
         viewModelScope.launch {
             markerRepository.saveMarkers(_permanentMarkers)
         }
@@ -218,7 +215,7 @@ class MarkerViewModel @Inject constructor(
     private val apiService: NominatimApiService
 ) : ViewModel() {
 
-    private val _selectedAddress = MutableStateFlow<String>("読み込み中…")
+    private val _selectedAddress = MutableStateFlow("読み込み中…")
     val selectedAddress: StateFlow<String> = _selectedAddress
 
     fun fetchAddressForLatLng(lat: Double, lon: Double) {
@@ -229,6 +226,7 @@ class MarkerViewModel @Inject constructor(
             override fun onResponse(
                 call: Call<NominatimResponse>, response: retrofit2.Response<NominatimResponse>
             ) {
+                Log.d("API", "Response bodyは次のようだよーんンンンンn！！！！！: ${response.body()}")
                 _selectedAddress.value = if (response.isSuccessful) {
                     response.body()?.displayName ?: "住所が見つかりません"
                 } else {
@@ -237,6 +235,11 @@ class MarkerViewModel @Inject constructor(
             }
 
             override fun onFailure(call: Call<NominatimResponse>, t: Throwable) {
+                Log.e(
+                    "API",
+                    "onFailureの原因はおそらくこれじゃあああああああ: ${t.localizedMessage}",
+                    t
+                )
                 _selectedAddress.value = "ネットワークエラー: ${t.message}"
             }
         })

@@ -29,7 +29,9 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,6 +51,9 @@ import com.example.maps20250414.model.LatLngSerializable
 import com.example.maps20250414.model.NamedMarker
 import com.example.maps20250414.strage.saveMarkers
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import androidx.core.net.toUri
 
 @Composable
 fun EditPanel(
@@ -59,13 +64,14 @@ fun EditPanel(
     permanentMarkers: List<NamedMarker>,
     focusManager: FocusManager,
     context: Context,
+    selectedAddress: StateFlow<String>
 //    onMediaPicked: (NamedMarker, Uri, String?) -> Unit,
 //    onMediaDelete: (NamedMarker) -> Unit
 
     //mapViewModel: MapViewModel = hiltViewModel(),
     //viewModel: PermanentMarkerViewModel = hiltViewModel(),
 ) {
-
+    val address by selectedAddress.collectAsState()
     val mediaPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
@@ -77,7 +83,9 @@ fun EditPanel(
             val mimeType = context.contentResolver.getType(it)
 
             uiState.selectedMarker?.let { marker ->
-                val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                //val index = permanentMarkers.indexOfFirst { it.id == marker.id }
+                val index =
+                    permanentMarkers.indexOfFirst { markerItem -> markerItem.id == marker.id }
                 if (index != -1) {
 //                    onMediaPicked(marker, uri, mimeType)
                     val updatedMarker = when {
@@ -122,7 +130,7 @@ fun EditPanel(
             uiState.selectedMarker?.let { marker ->
                 var editedName by remember(marker) { mutableStateOf(marker.title) }
                 var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
-                var selectedColorHue by remember(marker) { mutableStateOf(marker.colorHue) }
+                var selectedColorHue by remember(marker) { mutableFloatStateOf(marker.colorHue) }
 
                 Text("マーカーを編集")
 
@@ -133,7 +141,7 @@ fun EditPanel(
                 )
 
                 Text(
-                    text = "住所: ${uiState.selectedAddress ?: "住所が取得できませんでした"}"
+                    text = "住所: ${address.ifBlank { "住所が取得できませんでした" }}"
                 )
 
                 Row(
@@ -159,7 +167,7 @@ fun EditPanel(
 
                             focusManager.clearFocus() // ← 変換中なら確定
 
-                            uiState.selectedMarker?.let { marker ->
+                            uiState.selectedMarker.let { marker ->
                                 val index =
                                     permanentMarkers.indexOfFirst { it.id == marker.id }
                                 if (index != -1) {
@@ -208,7 +216,7 @@ fun EditPanel(
                                     selectedColorHue = hue
 
                                     // マーカーの色を即時変更
-                                    uiState.selectedMarker?.let { marker ->
+                                    uiState.selectedMarker.let { marker ->
                                         val index =
                                             permanentMarkers.indexOfFirst { it.id == marker.id }
                                         if (index != -1) {
@@ -253,11 +261,11 @@ fun EditPanel(
                 }
 
 
-                uiState.selectedMarker?.videoUri?.let { videoUri ->
+                uiState.selectedMarker.videoUri?.let { videoUri ->
                     AndroidView(
                         factory = {
                             VideoView(it).apply {
-                                setVideoURI(Uri.parse(videoUri))
+                                setVideoURI(videoUri.toUri())
                                 setOnPreparedListener { mediaPlayer ->
                                     mediaPlayer.isLooping = true
                                     start()
@@ -269,10 +277,10 @@ fun EditPanel(
                     )
                 }
 
-                if (uiState.selectedMarker?.imageUri != null || uiState.selectedMarker?.videoUri != null) {
+                if (uiState.selectedMarker.imageUri != null || uiState.selectedMarker.videoUri != null) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
-                        uiState.selectedMarker?.let { marker ->
+                        uiState.selectedMarker.let { marker ->
                             val index =
                                 permanentMarkers.indexOfFirst { it.id == marker.id }
                             if (index != -1) {
@@ -309,7 +317,7 @@ fun EditPanel(
                     onValueChange = { newText ->
                         memoText = newText
 
-                        uiState.selectedMarker?.let { marker ->
+                        uiState.selectedMarker.let { marker ->
                             val index =
                                 permanentMarkers.indexOfFirst { it.id == marker.id }
                             if (index != -1) {
@@ -381,8 +389,10 @@ fun EditPanelPreview() {
 
     val dummyUiState = MapsUiState(
         selectedMarker = dummyMarker,
-        selectedAddress = "東京都渋谷区",
     )
+    val dummyAddress: StateFlow<String> = MutableStateFlow("東京都千代田区永田町")
+
+
 
     EditPanel(
         uiState = dummyUiState,
@@ -392,5 +402,6 @@ fun EditPanelPreview() {
         permanentMarkers = listOf(dummyMarker),
         focusManager = LocalFocusManager.current,
         context = LocalContext.current,
+        selectedAddress = dummyAddress
     )
 }

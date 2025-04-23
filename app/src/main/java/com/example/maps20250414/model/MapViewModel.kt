@@ -8,8 +8,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-class MapViewModel() : ViewModel() {
+class MapViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MapsUiState())
+
     val uiState: StateFlow<MapsUiState> = _uiState
 
     fun changeIsFollowing() {
@@ -30,9 +31,9 @@ class MapViewModel() : ViewModel() {
     }
 
     fun changeTitleQuery(
-        Answer: String
+        answer: String
     ) {
-        _uiState.update { it.copy(titleQuery = Answer) }
+        _uiState.update { it.copy(titleQuery = answer) }
     }
 
 //    fun changeOnMemoQuery(
@@ -51,9 +52,9 @@ class MapViewModel() : ViewModel() {
 //    }
 
     fun changeMemoQuery(
-        Answer: String
+        answer: String
     ) {
-        _uiState.update { it.copy(memoQuery = Answer) }
+        _uiState.update { it.copy(memoQuery = answer) }
     }
 
 
@@ -64,20 +65,20 @@ class MapViewModel() : ViewModel() {
     }
 
     fun changeTempMarkerName(
-        Answer: String?
+        answer: String?
     ) {
-        _uiState.update { it.copy(tempMarkerName = Answer) }
+        _uiState.update { it.copy(tempMarkerName = answer) }
     }
 
 
     fun changeTempMarkerPosition(
-        Answer: LatLng?
+        answer: LatLng?
     ) {
-        _uiState.update { it.copy(tempMarkerPosition = Answer) }
+        _uiState.update { it.copy(tempMarkerPosition = answer) }
     }
 
 
-    fun UpdateSearchList(
+    fun updateSearchList(
         titleQuery: String?,
         memoQuery: String?,
         permanentMarkers: List<NamedMarker>,
@@ -134,11 +135,11 @@ class MapViewModel() : ViewModel() {
         }
     }
 
-    fun addVisibleMarkers(newMarker: NamedMarker) {
-        _uiState.update {
-            it.copy(visibleMarkers = it.visibleMarkers + newMarker)
-        }
-    }
+//    fun addVisibleMarkers(newMarker: NamedMarker) {
+//        _uiState.update {
+//            it.copy(visibleMarkers = it.visibleMarkers + newMarker)
+//        }
+//    }
 
 
     fun addAllVisibleMarkers(marker: List<NamedMarker>) {

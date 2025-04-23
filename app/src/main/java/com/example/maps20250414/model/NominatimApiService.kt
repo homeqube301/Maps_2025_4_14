@@ -9,7 +9,7 @@ import retrofit2.Call
 @JsonClass(generateAdapter = true)
 data class NominatimResponse(
     @Json(name = "displayName")
-    val displayName: String
+    val displayName: String = "こここだよ"
 )
 
 interface NominatimApiService {

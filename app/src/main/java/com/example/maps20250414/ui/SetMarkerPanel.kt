@@ -1,6 +1,5 @@
 package com.example.maps20250414.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -42,7 +41,7 @@ import java.time.format.DateTimeFormatter
 fun SetMarkerPanel(
     mapViewModel: MapViewModel = hiltViewModel(),
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
-    tempMarkerName: String?,
+    //tempMarkerName: String?,
     cameraPositionState: CameraPositionState,
     focusManager: FocusManager,
     onClose: () -> Unit
@@ -75,7 +74,7 @@ fun SetMarkerPanel(
             Spacer(modifier = Modifier.height(16.dp))
 
             // 色選択の状態
-            var selectedHue by remember { mutableStateOf(BitmapDescriptorFactory.HUE_RED) }
+            var selectedHue by remember { mutableFloatStateOf(BitmapDescriptorFactory.HUE_RED) }
 
             Text("マーカーの色を選んでください")
             Row(

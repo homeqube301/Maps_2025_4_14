@@ -44,11 +44,9 @@ fun MapScreen(
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
     mapViewModel: MapViewModel = hiltViewModel(),
-
-    ) {
+) {
 
     val uiState by mapViewModel.uiState.collectAsState()
-
 
     val context = LocalContext.current
     //val fusedLocationClient = remember {
@@ -65,7 +63,6 @@ fun MapScreen(
     LaunchedEffect(Unit) {
         locationViewModel.startLocationUpdates(
             context = context,
-            isFollowing = uiState.isFollowing,
             cameraPositionState = cameraPositionState,
             onLocationUpdate = { userLocation = it })
     }
@@ -115,7 +112,7 @@ fun MapScreen(
 
 
         LaunchedEffect(uiState.titleQuery, uiState.memoQuery) {
-            mapViewModel.UpdateSearchList(
+            mapViewModel.updateSearchList(
                 uiState.titleQuery,
                 uiState.memoQuery,
                 permanentMarkers,
@@ -269,7 +266,7 @@ fun MapScreen(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             SetMarkerPanel(
-                tempMarkerName = null,
+                //tempMarkerName = null,
                 cameraPositionState = cameraPositionState,
                 focusManager = focusManager,
                 onClose = {
@@ -286,6 +283,7 @@ fun MapScreen(
         ) {
             EditPanel(
                 uiState = uiState,
+                selectedAddress = markerViewModel.selectedAddress,
                 permanentMarkers = permanentMarkers,
                 focusManager = focusManager,
                 context = context,

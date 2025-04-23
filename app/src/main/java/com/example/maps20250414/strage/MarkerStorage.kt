@@ -1,6 +1,7 @@
 package com.example.maps20250414.strage
 
 import android.util.Log
+import androidx.core.content.edit
 import com.example.maps20250414.model.NamedMarker
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -9,7 +10,9 @@ import kotlinx.serialization.json.Json
 fun saveMarkers(context: android.content.Context, markers: List<NamedMarker>) {
     val prefs = context.getSharedPreferences("markers", android.content.Context.MODE_PRIVATE)
     val json = Json.encodeToString(markers)
-    prefs.edit().putString("marker_list", json).apply()
+    prefs.edit {
+        putString("marker_list", json)
+    }
 }
 
 fun loadMarkers(context: android.content.Context): List<NamedMarker> {

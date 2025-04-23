@@ -3,8 +3,6 @@ package com.example.maps20250414.model
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 @Serializable
@@ -18,15 +16,15 @@ data class NamedMarker(
     val memo: String? = null,
     val colorHue: Float = BitmapDescriptorFactory.HUE_RED,
 ) {
-    fun ensureCreatedAt(): NamedMarker {
-        return if (createdAt.isBlank()) {
-            this.copy(
-                createdAt = LocalDateTime.now().format(
-                    DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-                )
-            )
-        } else this
-    }
+//    fun ensureCreatedAt(): NamedMarker {
+//        return if (createdAt.isBlank()) {
+//            this.copy(
+//                createdAt = LocalDateTime.now().format(
+//                    DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+//                )
+//            )
+//        } else this
+//    }
 }
 
 
