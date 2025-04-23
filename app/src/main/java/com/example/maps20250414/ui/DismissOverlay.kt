@@ -11,14 +11,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.maps20250414.data.MapsUiState
+import com.example.maps20250414.model.LatLngSerializable
 import com.example.maps20250414.model.MapViewModel
+import com.example.maps20250414.model.NamedMarker
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
 @Composable
 fun DismissOverlay(
-    mapViewModel: MapViewModel = hiltViewModel()
+    onClosePanel: () -> Unit
 ) {
-    val uiState by mapViewModel.uiState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -28,19 +34,17 @@ fun DismissOverlay(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
             ) {
-//                isEditPanelOpen = false
-//                isPanelOpen = false
-//                isSearchOpen = false
-//                selectedMarker = null
-                if (uiState.isPanelOpen) {
-                    mapViewModel.changeIsPanelOpen()
-                } else if (uiState.isSearchOpen) {
-                    mapViewModel.changeIsSearchOpen()
-                } else if (uiState.isEditPanelOpen) {
-                    mapViewModel.changeIsEditPanelOpen()
-                }
-
-                mapViewModel.changeSelectedMarker(null)
+                onClosePanel()
             }
     )
 }
+
+@Preview(showBackground = true)
+@Composable
+fun DismissOverlayPreview() {
+    DismissOverlay(
+        onClosePanel = {}
+    )
+}
+
+

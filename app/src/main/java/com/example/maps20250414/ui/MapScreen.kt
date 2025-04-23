@@ -186,7 +186,19 @@ fun MapScreen(
         }
 
         if (uiState.isEditPanelOpen || uiState.isPanelOpen || uiState.isSearchOpen) {
-            DismissOverlay()
+            DismissOverlay(
+                onClosePanel = {
+                    if (uiState.isPanelOpen) {
+                        mapViewModel.changeIsPanelOpen()
+                    } else if (uiState.isSearchOpen) {
+                        mapViewModel.changeIsSearchOpen()
+                    } else if (uiState.isEditPanelOpen) {
+                        mapViewModel.changeIsEditPanelOpen()
+                    }
+
+                    mapViewModel.changeSelectedMarker(null)
+                }
+            )
         }
 
         // 検索ボタンとパネル
