@@ -15,35 +15,23 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.os.persistableBundleOf
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.maps20250414.data.MapsUiState
 import com.example.maps20250414.model.LatLngSerializable
-import com.example.maps20250414.model.MapViewModel
 import com.example.maps20250414.model.NamedMarker
-import com.example.maps20250414.model.PermanentMarkerViewModel
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 
 @Composable
 fun SearchMaker(
-//    titleQuery: String,
-//    memoQuery: String,
-//    titleResults: List<NamedMarker>,
-//    memoResults: List<NamedMarker>,
     onMarkerTapped: (NamedMarker) -> Unit,
     onMemoTapped: (NamedMarker) -> Unit,
     onTitleQueryChanged: (String) -> Unit,
     onMemoQueryChanged: (String) -> Unit,
-    mapViewModel: MapViewModel = hiltViewModel(),
     cameraPositionState: CameraPositionState,
     uiState: MapsUiState,
 
