@@ -1,5 +1,7 @@
 package com.example.maps20250414.model
 
+//import com.example.maps20250414.strage.MarkerStrage
+
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -8,9 +10,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.maps20250414.data.MapsUiState
 import com.example.maps20250414.strage.loadMarkers
 import com.example.maps20250414.strage.saveMarkers
-//import com.example.maps20250414.strage.MarkerStrage
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -28,18 +30,16 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Call
-
 import javax.inject.Inject
 import javax.inject.Singleton
-
 
 @HiltViewModel
 class LocationViewModel @Inject constructor(
     private val fusedLocationClient: FusedLocationProviderClient,
 ) : ViewModel() {
-
 
     private var locationCallback: LocationCallback? = null
 
@@ -49,7 +49,6 @@ class LocationViewModel @Inject constructor(
     fun toggleFollowing() {
         _isFollowing.value = !_isFollowing.value
     }
-
 
     fun startLocationUpdates(
         context: Context,
@@ -68,7 +67,6 @@ class LocationViewModel @Inject constructor(
         }
 
         stopLocationUpdates()
-
 
         val locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY, 3000L // 3秒間隔
@@ -109,16 +107,13 @@ class LocationViewModel @Inject constructor(
         stopLocationUpdates()
     }
 
-
 }
-
 
 @HiltViewModel
 class PermanentMarkerViewModel @Inject constructor(
     private val markerRepository: MarkerRepository // 依存関係としてリポジトリを注入
 
 ) : ViewModel() {
-
 
     // 永続マーカーのリスト
     private val _permanentMarkers = mutableStateListOf<NamedMarker>()
@@ -129,7 +124,6 @@ class PermanentMarkerViewModel @Inject constructor(
         loadMarkers()
     }
 
-
     // 永続マーカーをロード
     fun loadMarkers() {
         viewModelScope.launch {
@@ -138,7 +132,6 @@ class PermanentMarkerViewModel @Inject constructor(
             _permanentMarkers.addAll(loaded)
         }
     }
-
 
     // 永続マーカーを保存
     private fun saveMarkers() {
@@ -173,7 +166,6 @@ interface MarkerRepository {
     suspend fun saveMarkers(markers: List<NamedMarker>)
 }
 
-
 class MarkerRepositoryImpl @Inject constructor(
     private val context: Context,
 
@@ -201,7 +193,6 @@ object AppModule {
         return LocationServices.getFusedLocationProviderClient(context)
     }
 
-
     @Provides
     @Singleton
     fun provideMarkerRepository(@ApplicationContext context: Context): MarkerRepository {
@@ -209,17 +200,25 @@ object AppModule {
     }
 }
 
-
 @HiltViewModel
 class MarkerViewModel @Inject constructor(
     private val apiService: NominatimApiService
 ) : ViewModel() {
 
     private val _selectedAddress = MutableStateFlow("読み込み中…")
+
     val selectedAddress: StateFlow<String> = _selectedAddress
+    private val _uiState = MutableStateFlow(MapsUiState())
+    //val uiState: StateFlow<MapsUiState> = _uiState
+
+    private fun changeSelectedAdress(adress: String) {
+        _uiState.update { it.copy(selectedAddress = adress) }
+    }
 
     fun fetchAddressForLatLng(lat: Double, lon: Double) {
         _selectedAddress.value = "読み込み中…"
+        changeSelectedAdress(_selectedAddress.toString())
+
         Log.d("MarkerViewModel", "住所取得リクエストだよーん！！: lat=$lat, lon=$lon")
 
         apiService.reverseGeocode(lat, lon).enqueue(object : retrofit2.Callback<NominatimResponse> {

@@ -47,7 +47,6 @@ object NetworkModule {
         .add(KotlinJsonAdapterFactory())
         .build()
 
-
     @Provides
     @Singleton
     fun provideNominatimApiService(

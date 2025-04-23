@@ -2,14 +2,14 @@ package com.example.maps20250414.model
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
-import retrofit2.Call
 
 @JsonClass(generateAdapter = true)
 data class NominatimResponse(
     @Json(name = "displayName")
-    val displayName: String = "こここだよ"
+    val displayName: String
 )
 
 interface NominatimApiService {

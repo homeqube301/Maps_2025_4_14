@@ -12,9 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,14 +26,12 @@ import com.example.maps20250414.model.MarkerViewModel
 import com.example.maps20250414.model.PermanentMarkerViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-
 
 //@SuppressLint("MissingPermission")
 @Composable
@@ -47,38 +42,20 @@ fun MapScreen(
 ) {
 
     val uiState by mapViewModel.uiState.collectAsState()
-
     val context = LocalContext.current
-    //val fusedLocationClient = remember {
-    //    LocationServices.getFusedLocationProviderClient(context)
-    //}
-
-    //val isFollowing by locationViewModel.isFollowing.collectAsState()
-
-
-    var userLocation by remember { mutableStateOf<LatLng?>(null) }
     val cameraPositionState = rememberCameraPositionState()
-    //var isFollowing by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         locationViewModel.startLocationUpdates(
             context = context,
             cameraPositionState = cameraPositionState,
-            onLocationUpdate = { userLocation = it })
+            onLocationUpdate = { mapViewModel.changeUserLocation(it) })
     }
 
-    // タップされた位置の一時マーカー
-    //var tempMarkerPosition by remember { mutableStateOf<LatLng?>(null) }
-
-    // 永続マーカーのリスト
-    //val permanentMarkers = remember { mutableStateListOf<NamedMarker>() }
     val permanentMarkers = viewModel.permanentMarkers
     val markerViewModel: MarkerViewModel = hiltViewModel()
 
     LaunchedEffect(Unit) {
-        //val loaded = loadMarkers(context)
-        //permanentMarkers.addAll(loaded)
-
         viewModel.loadMarkers()
     }
 
@@ -86,30 +63,20 @@ fun MapScreen(
 
     val focusManager = LocalFocusManager.current
 
-
-
-
-    LaunchedEffect(cameraPositionState.isMoving) {
-        // マップ移動終了後に更新
-        snapshotFlow { cameraPositionState.isMoving }.collect { isMoving ->
-            if (!isMoving) {
-                // カメラが止まったときに現在の可視領域を取得
-                val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
-                if (bounds != null) {
-                    val filtered =
-                        permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
-                    //visibleMarkers.clear()
-                    //visibleMarkers.addAll(filtered)
-                    //uiState.copy(visibleMarkers = filtered)
-                    mapViewModel.addAllVisibleMarkers(filtered)
+    LaunchedEffect(Unit) {
+        snapshotFlow { cameraPositionState.isMoving }
+            .collect { isMoving ->
+                if (!isMoving) {
+                    val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
+                    bounds?.let {
+                        val filtered = permanentMarkers.filter { it.position.toLatLng() in bounds }
+                        mapViewModel.addAllVisibleMarkers(filtered)
+                    }
                 }
             }
-        }
     }
 
-
     Box(modifier = Modifier.fillMaxSize()) {
-
 
         LaunchedEffect(uiState.titleQuery, uiState.memoQuery) {
             mapViewModel.updateSearchList(
@@ -120,7 +87,6 @@ fun MapScreen(
         }
 
         //val context2 = LocalContext.current
-
 
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
@@ -147,7 +113,8 @@ fun MapScreen(
                         //selectedMarker = marker
                         mapViewModel.changeSelectedMarker(marker)
                         markerViewModel.fetchAddressForLatLng(
-                            marker.position.latitude, marker.position.longitude
+                            marker.position.latitude,
+                            marker.position.longitude,
                         )
                         //isEditPanelOpen = true
                         mapViewModel.changeIsEditPanelOpen()
@@ -185,17 +152,14 @@ fun MapScreen(
         if (uiState.isEditPanelOpen || uiState.isPanelOpen || uiState.isSearchOpen) {
             DismissOverlay(
                 onClosePanel = {
-                    if (uiState.isPanelOpen) {
-                        mapViewModel.changeIsPanelOpen()
-                    } else if (uiState.isSearchOpen) {
-                        mapViewModel.changeIsSearchOpen()
-                    } else if (uiState.isEditPanelOpen) {
-                        mapViewModel.changeIsEditPanelOpen()
+                    when {
+                        uiState.isPanelOpen -> mapViewModel.changeIsPanelOpen()
+                        uiState.isSearchOpen -> mapViewModel.changeIsSearchOpen()
+                        else -> mapViewModel.changeIsEditPanelOpen()
                     }
 
                     mapViewModel.changeSelectedMarker(null)
-                }
-            )
+                })
         }
 
         // 検索ボタンとパネル
@@ -236,8 +200,7 @@ fun MapScreen(
                     mapViewModel.changeIsEditPanelOpen()
                     cameraPositionState.move(
                         CameraUpdateFactory.newLatLngZoom(
-                            marker.position.toLatLng(),
-                            17f
+                            marker.position.toLatLng(), 17f
                         )
                     )
                     mapViewModel.changeIsSearchOpen()
@@ -249,8 +212,7 @@ fun MapScreen(
                     mapViewModel.changeIsEditPanelOpen()
                     cameraPositionState.move(
                         CameraUpdateFactory.newLatLngZoom(
-                            marker.position.toLatLng(),
-                            17f
+                            marker.position.toLatLng(), 17f
                         )
                     )
                     mapViewModel.changeIsSearchOpen()
@@ -262,19 +224,14 @@ fun MapScreen(
 
         // 右側から出るパネル
         AnimatedVisibility(
-            visible = uiState.isPanelOpen,
-            modifier = Modifier.align(Alignment.CenterEnd)
+            visible = uiState.isPanelOpen, modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             SetMarkerPanel(
                 //tempMarkerName = null,
-                cameraPositionState = cameraPositionState,
-                focusManager = focusManager,
-                onClose = {
+                cameraPositionState = cameraPositionState, focusManager = focusManager, onClose = {
                     mapViewModel.changePanelOpen(false)
-                }
-            )
+                })
         }
-
 
         // 右側から出るパネル(編集用)
         AnimatedVisibility(
@@ -321,7 +278,6 @@ fun MapScreen(
             )
 
         }
-
 
     }
 }

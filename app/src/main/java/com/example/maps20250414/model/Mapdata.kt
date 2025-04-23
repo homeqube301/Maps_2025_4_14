@@ -27,7 +27,6 @@ data class NamedMarker(
 //    }
 }
 
-
 @Serializable
 data class LatLngSerializable(val latitude: Double, val longitude: Double) {
     fun toLatLng() = LatLng(latitude, longitude)

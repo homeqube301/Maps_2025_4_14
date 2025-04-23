@@ -23,7 +23,6 @@ import com.example.maps20250414.data.MapsUiState
 import com.example.maps20250414.model.LatLngSerializable
 import com.example.maps20250414.model.NamedMarker
 
-
 @Composable
 fun SearchMaker(
     onMarkerTapped: (NamedMarker) -> Unit,
@@ -95,7 +94,6 @@ fun SearchMaker(
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

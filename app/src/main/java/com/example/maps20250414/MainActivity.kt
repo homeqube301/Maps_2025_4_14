@@ -1,20 +1,19 @@
 package com.example.maps20250414
 
+import android.Manifest
+import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.maps20250414.ui.MapScreen
 import com.example.maps20250414.ui.theme.Maps20250414Theme
-import android.Manifest
-import android.app.Application
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 

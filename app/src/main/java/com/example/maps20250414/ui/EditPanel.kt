@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.example.maps20250414.data.MapsUiState
 import com.example.maps20250414.model.LatLngSerializable
@@ -53,7 +54,6 @@ import com.example.maps20250414.strage.saveMarkers
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import androidx.core.net.toUri
 
 @Composable
 fun EditPanel(

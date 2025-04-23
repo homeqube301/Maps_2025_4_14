@@ -6,7 +6,6 @@ import com.example.maps20250414.model.NamedMarker
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-
 fun saveMarkers(context: android.content.Context, markers: List<NamedMarker>) {
     val prefs = context.getSharedPreferences("markers", android.content.Context.MODE_PRIVATE)
     val json = Json.encodeToString(markers)

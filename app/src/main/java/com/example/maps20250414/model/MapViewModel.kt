@@ -4,19 +4,21 @@ import androidx.lifecycle.ViewModel
 import com.example.maps20250414.data.MapsUiState
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class MapViewModel : ViewModel() {
+@HiltViewModel
+class MapViewModel @Inject constructor() : ViewModel() {
+
     private val _uiState = MutableStateFlow(MapsUiState())
-
     val uiState: StateFlow<MapsUiState> = _uiState
 
     fun changeIsFollowing() {
         _uiState.update { it.copy(isFollowing = !it.isFollowing) }
     }
-
 
     fun changeIsEditPanelOpen() {
         _uiState.update { it.copy(isEditPanelOpen = !it.isEditPanelOpen) }
@@ -36,27 +38,11 @@ class MapViewModel : ViewModel() {
         _uiState.update { it.copy(titleQuery = answer) }
     }
 
-//    fun changeOnMemoQuery(
-//        query: String,
-//        permanentMarkers: List<NamedMarker>
-//    ) {
-//        val filtered = permanentMarkers.filter {
-//            it.memo?.contains(query, ignoreCase = true) == true
-//        }
-//        _uiState.update {
-//            it.copy(
-//                memoQuery = query,
-//                memoResults = filtered
-//            )
-//        }
-//    }
-
     fun changeMemoQuery(
         answer: String
     ) {
         _uiState.update { it.copy(memoQuery = answer) }
     }
-
 
     fun changeSelectedMarker(
         updateMarker: NamedMarker?
@@ -70,13 +56,11 @@ class MapViewModel : ViewModel() {
         _uiState.update { it.copy(tempMarkerName = answer) }
     }
 
-
     fun changeTempMarkerPosition(
         answer: LatLng?
     ) {
         _uiState.update { it.copy(tempMarkerPosition = answer) }
     }
-
 
     fun updateSearchList(
         titleQuery: String?,
@@ -88,7 +72,6 @@ class MapViewModel : ViewModel() {
 
         _uiState.update { it.copy(titleResults = emptyList()) }
         _uiState.update { it.copy(memoResults = emptyList()) }
-
 
         val titleFiltered = if (!lowerTitle.isNullOrBlank()) {
             permanentMarkers.filter {
@@ -124,7 +107,6 @@ class MapViewModel : ViewModel() {
         }
     }
 
-
     fun removeVisibleMarkers(
         marker: NamedMarker
     ) {
@@ -141,15 +123,20 @@ class MapViewModel : ViewModel() {
 //        }
 //    }
 
-
     fun addAllVisibleMarkers(marker: List<NamedMarker>) {
         _uiState.update {
             it.copy(visibleMarkers = it.visibleMarkers + marker)
         }
     }
 
+    fun changeUserLocation(location: LatLng) {
+        _uiState.update {
+            it.copy(userLocation = location)
+        }
+    }
 
     fun changePanelOpen(isOpen: Boolean) {
         _uiState.update { it.copy(isPanelOpen = isOpen) }
     }
+
 }
