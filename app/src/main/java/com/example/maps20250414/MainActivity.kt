@@ -56,10 +56,11 @@ class MainActivity : ComponentActivity() {
     }
 
     // 🔄 権限の結果が返ってきたときに画面を再構成する必要あり
-    @Deprecated("Deprecated in Java", ReplaceWith(
-        "super.onRequestPermissionsResult(requestCode, permissions, grantResults)",
-        "androidx.activity.ComponentActivity"
-    )
+    @Deprecated(
+        "Deprecated in Java", ReplaceWith(
+            "super.onRequestPermissionsResult(requestCode, permissions, grantResults)",
+            "androidx.activity.ComponentActivity"
+        )
     )
     override fun onRequestPermissionsResult(
         requestCode: Int,
