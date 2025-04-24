@@ -60,7 +60,6 @@ fun MapScreen(
     }
 
     // サイドパネルの表示フラグ
-
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
@@ -86,7 +85,6 @@ fun MapScreen(
             )
         }
 
-        //val context2 = LocalContext.current
 
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
@@ -96,9 +94,7 @@ fun MapScreen(
                 mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
             ),
             onMapClick = { latLng ->
-                //tempMarkerPosition = latLng
                 mapViewModel.changeTempMarkerPosition(latLng)
-                //uiState.isPanelOpen = true
                 mapViewModel.changeIsPanelOpen()
             }) {
 
@@ -183,16 +179,6 @@ fun MapScreen(
         // 検索パネル
         if (uiState.isSearchOpen) {
             SearchMaker(
-//                titleQuery = "",
-//                memoQuery = "",
-//                titleResults = emptyList(),
-//                memoResults = emptyList(),
-//                onMarkerNameChanged = { },
-//                onMemoNameChanged = {},
-//                onMarkerTapped = {},
-//                onMemoTapped = {},
-                //cameraPositionState = cameraPositionState,
-//                uiState = uiState,
                 titleResults = uiState.titleResults,
                 memoResults = uiState.memoResults,
                 titleQuery = uiState.titleQuery,
@@ -285,22 +271,6 @@ fun MapScreen(
                     mapViewModel.changeIsEditPanelOpen()
                     mapViewModel.changeSelectedMarker(null)
                 },
-//                onMediaPicked = { marker, uri, mimeType ->
-//                    val updatedMarker = when {
-//                        mimeType?.startsWith("image/") == true -> marker.copy(imageUri = uri.toString())
-//                        mimeType?.startsWith("video/") == true -> marker.copy(videoUri = uri.toString())
-//                        else -> marker
-//                    }
-//                    viewModel.updateMarker(updatedMarker)
-//                    mapViewModel.changeSelectedMarker(updatedMarker)
-//                    mapViewModel.updateVisibleMarkers(cameraPositionState, permanentMarkers)
-//                },
-//                onMediaDelete = { marker ->
-//                    val updatedMarker = marker.copy(imageUri = null, videoUri = null)
-//                    viewModel.updateMarker(updatedMarker)
-//                    mapViewModel.changeSelectedMarker(updatedMarker)
-//                    mapViewModel.updateVisibleMarkers(cameraPositionState, permanentMarkers)
-//                }
             )
 
         }
