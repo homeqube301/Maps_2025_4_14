@@ -29,6 +29,7 @@ import com.example.maps20250414.ui.stateholder.MarkerViewModel
 import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -39,6 +40,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 //@SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
+    latitude: Double = 0.0,
+    longitude: Double = 0.0,
     navController: NavHostController,
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
@@ -48,6 +51,19 @@ fun MapScreen(
     val uiState by mapViewModel.uiState.collectAsState()
     val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState()
+    val permanentMarkers = viewModel.permanentMarkers
+    val markerViewModel: MarkerViewModel = hiltViewModel()
+    // サイドパネルの表示フラグ
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(latitude, longitude) {
+        if (latitude != 0.0 && longitude != 0.0) {
+            cameraPositionState.animate(
+                update = CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 16f),
+                durationMs = 1000
+            )
+        }
+    }
 
     LaunchedEffect(Unit) {
         locationViewModel.startLocationUpdates(
@@ -56,15 +72,13 @@ fun MapScreen(
             onLocationUpdate = { mapViewModel.changeUserLocation(it) })
     }
 
-    val permanentMarkers = viewModel.permanentMarkers
-    val markerViewModel: MarkerViewModel = hiltViewModel()
+
+
 
     LaunchedEffect(Unit) {
         viewModel.loadMarkers()
     }
 
-    // サイドパネルの表示フラグ
-    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(Unit) {
         snapshotFlow { cameraPositionState.isMoving }
@@ -78,6 +92,7 @@ fun MapScreen(
                 }
             }
     }
+
 
     Box(modifier = Modifier.fillMaxSize()) {
 
