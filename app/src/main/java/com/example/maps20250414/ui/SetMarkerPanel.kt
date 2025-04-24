@@ -17,7 +17,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -25,28 +24,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.maps20250414.model.LatLngSerializable
-import com.example.maps20250414.model.MapViewModel
 import com.example.maps20250414.model.NamedMarker
-import com.example.maps20250414.model.PermanentMarkerViewModel
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.rememberCameraPositionState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun SetMarkerPanel(
-    mapViewModel: MapViewModel = hiltViewModel(),
-    viewModel: PermanentMarkerViewModel = hiltViewModel(),
+    //mapViewModel: MapViewModel = hiltViewModel(),
+    //viewModel: PermanentMarkerViewModel = hiltViewModel(),
     //tempMarkerName: String?,
     cameraPositionState: CameraPositionState,
     focusManager: FocusManager,
-    onClose: () -> Unit
+    tempMarkerName: String?,
+    tempMarkerPosition: LatLng?,
+    onClose: () -> Unit,
+    resetTempMarkers: () -> Unit,
+    changeTempMarkerName: (String) -> Unit,
+    addVisibleMarker: (NamedMarker) -> Unit,
+    addMarker: (NamedMarker) -> Unit,
 ) {
-    val uiState by mapViewModel.uiState.collectAsState()
+    //val uiState by mapViewModel.uiState.collectAsState()
     Surface(
         tonalElevation = 4.dp, modifier = Modifier
             .width(300.dp)
@@ -59,10 +66,12 @@ fun SetMarkerPanel(
         ) {
             Text("マーカー名を入力してください")
             OutlinedTextField(
-                value = uiState.tempMarkerName ?: "",
+                value = tempMarkerName ?: "",
+                //uiState.tempMarkerName ?: "",
                 onValueChange = {
                     //tempMarkerName = it
-                    mapViewModel.changeTempMarkerName(it)
+                    //mapViewModel.changeTempMarkerName(it)
+                    changeTempMarkerName(it)
                 },
                 label = { Text("マーカー名") },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -104,35 +113,38 @@ fun SetMarkerPanel(
 
                 focusManager.clearFocus() // ← 変換中なら確定
 
-                uiState.tempMarkerPosition?.let { pos ->
+                //uiState.tempMarkerPosition
+                tempMarkerPosition?.let { pos ->
                     val newMarker = NamedMarker(
                         position = LatLngSerializable.from(pos),
-                        title = uiState.tempMarkerName ?: "",
+                        title = tempMarkerName ?: "",
+                        //uiState.tempMarkerName ?: "",
                         createdAt = LocalDateTime.now().format(
                             DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
                         ),
                         colorHue = selectedHue
 
                     )
-                    viewModel.addMarker(newMarker)
+                    addMarker(newMarker)
+                    //viewModel.addMarker(newMarker)
                     //saveMarkers(context, permanentMarkers)
 
-                    //Log.e("loadMarkers", "ここまではきてるよ！！")
-
-                    //表示範囲に入っていれば visibleMarkers にも追加！
+                    // 表示範囲に入っていれば visibleMarkers にも追加！
                     val bounds =
                         cameraPositionState.projection?.visibleRegion?.latLngBounds
                     if (bounds != null && bounds.contains(pos)) {
                         //visibleMarkers.add(newMarker)
-                        mapViewModel.addAllVisibleMarkers(listOf(newMarker))
+                        //mapViewModel.addAllVisibleMarkers(listOf(newMarker))
+                        addVisibleMarker(newMarker)
                     }
                 }
-                //tempMarkerPosition = null
-                mapViewModel.changeTempMarkerPosition(null)
-                //tempMarkerName = ""
-                mapViewModel.changeTempMarkerName(null)
-                //isPanelOpen = false
-                mapViewModel.changeIsPanelOpen()
+//                //tempMarkerPosition = null
+//                mapViewModel.changeTempMarkerPosition(null)
+//                //tempMarkerName = ""
+//                mapViewModel.changeTempMarkerName(null)
+//                //isPanelOpen = false
+//                mapViewModel.changeIsPanelOpen()
+                resetTempMarkers()
             }) {
                 Text("マーカーを設置する")
             }
@@ -141,13 +153,36 @@ fun SetMarkerPanel(
 //                tempMarkerPosition = null
 //                tempMarkerName = ""
 //                isPanelOpen = false
-                mapViewModel.changeTempMarkerPosition(null)
-                mapViewModel.changeTempMarkerName(null)
-                mapViewModel.changeIsPanelOpen()
+//                mapViewModel.changeTempMarkerPosition(null)
+//                mapViewModel.changeTempMarkerName(null)
+//                mapViewModel.changeIsPanelOpen()
+                resetTempMarkers()
                 onClose()
             }) {
                 Text("閉じる")
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewSetMarkerPanel() {
+    val dummyCameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(35.681236, 139.767125), 10f)
+    }
+
+    val dummyFocusManager = LocalFocusManager.current
+
+    SetMarkerPanel(
+        cameraPositionState = dummyCameraPositionState,
+        focusManager = dummyFocusManager,
+        tempMarkerName = "サンプルマーカー",
+        tempMarkerPosition = LatLng(35.681236, 139.767125),
+        onClose = {},
+        resetTempMarkers = {},
+        changeTempMarkerName = {},
+        addVisibleMarker = {},
+        addMarker = {}
+    )
 }

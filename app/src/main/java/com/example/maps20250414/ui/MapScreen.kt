@@ -228,9 +228,30 @@ fun MapScreen(
         ) {
             SetMarkerPanel(
                 //tempMarkerName = null,
-                cameraPositionState = cameraPositionState, focusManager = focusManager, onClose = {
+                cameraPositionState = cameraPositionState,
+                focusManager = focusManager,
+                tempMarkerPosition = uiState.tempMarkerPosition,
+                tempMarkerName = uiState.tempMarkerName,
+                onClose = {
                     mapViewModel.changePanelOpen(false)
-                })
+                },
+                resetTempMarkers = {
+                    mapViewModel.changeTempMarkerPosition(null)
+                    mapViewModel.changeTempMarkerName(null)
+                    mapViewModel.changeIsPanelOpen()
+                },
+                changeTempMarkerName = { name ->
+                    mapViewModel.changeTempMarkerName(name)
+                },
+                addVisibleMarker = { marker ->
+                    mapViewModel.addAllVisibleMarkers(listOf(marker))
+                },
+                addMarker = { marker ->
+                    viewModel.addMarker(marker)
+                }
+
+            )
+
         }
 
         // 右側から出るパネル(編集用)
