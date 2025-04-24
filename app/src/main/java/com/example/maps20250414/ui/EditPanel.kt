@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
-import com.example.maps20250414.data.MapsUiState
 import com.example.maps20250414.model.LatLngSerializable
 import com.example.maps20250414.model.NamedMarker
 import com.example.maps20250414.strage.saveMarkers
@@ -57,7 +56,8 @@ import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun EditPanel(
-    uiState: MapsUiState,
+    //uiState: MapsUiState,
+    selectedMarker: NamedMarker?,
     onMarkerUpdate: (NamedMarker) -> Unit,
     onMarkerDelete: (NamedMarker) -> Unit,
     onPanelClose: () -> Unit,
@@ -65,11 +65,6 @@ fun EditPanel(
     focusManager: FocusManager,
     context: Context,
     selectedAddress: StateFlow<String>
-//    onMediaPicked: (NamedMarker, Uri, String?) -> Unit,
-//    onMediaDelete: (NamedMarker) -> Unit
-
-    //mapViewModel: MapViewModel = hiltViewModel(),
-    //viewModel: PermanentMarkerViewModel = hiltViewModel(),
 ) {
     val address by selectedAddress.collectAsState()
     val mediaPickerLauncher = rememberLauncherForActivityResult(
@@ -82,7 +77,8 @@ fun EditPanel(
 
             val mimeType = context.contentResolver.getType(it)
 
-            uiState.selectedMarker?.let { marker ->
+            //uiState.selectedMarker
+            selectedMarker?.let { marker ->
                 //val index = permanentMarkers.indexOfFirst { it.id == marker.id }
                 val index =
                     permanentMarkers.indexOfFirst { markerItem -> markerItem.id == marker.id }
@@ -127,7 +123,8 @@ fun EditPanel(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            uiState.selectedMarker?.let { marker ->
+            //uiState.selectedMarker
+            selectedMarker?.let { marker ->
                 var editedName by remember(marker) { mutableStateOf(marker.title) }
                 var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
                 var selectedColorHue by remember(marker) { mutableFloatStateOf(marker.colorHue) }
@@ -168,7 +165,8 @@ fun EditPanel(
 
                             focusManager.clearFocus() // ← 変換中なら確定
 
-                            uiState.selectedMarker.let { marker ->
+                            //uiState.selectedMarker
+                            selectedMarker.let { marker ->
                                 val index =
                                     permanentMarkers.indexOfFirst { it.id == marker.id }
                                 if (index != -1) {
@@ -217,7 +215,8 @@ fun EditPanel(
                                     selectedColorHue = hue
 
                                     // マーカーの色を即時変更
-                                    uiState.selectedMarker.let { marker ->
+                                    //uiState.selectedMarker
+                                    selectedMarker.let { marker ->
                                         val index =
                                             permanentMarkers.indexOfFirst { it.id == marker.id }
                                         if (index != -1) {
@@ -261,8 +260,8 @@ fun EditPanel(
 
                 }
 
-
-                uiState.selectedMarker.videoUri?.let { videoUri ->
+                //uiState.selectedMarker
+                selectedMarker.videoUri?.let { videoUri ->
                     AndroidView(
                         factory = {
                             VideoView(it).apply {
@@ -278,10 +277,11 @@ fun EditPanel(
                     )
                 }
 
-                if (uiState.selectedMarker.imageUri != null || uiState.selectedMarker.videoUri != null) {
+                if (selectedMarker.imageUri != null || selectedMarker.videoUri != null) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
-                        uiState.selectedMarker.let { marker ->
+                        //uiState.selectedMarker
+                        selectedMarker.let { marker ->
                             val index =
                                 permanentMarkers.indexOfFirst { it.id == marker.id }
                             if (index != -1) {
@@ -318,7 +318,8 @@ fun EditPanel(
                     onValueChange = { newText ->
                         memoText = newText
 
-                        uiState.selectedMarker.let { marker ->
+                        //uiState.selectedMarker
+                        selectedMarker.let { marker ->
                             val index =
                                 permanentMarkers.indexOfFirst { it.id == marker.id }
                             if (index != -1) {
@@ -388,15 +389,11 @@ fun EditPanelPreview() {
         createdAt = "2025-04-21"
     )
 
-    val dummyUiState = MapsUiState(
-        selectedMarker = dummyMarker,
-    )
     val dummyAddress: StateFlow<String> = MutableStateFlow("東京都千代田区永田町")
 
-
-
     EditPanel(
-        uiState = dummyUiState,
+        //uiState = dummyUiState,
+        selectedMarker = dummyMarker,
         onMarkerUpdate = {},
         onMarkerDelete = {},
         onPanelClose = {},

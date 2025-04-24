@@ -19,19 +19,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.maps20250414.data.MapsUiState
 import com.example.maps20250414.model.LatLngSerializable
 import com.example.maps20250414.model.NamedMarker
 
 @Composable
 fun SearchMaker(
+    titleQuery: String?,
+    memoQuery: String?,
+    titleResults: List<NamedMarker>,
+    memoResults: List<NamedMarker>,
     onMarkerTapped: (NamedMarker) -> Unit,
     onMemoTapped: (NamedMarker) -> Unit,
     onTitleQueryChanged: (String) -> Unit,
     onMemoQueryChanged: (String) -> Unit,
-    uiState: MapsUiState,
+    //uiState: MapsUiState,
 
-    ) {
+) {
 
     Surface(
         modifier = Modifier
@@ -44,7 +47,8 @@ fun SearchMaker(
 
             // マーカー名検索
             OutlinedTextField(
-                value = uiState.titleQuery ?: "",
+                value = titleQuery ?: "",
+                //uiState.titleQuery ?: "",
                 onValueChange = {
                     //mapViewModel.changeTitleQuery(it)
                     onTitleQueryChanged(it)
@@ -54,7 +58,10 @@ fun SearchMaker(
             )
 
             LazyColumn {
-                items(uiState.titleResults) { marker ->
+                items(
+                    //uiState.titleResults
+                    titleResults
+                ) { marker ->
                     Text(
                         text = marker.title,
                         modifier = Modifier
@@ -70,7 +77,8 @@ fun SearchMaker(
 
             // メモ検索
             OutlinedTextField(
-                value = uiState.memoQuery ?: "",
+                value = memoQuery ?: "",
+                //uiState.memoQuery ?: "",
                 onValueChange = {
                     //mapViewModel.changeMemoQuery(it)
                     onMemoQueryChanged(it)
@@ -80,7 +88,10 @@ fun SearchMaker(
             )
 
             LazyColumn {
-                items(uiState.memoResults) { marker ->
+                items(
+                    //uiState.memoResults
+                    memoResults
+                ) { marker ->
                     Text(
                         text = marker.title + "（メモ一致）",
                         modifier = Modifier
@@ -114,16 +125,12 @@ fun PreviewSearchMaker() {
             colorHue = 120f
         )
     )
-    val dummyState = MapsUiState(
+    SearchMaker(
+        //uiState = dummyState,
         titleQuery = "東京",
         memoQuery = "観光",
         titleResults = dummyMarkers,
         memoResults = dummyMarkers,
-        isSearchOpen = true
-    )
-
-    SearchMaker(
-        uiState = dummyState,
         onTitleQueryChanged = {},
         onMemoQueryChanged = {},
         onMarkerTapped = {},

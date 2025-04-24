@@ -192,7 +192,11 @@ fun MapScreen(
 //                onMarkerTapped = {},
 //                onMemoTapped = {},
                 //cameraPositionState = cameraPositionState,
-                uiState = uiState,
+//                uiState = uiState,
+                titleResults = uiState.titleResults,
+                memoResults = uiState.memoResults,
+                titleQuery = uiState.titleQuery,
+                memoQuery = uiState.memoQuery,
                 onTitleQueryChanged = { mapViewModel.changeTitleQuery(it) },
                 onMemoQueryChanged = { mapViewModel.changeMemoQuery(it) },
                 onMarkerTapped = { marker ->
@@ -260,7 +264,8 @@ fun MapScreen(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             EditPanel(
-                uiState = uiState,
+                //uiState = uiState,
+                selectedMarker = uiState.selectedMarker,
                 selectedAddress = markerViewModel.selectedAddress,
                 permanentMarkers = permanentMarkers,
                 focusManager = focusManager,
