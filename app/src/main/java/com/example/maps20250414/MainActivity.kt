@@ -64,6 +64,5 @@ class MainActivity : ComponentActivity() {
 }
 
 @HiltAndroidApp
-class MyApplication : Application() {
-}
+class MyApplication : Application()
 

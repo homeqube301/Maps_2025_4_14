@@ -47,9 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
+import com.example.maps20250414.data.local.MarkerLocalDataSource
 import com.example.maps20250414.domain.model.LatLngSerializable
 import com.example.maps20250414.domain.model.NamedMarker
-import com.example.maps20250414.strage.saveMarkers
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -175,7 +175,7 @@ fun EditPanel(
                                     )
                                     //viewModel.updateMarker(updatedMarker)
                                     onMarkerUpdate(updatedMarker)
-                                    saveMarkers(context, permanentMarkers)
+                                    MarkerLocalDataSource.saveMarkers(context, permanentMarkers)
                                 }
                                 //isEditPanelOpen = false
                                 //selectedMarker = null
