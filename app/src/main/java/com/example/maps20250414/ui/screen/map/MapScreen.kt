@@ -1,10 +1,12 @@
-package com.example.maps20250414.ui.screen
+package com.example.maps20250414.ui.screen.map
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -19,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.maps20250414.R
 import com.example.maps20250414.ui.stateholder.LocationViewModel
 import com.example.maps20250414.ui.stateholder.MapViewModel
@@ -36,6 +39,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 //@SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
+    navController: NavHostController,
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
     mapViewModel: MapViewModel = hiltViewModel(),
@@ -210,6 +214,15 @@ fun MapScreen(
                     mapViewModel.changeMemoQuery("")
                 },
             )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // マーカー一覧ボタン
+        Button(onClick = {
+            navController.navigate("marker_list")
+        }) {
+            Text("マーカー一覧")
         }
 
         // 右側から出るパネル

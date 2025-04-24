@@ -1,4 +1,4 @@
-package com.example.maps20250414.ui.screen
+package com.example.maps20250414.ui.screen.map
 
 import android.content.Context
 import android.content.Intent

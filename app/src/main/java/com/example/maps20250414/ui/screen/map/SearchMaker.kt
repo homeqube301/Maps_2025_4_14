@@ -1,4 +1,4 @@
-package com.example.maps20250414.ui.screen
+package com.example.maps20250414.ui.screen.map
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
