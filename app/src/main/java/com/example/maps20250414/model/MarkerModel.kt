@@ -216,8 +216,10 @@ class MarkerViewModel @Inject constructor(
             override fun onResponse(
                 call: Call<NominatimResponse>, response: retrofit2.Response<NominatimResponse>
             ) {
-                Log.d("API", "Response bodyは次のようだよーんンンンンn！！！！！: ${response.body()}")
                 _selectedAddress.value = if (response.isSuccessful) {
+                    Log.e("API", "ステータスコード: ${response.code()}")
+                    Log.e("API", "メッセージ: ${response.message()}")
+                    Log.e("API", "エラー本文: ${response.errorBody()?.string()}")
                     response.body()?.displayName ?: "住所が見つかりません"
                 } else {
                     "住所の取得に失敗"
@@ -225,11 +227,6 @@ class MarkerViewModel @Inject constructor(
             }
 
             override fun onFailure(call: Call<NominatimResponse>, t: Throwable) {
-                Log.e(
-                    "API",
-                    "onFailureの原因はおそらくこれじゃあああああああ: ${t.localizedMessage}",
-                    t
-                )
                 _selectedAddress.value = "ネットワークエラー: ${t.message}"
             }
         })

@@ -11,8 +11,6 @@ import okhttp3.Dns
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.net.Inet4Address
-import java.net.InetAddress
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -23,11 +21,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
-        .dns(object : Dns {
-            override fun lookup(hostname: String): List<InetAddress> {
-                return Dns.SYSTEM.lookup(hostname).filterIsInstance<Inet4Address>()
-            }
-        }).connectTimeout(30, TimeUnit.SECONDS) // ← 30秒に伸ばす
+        .dns(Dns.SYSTEM)
+        .connectTimeout(30, TimeUnit.SECONDS) // ← 30秒に伸ばす
         .readTimeout(30, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
         .addInterceptor { chain ->
