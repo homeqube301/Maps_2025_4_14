@@ -1,4 +1,4 @@
-package com.example.maps20250414.ui
+package com.example.maps20250414.ui.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -20,10 +20,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.maps20250414.R
-import com.example.maps20250414.model.LocationViewModel
-import com.example.maps20250414.model.MapViewModel
-import com.example.maps20250414.model.MarkerViewModel
-import com.example.maps20250414.model.PermanentMarkerViewModel
+import com.example.maps20250414.ui.stateholder.LocationViewModel
+import com.example.maps20250414.ui.stateholder.MapViewModel
+import com.example.maps20250414.ui.stateholder.MarkerViewModel
+import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions

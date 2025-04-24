@@ -1,4 +1,4 @@
-package com.example.maps20250414.model
+package com.example.maps20250414.network
 
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory

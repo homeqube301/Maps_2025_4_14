@@ -1,4 +1,4 @@
-package com.example.maps20250414.model
+package com.example.maps20250414.ui.stateholder
 
 //import com.example.maps20250414.strage.MarkerStrage
 
@@ -10,29 +10,24 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.maps20250414.strage.loadMarkers
-import com.example.maps20250414.strage.saveMarkers
+import com.example.maps20250414.domain.model.NamedMarker
+import com.example.maps20250414.domain.repoitory.MarkerRepository
+import com.example.maps20250414.network.NominatimApiService
+import com.example.maps20250414.network.NominatimResponse
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @HiltViewModel
 class LocationViewModel @Inject constructor(
@@ -157,45 +152,6 @@ class PermanentMarkerViewModel @Inject constructor(
         saveMarkers()
     }
 
-}
-
-interface MarkerRepository {
-    suspend fun loadMarkers(): List<NamedMarker>
-    suspend fun saveMarkers(markers: List<NamedMarker>)
-}
-
-class MarkerRepositoryImpl @Inject constructor(
-    private val context: Context,
-
-    ) : MarkerRepository {
-
-    override suspend fun loadMarkers(): List<NamedMarker> {
-
-        return loadMarkers(context)
-    }
-
-    override suspend fun saveMarkers(markers: List<NamedMarker>) {
-        saveMarkers(context, markers)
-    }
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-object AppModule {
-
-    @Provides
-    @Singleton
-    fun provideFusedLocationProviderClient(
-        @ApplicationContext context: Context
-    ): FusedLocationProviderClient {
-        return LocationServices.getFusedLocationProviderClient(context)
-    }
-
-    @Provides
-    @Singleton
-    fun provideMarkerRepository(@ApplicationContext context: Context): MarkerRepository {
-        return MarkerRepositoryImpl(context)
-    }
 }
 
 @HiltViewModel

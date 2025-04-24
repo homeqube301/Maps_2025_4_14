@@ -1,7 +1,8 @@
-package com.example.maps20250414.model
+package com.example.maps20250414.ui.stateholder
 
 import androidx.lifecycle.ViewModel
-import com.example.maps20250414.data.MapsUiState
+import com.example.maps20250414.domain.model.NamedMarker
+import com.example.maps20250414.ui.state.MapsUiState
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import dagger.hilt.android.lifecycle.HiltViewModel

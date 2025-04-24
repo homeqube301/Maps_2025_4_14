@@ -1,4 +1,4 @@
-package com.example.maps20250414.ui
+package com.example.maps20250414.ui.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,8 +28,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.maps20250414.model.LatLngSerializable
-import com.example.maps20250414.model.NamedMarker
+import com.example.maps20250414.domain.model.LatLngSerializable
+import com.example.maps20250414.domain.model.NamedMarker
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng

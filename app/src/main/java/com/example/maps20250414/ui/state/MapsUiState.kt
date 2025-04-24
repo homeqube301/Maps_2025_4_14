@@ -1,6 +1,6 @@
-package com.example.maps20250414.data
+package com.example.maps20250414.ui.state
 
-import com.example.maps20250414.model.NamedMarker
+import com.example.maps20250414.domain.model.NamedMarker
 import com.google.android.gms.maps.model.LatLng
 
 data class MapsUiState(

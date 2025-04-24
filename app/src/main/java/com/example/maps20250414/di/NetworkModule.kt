@@ -1,6 +1,6 @@
-package com.example.maps20250414.network
+package com.example.maps20250414.di
 
-import com.example.maps20250414.model.NominatimApiService
+import com.example.maps20250414.network.NominatimApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module

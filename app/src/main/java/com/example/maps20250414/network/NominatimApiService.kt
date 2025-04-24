@@ -1,4 +1,4 @@
-package com.example.maps20250414.model
+package com.example.maps20250414.network
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

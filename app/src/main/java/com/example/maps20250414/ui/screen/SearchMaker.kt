@@ -1,4 +1,4 @@
-package com.example.maps20250414.ui
+package com.example.maps20250414.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,8 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.maps20250414.model.LatLngSerializable
-import com.example.maps20250414.model.NamedMarker
+import com.example.maps20250414.domain.model.LatLngSerializable
+import com.example.maps20250414.domain.model.NamedMarker
 
 @Composable
 fun SearchMaker(

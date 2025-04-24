@@ -1,4 +1,4 @@
-package com.example.maps20250414.ui
+package com.example.maps20250414.ui.screen
 
 import android.content.Context
 import android.content.Intent
@@ -47,8 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
-import com.example.maps20250414.model.LatLngSerializable
-import com.example.maps20250414.model.NamedMarker
+import com.example.maps20250414.domain.model.LatLngSerializable
+import com.example.maps20250414.domain.model.NamedMarker
 import com.example.maps20250414.strage.saveMarkers
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import kotlinx.coroutines.flow.MutableStateFlow

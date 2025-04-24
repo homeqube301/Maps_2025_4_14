@@ -12,7 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.maps20250414.ui.MapScreen
+import com.example.maps20250414.ui.screen.MapScreen
 import com.example.maps20250414.ui.theme.Maps20250414Theme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
@@ -65,9 +65,5 @@ class MainActivity : ComponentActivity() {
 
 @HiltAndroidApp
 class MyApplication : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        // アプリケーションの初期化処理
-    }
 }
 

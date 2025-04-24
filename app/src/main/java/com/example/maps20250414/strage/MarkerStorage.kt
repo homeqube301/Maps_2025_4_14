@@ -2,7 +2,7 @@ package com.example.maps20250414.strage
 
 import android.util.Log
 import androidx.core.content.edit
-import com.example.maps20250414.model.NamedMarker
+import com.example.maps20250414.domain.model.NamedMarker
 import kotlinx.serialization.json.Json
 
 fun saveMarkers(context: android.content.Context, markers: List<NamedMarker>) {
