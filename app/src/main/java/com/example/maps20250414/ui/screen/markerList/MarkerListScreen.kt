@@ -1,5 +1,6 @@
 package com.example.maps20250414.ui.screen.markerList
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,7 +39,6 @@ fun MarkerListScreen(
         }
     }
     val markerList = markerListState.value
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -53,7 +53,12 @@ fun MarkerListScreen(
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
             items(markerList) { marker ->
-                MarkerItem(marker)
+                MarkerItem(
+                    marker = marker,
+                    onClick = {
+                        navController.navigate("map/${marker.position.latitude}/${marker.position.longitude}")
+                    }
+                )
                 HorizontalDivider()
             }
         }
@@ -61,11 +66,12 @@ fun MarkerListScreen(
 }
 
 @Composable
-fun MarkerItem(marker: NamedMarker) {
+fun MarkerItem(marker: NamedMarker, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .clickable { onClick() }
     ) {
 
         Text(text = "ID: ${marker.id}", style = MaterialTheme.typography.bodySmall)
