@@ -6,3 +6,4 @@ interface MarkerRepository {
     suspend fun loadMarkers(): List<NamedMarker>
     suspend fun saveMarkers(markers: List<NamedMarker>)
 }
+

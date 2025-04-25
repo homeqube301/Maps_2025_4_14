@@ -104,13 +104,13 @@ class LocationViewModel @Inject constructor(
 
 @HiltViewModel
 class PermanentMarkerViewModel @Inject constructor(
-    private val markerRepository: MarkerRepository // 依存関係としてリポジトリを注入
-
+    private val markerRepository: MarkerRepository,
 ) : ViewModel() {
 
     // 永続マーカーのリスト
     private val _permanentMarkers = mutableStateListOf<NamedMarker>()
-    val permanentMarkers: List<NamedMarker> get() = _permanentMarkers
+    val permanentMarkers: List<NamedMarker>
+        get() = _permanentMarkers
 
     init {
         // 初期化時にマーカーを読み込む

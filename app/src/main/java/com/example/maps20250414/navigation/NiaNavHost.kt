@@ -31,7 +31,9 @@ fun NiaNavHost(
 
 
         composable("marker_list") {
-            MarkerListScreen(navController = navController)
+            MarkerListScreen(
+                navController = navController,
+            )
         }
     }
 }

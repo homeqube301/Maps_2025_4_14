@@ -21,9 +21,11 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.maps20250414.domain.model.LatLngSerializable
 import com.example.maps20250414.domain.model.NamedMarker
 import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 
@@ -31,7 +33,7 @@ import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 @Composable
 fun MarkerListScreen(
     navController: NavHostController,
-    viewModel: PermanentMarkerViewModel = hiltViewModel()
+    viewModel: PermanentMarkerViewModel = hiltViewModel(),
 ) {
     val markerListState = remember {
         derivedStateOf {
@@ -91,3 +93,21 @@ fun MarkerItem(marker: NamedMarker, onClick: () -> Unit) {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun MarkerItemPreview() {
+    val dummyMarker = NamedMarker(
+        id = 1.toString(),
+        title = "東京タワー",
+        memo = "観光地の名所です。",
+        createdAt = "2025-04-24 18:00",
+        position = LatLngSerializable(35.6586, 139.7454)
+    )
+
+    MaterialTheme {
+        MarkerItem(marker = dummyMarker, onClick = {})
+    }
+}
+
+
