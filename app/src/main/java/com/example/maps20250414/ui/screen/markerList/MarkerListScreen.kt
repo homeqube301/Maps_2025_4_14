@@ -45,6 +45,8 @@ fun MarkerListScreen(
     memo: String,
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
 ) {
+
+    Log.d("FilterParams", "start=$startDate, end=$endDate, name=$markerName, memo=$memo")
     // 日付のフォーマットを定義
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
@@ -76,32 +78,27 @@ fun MarkerListScreen(
 
     val filteredMarkerList = markerListState.value.filter { marker ->
         // マーカー名でフィルタリング（空ならスキップ）
-        (markerName.isEmpty() || marker.title.contains(markerName, ignoreCase = true)) &&
+        val markerDate: LocalDate? = try {
+            val dateTime = LocalDateTime.parse(marker.createdAt, originalFormatter)
+            dateTime.toLocalDate()
+        } catch (e: Exception) {
+            Log.e("MarkerListScreen", "marker.createdAtのパースに失敗: ${marker.createdAt}")
+            null
+        }
 
-                // 作成日でフィルタリング（空ならスキップ）
-                (startDateTime == null || try {
-                    val dateTime = LocalDateTime.parse(marker.createdAt, originalFormatter)
-                    val reformattedDate = dateTime.toLocalDate().format(formatter)
-                    val markerDateTime = LocalDate.parse(reformattedDate, formatter)
+        val matchesDate = if (markerDate != null) {
+            (startDateTime == null || !markerDate.isBefore(startDateTime)) &&
+                    (endDateTime == null || !markerDate.isAfter(endDateTime))
+        } else {
+            false
+        }
 
-                    markerDateTime.isAfter(startDateTime.minusDays(1))
-                } catch (e: Exception) {
+        val matchesName =
+            markerName.isEmpty() || marker.title.contains(markerName, ignoreCase = true)
+        val matchesMemo = memo.isEmpty() || marker.memo?.contains(memo, ignoreCase = true) == true
 
-                    false // 変換に失敗した場合はフィルタ外
-                }) &&
-                (endDateTime == null || try {
-                    val dateTime = LocalDateTime.parse(marker.createdAt, originalFormatter)
-                    val reformattedDate = dateTime.toLocalDate().format(formatter)
-                    val markerDateTime = LocalDate.parse(reformattedDate, formatter)
+        matchesName && matchesDate && matchesMemo
 
-                    markerDateTime.isBefore(endDateTime.plusDays(1))
-                } catch (e: Exception) {
-
-                    false // 変換に失敗した場合はフィルタ外
-                }) &&
-
-                // メモでフィルタリング（空ならスキップ）
-                (memo.isEmpty() || marker.memo?.contains(memo, ignoreCase = true) == true)
     }
 
 
