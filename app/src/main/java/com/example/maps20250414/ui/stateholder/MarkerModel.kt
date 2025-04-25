@@ -1,7 +1,5 @@
 package com.example.maps20250414.ui.stateholder
 
-//import com.example.maps20250414.strage.MarkerStrage
-
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
@@ -104,13 +102,13 @@ class LocationViewModel @Inject constructor(
 
 @HiltViewModel
 class PermanentMarkerViewModel @Inject constructor(
-    private val markerRepository: MarkerRepository // 依存関係としてリポジトリを注入
-
+    private val markerRepository: MarkerRepository,
 ) : ViewModel() {
 
     // 永続マーカーのリスト
     private val _permanentMarkers = mutableStateListOf<NamedMarker>()
-    val permanentMarkers: List<NamedMarker> get() = _permanentMarkers
+    val permanentMarkers: List<NamedMarker>
+        get() = _permanentMarkers
 
     init {
         // 初期化時にマーカーを読み込む

@@ -1,5 +1,6 @@
 package com.example.maps20250414.ui.screen.markerList
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,7 +9,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,24 +24,87 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.maps20250414.domain.model.LatLngSerializable
 import com.example.maps20250414.domain.model.NamedMarker
 import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarkerListScreen(
     navController: NavHostController,
-    viewModel: PermanentMarkerViewModel = hiltViewModel()
+    markerName: String,
+    startDate: String,
+    endDate: String,
+    memo: String,
+    viewModel: PermanentMarkerViewModel = hiltViewModel(),
 ) {
+    // 日付のフォーマットを定義
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+
     val markerListState = remember {
         derivedStateOf {
             viewModel.permanentMarkers.sortedBy { it.createdAt }
         }
     }
-    val markerList = markerListState.value
+
+    // startDate と endDate を LocalDateTime に変換
+    val startDateTime = if (startDate.isNotEmpty()) {
+        try {
+            LocalDate.parse(startDate, formatter)
+
+        } catch (e: Exception) {
+            Log.e("MarkerListScreen", "startDate の変換に失敗しました: $e")
+            null // パースできなかった場合は null にする
+        }
+    } else null
+
+    val endDateTime = if (endDate.isNotEmpty()) {
+        try {
+            LocalDate.parse(endDate, formatter)
+        } catch (e: Exception) {
+            null // パースできなかった場合は null にする
+        }
+    } else null
+
+    val filteredMarkerList = markerListState.value.filter { marker ->
+        // マーカー名でフィルタリング（空ならスキップ）
+        (markerName.isEmpty() || marker.title.contains(markerName, ignoreCase = true)) &&
+
+                // 作成日でフィルタリング（空ならスキップ）
+                (startDateTime == null || try {
+                    val dateTime = LocalDateTime.parse(marker.createdAt, originalFormatter)
+                    val reformattedDate = dateTime.toLocalDate().format(formatter)
+                    val markerDateTime = LocalDate.parse(reformattedDate, formatter)
+
+                    markerDateTime.isAfter(startDateTime.minusDays(1))
+                } catch (e: Exception) {
+
+                    false // 変換に失敗した場合はフィルタ外
+                }) &&
+                (endDateTime == null || try {
+                    val dateTime = LocalDateTime.parse(marker.createdAt, originalFormatter)
+                    val reformattedDate = dateTime.toLocalDate().format(formatter)
+                    val markerDateTime = LocalDate.parse(reformattedDate, formatter)
+
+                    markerDateTime.isBefore(endDateTime.plusDays(1))
+                } catch (e: Exception) {
+
+                    false // 変換に失敗した場合はフィルタ外
+                }) &&
+
+                // メモでフィルタリング（空ならスキップ）
+                (memo.isEmpty() || marker.memo?.contains(memo, ignoreCase = true) == true)
+    }
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -49,10 +115,18 @@ fun MarkerListScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate("detail_search") },
+                content = {
+                    Icon(Icons.Filled.Search, contentDescription = "詳細検索")
+                }
+            )
         }
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
-            items(markerList) { marker ->
+            items(filteredMarkerList) { marker ->
                 MarkerItem(
                     marker = marker,
                     onClick = {
@@ -91,3 +165,21 @@ fun MarkerItem(marker: NamedMarker, onClick: () -> Unit) {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun MarkerItemPreview() {
+    val dummyMarker = NamedMarker(
+        id = 1.toString(),
+        title = "東京タワー",
+        memo = "観光地の名所です。",
+        createdAt = "2025/04/24 18:00:36",
+        position = LatLngSerializable(35.6586, 139.7454)
+    )
+
+    MaterialTheme {
+        MarkerItem(marker = dummyMarker, onClick = {})
+    }
+}
+
+
