@@ -1,7 +1,5 @@
 package com.example.maps20250414.ui.stateholder
 
-//import com.example.maps20250414.strage.MarkerStrage
-
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager

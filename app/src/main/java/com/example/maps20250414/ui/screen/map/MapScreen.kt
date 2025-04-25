@@ -50,11 +50,10 @@ fun MapScreen(
 
     val uiState by mapViewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
     val cameraPositionState = rememberCameraPositionState()
     val permanentMarkers = viewModel.permanentMarkers
     val markerViewModel: MarkerViewModel = hiltViewModel()
-    // サイドパネルの表示フラグ
-    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(latitude, longitude) {
         if (latitude != 0.0 && longitude != 0.0) {
@@ -71,9 +70,6 @@ fun MapScreen(
             cameraPositionState = cameraPositionState,
             onLocationUpdate = { mapViewModel.changeUserLocation(it) })
     }
-
-
-
 
     LaunchedEffect(Unit) {
         viewModel.loadMarkers()
