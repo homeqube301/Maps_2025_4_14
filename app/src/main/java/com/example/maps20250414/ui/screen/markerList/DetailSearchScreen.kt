@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -15,58 +14,61 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.maps20250414.ui.stateholder.ListViewModel
 import java.util.Calendar
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailSearchScreen(navController: NavHostController) {
-    // 入力された検索条件を保持するための状態
-    var markerName by remember { mutableStateOf("") }
-    var startDate by remember { mutableStateOf("") }
-    var endDate by remember { mutableStateOf("") }
-    var memo by remember { mutableStateOf("") }
-    // DatePicker用の状態
-    val openStartDatePicker = remember { mutableStateOf(false) }
-    val openEndDatePicker = remember { mutableStateOf(false) }
+fun DetailSearchScreen(
+    navController: NavHostController,
+    //listViewModel: ListViewModel = hiltViewModel()
+    listViewModel: ListViewModel
+) {
+    val listState by listViewModel.listState.collectAsState()
 
     // 作成日（開始日）選択用
-    if (openStartDatePicker.value) {
+    if (listState.openStartDatePicker) {
         DatePickerDialog(
-            onDismissRequest = { openStartDatePicker.value = false },
+            onDismissRequest = {
+                listViewModel.chengeStartDatePicker()
+            },
             onDateSelected = { year, month, dayOfMonth ->
-                startDate = "$year-${String.format("%02d", month + 1)}-${
-                    String.format(
-                        "%02d",
-                        dayOfMonth
-                    )
-                }"  // 月は0から始まるため、+1が必要
-                openStartDatePicker.value = false
+                listViewModel.changeStartDate(
+                    "$year-${String.format("%02d", month + 1)}-${
+                        String.format(
+                            "%02d",
+                            dayOfMonth
+                        )
+                    }"
+                )
+                listViewModel.chengeStartDatePicker()
             }
         )
     }
 
     // 作成日（終了日）選択用
-    if (openEndDatePicker.value) {
+    if (listState.openEndDatePicker) {
         DatePickerDialog(
-            onDismissRequest = { openEndDatePicker.value = false },
+            onDismissRequest = {
+                listViewModel.chengeEndDatePicker()
+            },
             onDateSelected = { year, month, dayOfMonth ->
-                endDate = "$year-${String.format("%02d", month + 1)}-${
-                    String.format(
-                        "%02d",
-                        dayOfMonth
-                    )
-                }"  // 月は0から始まるため、+1が必要
-                openEndDatePicker.value = false
+                listViewModel.changeEndDate(
+                    "$year-${String.format("%02d", month + 1)}-${
+                        String.format(
+                            "%02d",
+                            dayOfMonth
+                        )
+                    }"
+                )
+                listViewModel.chengeEndDatePicker()
             }
         )
     }
@@ -82,49 +84,63 @@ fun DetailSearchScreen(navController: NavHostController) {
 
         // マーカー名検索フィールド
         TextField(
-            value = markerName,
-            onValueChange = { markerName = it },
+            value = listState.markerName ?: "",
+            onValueChange = {
+                //markerName = it
+                listViewModel.changeMarkerName(it)
+            },
             label = { Text("マーカー名") },
             modifier = Modifier.fillMaxWidth()
         )
 
         // 作成日（開始日）検索フィールド
         OutlinedButton(
-            onClick = { openStartDatePicker.value = true },
+            onClick = {
+                listViewModel.chengeStartDatePicker()
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = if (startDate.isEmpty()) "作成日（開始日）を選択" else startDate)
+            Text(
+                text = if (listState.startDate.isNullOrEmpty()) {
+                    "作成日（開始日）を選択"
+                } else {
+                    listState.startDate!!
+                }
+            )
         }
 
         // 作成日（終了日）検索フィールド
         OutlinedButton(
-            onClick = { openEndDatePicker.value = true },
+            onClick = {
+                listViewModel.chengeEndDatePicker()
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = if (endDate.isEmpty()) "作成日（終了日）を選択" else endDate)
+            Text(
+                text = if (listState.endDate.isNullOrEmpty()) {
+                    "作成日（開始日）を選択"
+                } else {
+                    listState.endDate!!
+                }
+            )
         }
 
         // メモ検索フィールド
         TextField(
-            value = memo,
-            onValueChange = { memo = it },
+            value = listState.memo ?: "",
+            onValueChange = {
+                listViewModel.changeMemo(it)
+            },
             label = { Text("メモ") },
             modifier = Modifier.fillMaxWidth()
         )
-
-        // 戻るボタン
-        Button(onClick = { navController.popBackStack() }) {
-            Text("戻る")
-        }
 
         // 検索ボタン
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
                 // 検索条件を渡して遷移
-                navController.navigate(
-                    "marker_list?markerName=$markerName&startDate=$startDate&endDate=$endDate&memo=$memo"
-                )
+                navController.navigate("marker_list?")
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -168,7 +184,7 @@ fun DatePickerDialog(
 @Composable
 fun DetailSearchScreenPreview() {
     val dummyNavController = rememberNavController()
-    DetailSearchScreen(navController = dummyNavController)
+    DetailSearchScreen(navController = dummyNavController, listViewModel = ListViewModel())
 }
 
 @Preview(showBackground = true)
