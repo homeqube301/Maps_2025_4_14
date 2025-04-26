@@ -26,11 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.maps20250414.domain.model.LatLngSerializable
 import com.example.maps20250414.domain.model.NamedMarker
-import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -43,7 +42,8 @@ fun MarkerListScreen(
     startDate: String,
     endDate: String,
     memo: String,
-    viewModel: PermanentMarkerViewModel = hiltViewModel(),
+    //viewModel: PermanentMarkerViewModel = hiltViewModel(),
+    permanetMarkers: List<NamedMarker>,
 ) {
 
     Log.d("FilterParams", "start=$startDate, end=$endDate, name=$markerName, memo=$memo")
@@ -53,7 +53,8 @@ fun MarkerListScreen(
 
     val markerListState = remember {
         derivedStateOf {
-            viewModel.permanentMarkers.sortedBy { it.createdAt }
+            //viewModel.permanentMarkers.sortedBy { it.createdAt }
+            permanetMarkers.sortedBy { it.createdAt }
         }
     }
 
@@ -161,6 +162,36 @@ fun MarkerItem(marker: NamedMarker, onClick: () -> Unit) {
             modifier = Modifier.padding(top = 4.dp)
         )
     }
+}
+
+@Preview
+@Composable
+fun PreviewMarkerListScreen() {
+    val dummyNavController = rememberNavController()
+
+    val dummyMarkers = listOf(
+        NamedMarker(
+            title = "テストマーカー1",
+            memo = "これはメモ1です",
+            createdAt = "2024/04/01 00:00:00",
+            position = LatLngSerializable(35.0, 139.0)
+        ),
+        NamedMarker(
+            title = "テストマーカー2",
+            memo = "これはメモ2です",
+            createdAt = "2024/04/05 00:00:00",
+            position = LatLngSerializable(36.0, 140.0)
+        )
+    )
+
+    MarkerListScreen(
+        navController = dummyNavController,
+        markerName = "テスト",
+        startDate = "2024-04-01",
+        endDate = "2024-04-10",
+        memo = "メモ",
+        permanetMarkers = dummyMarkers
+    )
 }
 
 @Preview(showBackground = true)

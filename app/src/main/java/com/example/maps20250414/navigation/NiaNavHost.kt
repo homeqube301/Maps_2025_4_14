@@ -1,17 +1,22 @@
 package com.example.maps20250414.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.maps20250414.ui.screen.map.MapScreen
 import com.example.maps20250414.ui.screen.markerList.DetailSearchScreen
 import com.example.maps20250414.ui.screen.markerList.MarkerListScreen
+import com.example.maps20250414.ui.stateholder.ListViewModel
+import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 
 @Composable
 fun NiaNavHost(
     navController: NavHostController,
-    startDestination: String = "map"
+    startDestination: String = "map",
+    listViewModel: ListViewModel = hiltViewModel(),
+    viewModel: PermanentMarkerViewModel = hiltViewModel(),
 ) {
     NavHost(
         navController = navController,
@@ -35,14 +40,15 @@ fun NiaNavHost(
             val startDate = backStackEntry.arguments?.getString("startDate") ?: ""
             val endDate = backStackEntry.arguments?.getString("endDate") ?: ""
             val memo = backStackEntry.arguments?.getString("memo") ?: ""
-
+//        composable("marker_list") { backStackEntry ->
             // MarkerListScreenに検索条件を渡す
             MarkerListScreen(
                 navController = navController,
                 markerName = markerName,
                 startDate = startDate,
                 endDate = endDate,
-                memo = memo
+                memo = memo,
+                permanetMarkers = viewModel.permanentMarkers
             )
         }
         composable("detail_search") {

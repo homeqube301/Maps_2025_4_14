@@ -1,6 +1,5 @@
 package com.example.maps20250414.ui.screen.markerList
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -147,11 +146,12 @@ fun DetailSearchScreen(
             onClick = {
                 // 検索条件を渡して遷移
                 navController.navigate(
-                    "marker_list?" +
-                            "markerName=${Uri.encode(listState.markerName ?: "")}&" +
-                            "startDate=${Uri.encode(listState.startDate ?: "")}&" +
-                            "endDate=${Uri.encode(listState.endDate ?: "")}&" +
-                            "memo=${Uri.encode(listState.memo ?: "")}"
+                    "marker_list"
+//                            +
+//                            "markerName=${Uri.encode(listState.markerName ?: "")}&" +
+//                            "startDate=${Uri.encode(listState.startDate ?: "")}&" +
+//                            "endDate=${Uri.encode(listState.endDate ?: "")}&" +
+//                            "memo=${Uri.encode(listState.memo ?: "")}"
                 )
             },
             modifier = Modifier.fillMaxWidth()
