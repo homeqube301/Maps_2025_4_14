@@ -9,6 +9,8 @@ import com.example.maps20250414.ui.screen.map.MapScreen
 import com.example.maps20250414.ui.screen.markerList.DetailSearchScreen
 import com.example.maps20250414.ui.screen.markerList.MarkerListScreen
 import com.example.maps20250414.ui.stateholder.ListViewModel
+import com.example.maps20250414.ui.stateholder.LocationViewModel
+import com.example.maps20250414.ui.stateholder.MapViewModel
 import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 
 @Composable
@@ -16,8 +18,11 @@ fun NiaNavHost(
     navController: NavHostController,
     startDestination: String = "map/{latitude}/{longitude}",
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
-    listViewModel: ListViewModel = hiltViewModel()
-) {
+    listViewModel: ListViewModel = hiltViewModel(),
+    mapViewModel: MapViewModel = hiltViewModel(),
+    locationViewModel: LocationViewModel = hiltViewModel(),
+
+    ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
@@ -32,7 +37,9 @@ fun NiaNavHost(
                 navController = navController,
                 latitude = latitude,
                 longitude = longitude,
-                listviewModel = listViewModel
+                listviewModel = listViewModel,
+                mapViewModel = mapViewModel,
+                locationViewModel = locationViewModel
             )
         }
         composable("marker_list?") {

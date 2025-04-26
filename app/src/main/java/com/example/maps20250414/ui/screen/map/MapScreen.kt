@@ -49,8 +49,8 @@ fun MapScreen(
     longitude: Double = 0.0,
     navController: NavHostController,
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
-    locationViewModel: LocationViewModel = hiltViewModel(),
-    mapViewModel: MapViewModel = hiltViewModel(),
+    locationViewModel: LocationViewModel,
+    mapViewModel: MapViewModel,
     listviewModel: ListViewModel
 ) {
 
