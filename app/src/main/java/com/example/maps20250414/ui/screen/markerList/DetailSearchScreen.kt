@@ -1,6 +1,5 @@
 package com.example.maps20250414.ui.screen.markerList
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,7 +37,7 @@ fun DetailSearchScreen(
     if (listState.openStartDatePicker) {
         DatePickerDialog(
             onDismissRequest = {
-                listViewModel.chengeStartDatePicker(false)
+                listViewModel.chengeStartDatePicker()
             },
             onDateSelected = { year, month, dayOfMonth ->
                 listViewModel.changeStartDate(
@@ -49,7 +48,7 @@ fun DetailSearchScreen(
                         )
                     }"
                 )
-                listViewModel.chengeStartDatePicker(false)
+                listViewModel.chengeStartDatePicker()
             }
         )
     }
@@ -58,7 +57,7 @@ fun DetailSearchScreen(
     if (listState.openEndDatePicker) {
         DatePickerDialog(
             onDismissRequest = {
-                listViewModel.chengeEndDatePicker(false)
+                listViewModel.chengeEndDatePicker()
             },
             onDateSelected = { year, month, dayOfMonth ->
                 listViewModel.changeEndDate(
@@ -69,7 +68,7 @@ fun DetailSearchScreen(
                         )
                     }"
                 )
-                listViewModel.chengeEndDatePicker(false)
+                listViewModel.chengeEndDatePicker()
             }
         )
     }
@@ -97,7 +96,7 @@ fun DetailSearchScreen(
         // 作成日（開始日）検索フィールド
         OutlinedButton(
             onClick = {
-                listViewModel.chengeStartDatePicker(true)
+                listViewModel.chengeStartDatePicker()
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -113,7 +112,7 @@ fun DetailSearchScreen(
         // 作成日（終了日）検索フィールド
         OutlinedButton(
             onClick = {
-                listViewModel.chengeEndDatePicker(true)
+                listViewModel.chengeEndDatePicker()
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -141,13 +140,7 @@ fun DetailSearchScreen(
         Button(
             onClick = {
                 // 検索条件を渡して遷移
-                navController.navigate(
-                    "marker_list?" +
-                            "markerName=${Uri.encode(listState.markerName ?: "")}&" +
-                            "startDate=${Uri.encode(listState.startDate ?: "")}&" +
-                            "endDate=${Uri.encode(listState.endDate ?: "")}&" +
-                            "memo=${Uri.encode(listState.memo ?: "")}"
-                )
+                navController.navigate("marker_list?")
             },
             modifier = Modifier.fillMaxWidth()
         ) {

@@ -13,12 +13,12 @@ class ListViewModel @Inject constructor() : ViewModel() {
     private val _listState = MutableStateFlow(ListState())
     val listState: StateFlow<ListState> = _listState
 
-    fun chengeStartDatePicker(change: Boolean) {
+    fun chengeStartDatePicker() {
         _listState.update { it.copy(openStartDatePicker = !it.openStartDatePicker) }
 
     }
 
-    fun chengeEndDatePicker(change: Boolean) {
+    fun chengeEndDatePicker() {
         _listState.update { it.copy(openEndDatePicker = !it.openEndDatePicker) }
     }
 

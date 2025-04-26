@@ -24,7 +24,12 @@ fun NiaNavHost(
     ) {
         composable("map") {
             // デフォルト位置で地図表示
-            MapScreen(navController = navController, latitude = 0.0, longitude = 0.0)
+            MapScreen(
+                navController = navController,
+                latitude = 0.0,
+                longitude = 0.0,
+                listviewModel = listViewModel
+            )
         }
         composable("map/{latitude}/{longitude}") { backStackEntry ->
             // ナビゲーションパラメータ（緯度、経度）を取得
@@ -32,24 +37,22 @@ fun NiaNavHost(
                 backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull() ?: 0.0
             val longitude =
                 backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull() ?: 0.0
-            MapScreen(navController = navController, latitude = latitude, longitude = longitude)
+            MapScreen(
+                navController = navController,
+                latitude = latitude,
+                longitude = longitude,
+                listviewModel = listViewModel
+            )
         }
-        composable("marker_list?markerName={markerName}&startDate={startDate}&endDate={endDate}&memo={memo}") { backStackEntry ->
-            // 詳細検索で渡されたパラメータを取得
-            val markerName = backStackEntry.arguments?.getString("markerName") ?: ""
-            val startDate = backStackEntry.arguments?.getString("startDate") ?: ""
-            val endDate = backStackEntry.arguments?.getString("endDate") ?: ""
-            val memo = backStackEntry.arguments?.getString("memo") ?: ""
-
+        composable("marker_list?") {
             // MarkerListScreenに検索条件を渡す
             MarkerListScreen(
                 navController = navController,
-                markerName = markerName,
-                startDate = startDate,
-                endDate = endDate,
-                memo = memo,
+                markerName = listViewModel.listState.value.markerName ?: "",
+                startDate = listViewModel.listState.value.startDate ?: "",
+                endDate = listViewModel.listState.value.endDate ?: "",
+                memo = listViewModel.listState.value.memo ?: "",
                 permanetMarkers = viewModel.permanentMarkers,
-                listViewModel = listViewModel
             )
         }
         composable("detail_search") {

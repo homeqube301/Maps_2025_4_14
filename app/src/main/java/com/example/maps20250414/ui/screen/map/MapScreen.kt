@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.maps20250414.R
+import com.example.maps20250414.ui.stateholder.ListViewModel
 import com.example.maps20250414.ui.stateholder.LocationViewModel
 import com.example.maps20250414.ui.stateholder.MapViewModel
 import com.example.maps20250414.ui.stateholder.MarkerViewModel
@@ -36,6 +37,9 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 //@SuppressLint("MissingPermission")
 @Composable
@@ -46,9 +50,11 @@ fun MapScreen(
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
     mapViewModel: MapViewModel = hiltViewModel(),
+    listviewModel: ListViewModel
 ) {
 
     val uiState by mapViewModel.uiState.collectAsState()
+    val listState by listviewModel.listState.collectAsState()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val cameraPositionState = rememberCameraPositionState()
@@ -82,7 +88,52 @@ fun MapScreen(
                 if (!isMoving) {
                     val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
                     bounds?.let {
-                        val filtered = permanentMarkers.filter { it.position.toLatLng() in bounds }
+                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+
+                        val startDateTime = if (!listState.startDate.isNullOrEmpty()) {
+                            try {
+                                LocalDate.parse(listState.startDate, formatter)
+                            } catch (e: Exception) {
+                                null
+                            }
+                        } else null
+
+                        val endDateTime = if (!listState.endDate.isNullOrEmpty()) {
+                            try {
+                                LocalDate.parse(listState.endDate, formatter)
+                            } catch (e: Exception) {
+                                null
+                            }
+                        } else null
+
+                        val filtered = permanentMarkers.filter { marker ->
+                            val markerDate: LocalDate? = try {
+                                LocalDateTime.parse(marker.createdAt, originalFormatter)
+                                    .toLocalDate()
+                            } catch (e: Exception) {
+                                null
+                            }
+
+                            val matchesBounds = marker.position.toLatLng() in bounds
+                            val matchesDate = markerDate?.let {
+                                (startDateTime == null || !it.isBefore(startDateTime)) &&
+                                        (endDateTime == null || !it.isAfter(endDateTime))
+                            } ?: false
+                            val matchesName =
+                                listState.markerName.isNullOrEmpty() || marker.title.contains(
+                                    listState.markerName!!,
+                                    ignoreCase = true
+                                )
+                            val matchesMemo =
+                                listState.memo.isNullOrEmpty() || marker.memo?.contains(
+                                    listState.memo!!,
+                                    ignoreCase = true
+                                ) == true
+
+                            matchesBounds && matchesDate && matchesName && matchesMemo
+                        }
+
                         mapViewModel.addAllVisibleMarkers(filtered)
                     }
                 }

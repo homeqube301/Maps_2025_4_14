@@ -30,7 +30,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.maps20250414.domain.model.LatLngSerializable
 import com.example.maps20250414.domain.model.NamedMarker
-import com.example.maps20250414.ui.stateholder.ListViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -44,7 +43,6 @@ fun MarkerListScreen(
     endDate: String,
     memo: String,
     permanetMarkers: List<NamedMarker>,
-    listViewModel: ListViewModel
 ) {
 
     Log.d("FilterParams", "start=$startDate, end=$endDate, name=$markerName, memo=$memo")
@@ -193,7 +191,6 @@ fun PreviewMarkerListScreen() {
         endDate = "2024-04-10",
         memo = "メモ",
         permanetMarkers = dummyMarkers,
-        listViewModel = ListViewModel()
     )
 }
 
