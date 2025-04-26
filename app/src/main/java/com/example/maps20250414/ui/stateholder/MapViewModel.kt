@@ -66,7 +66,7 @@ class MapViewModel @Inject constructor() : ViewModel() {
     fun updateSearchList(
         titleQuery: String?,
         memoQuery: String?,
-        permanentMarkers: List<NamedMarker>,
+        visibleMarkers: List<NamedMarker>,
     ) {
         val lowerTitle = titleQuery?.lowercase()
         val lowerMemo = memoQuery?.lowercase()
@@ -75,13 +75,13 @@ class MapViewModel @Inject constructor() : ViewModel() {
         _uiState.update { it.copy(memoResults = emptyList()) }
 
         val titleFiltered = if (!lowerTitle.isNullOrBlank()) {
-            permanentMarkers.filter {
+            visibleMarkers.filter {
                 it.title.lowercase().contains(lowerTitle)
             }
         } else emptyList()
 
         val memoFiltered = if (!lowerMemo.isNullOrBlank()) {
-            permanentMarkers.filter {
+            visibleMarkers.filter {
                 it.memo?.lowercase()?.contains(lowerMemo) == true
             }
         } else emptyList()
@@ -126,7 +126,7 @@ class MapViewModel @Inject constructor() : ViewModel() {
 
     fun addAllVisibleMarkers(marker: List<NamedMarker>) {
         _uiState.update {
-            it.copy(visibleMarkers = it.visibleMarkers + marker)
+            it.copy(visibleMarkers = (it.visibleMarkers + marker).distinct())
         }
     }
 

@@ -37,6 +37,7 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -83,6 +84,11 @@ fun MapScreen(
 
 
     LaunchedEffect(Unit) {
+        delay(300) // projection が null でないように少し待つ
+        cameraPositionState.projection?.visibleRegion?.latLngBounds?.let { bounds ->
+            val filtered = permanentMarkers.filter { it.position.toLatLng() in bounds }
+            mapViewModel.addAllVisibleMarkers(filtered)
+        }
         snapshotFlow { cameraPositionState.isMoving }
             .collect { isMoving ->
                 if (!isMoving) {
@@ -115,7 +121,7 @@ fun MapScreen(
                                 null
                             }
 
-                            val matchesBounds = marker.position.toLatLng() in bounds
+                            //val matchesBounds = marker.position.toLatLng() in bounds
                             val matchesDate = markerDate?.let {
                                 (startDateTime == null || !it.isBefore(startDateTime)) &&
                                         (endDateTime == null || !it.isAfter(endDateTime))
@@ -131,7 +137,8 @@ fun MapScreen(
                                     ignoreCase = true
                                 ) == true
 
-                            matchesBounds && matchesDate && matchesName && matchesMemo
+                            //matchesBounds &&
+                            matchesDate && matchesName && matchesMemo
                         }
 
                         mapViewModel.addAllVisibleMarkers(filtered)
@@ -147,7 +154,7 @@ fun MapScreen(
             mapViewModel.updateSearchList(
                 uiState.titleQuery,
                 uiState.memoQuery,
-                permanentMarkers,
+                uiState.visibleMarkers,
             )
         }
 
@@ -238,7 +245,7 @@ fun MapScreen(
                 mapViewModel.changeMemoQuery("")
 
             }) {
-                Text(if (uiState.isSearchOpen) "閉じる" else "検索")
+                Text(if (uiState.isSearchOpen) "閉じる" else "簡易検索")
             }
         }
 

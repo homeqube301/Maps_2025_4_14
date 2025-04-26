@@ -14,7 +14,7 @@ import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 @Composable
 fun NiaNavHost(
     navController: NavHostController,
-    startDestination: String = "map",
+    startDestination: String = "map/{latitude}/{longitude}",
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
     listViewModel: ListViewModel = hiltViewModel()
 ) {
@@ -22,15 +22,6 @@ fun NiaNavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        composable("map") {
-            // デフォルト位置で地図表示
-            MapScreen(
-                navController = navController,
-                latitude = 0.0,
-                longitude = 0.0,
-                listviewModel = listViewModel
-            )
-        }
         composable("map/{latitude}/{longitude}") { backStackEntry ->
             // ナビゲーションパラメータ（緯度、経度）を取得
             val latitude =

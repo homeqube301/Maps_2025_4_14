@@ -108,7 +108,7 @@ fun MarkerListScreen(
                 title = { Text("マーカー一覧") },
                 navigationIcon = {
                     //IconButton(onClick = { navController.popBackStack() }) {
-                    IconButton(onClick = { navController.navigate("map") }) {
+                    IconButton(onClick = { navController.navigate("map/{latitude}/{longitude}") }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
                 }
