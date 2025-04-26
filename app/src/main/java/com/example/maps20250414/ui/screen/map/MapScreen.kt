@@ -48,19 +48,17 @@ fun MapScreen(
     latitude: Double = 0.0,
     longitude: Double = 0.0,
     navController: NavHostController,
-    viewModel: PermanentMarkerViewModel = hiltViewModel(),
+    permanentViewModel: PermanentMarkerViewModel,
     locationViewModel: LocationViewModel,
     mapViewModel: MapViewModel,
-    listviewModel: ListViewModel
+    listviewModel: ListViewModel,
+    markerViewModel: MarkerViewModel = hiltViewModel()
 ) {
-
     val uiState by mapViewModel.uiState.collectAsState()
     val listState by listviewModel.listState.collectAsState()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val cameraPositionState = rememberCameraPositionState()
-    val permanentMarkers = viewModel.permanentMarkers
-    val markerViewModel: MarkerViewModel = hiltViewModel()
 
     LaunchedEffect(latitude, longitude) {
         if (latitude != 0.0 && longitude != 0.0) {
@@ -79,14 +77,15 @@ fun MapScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.loadMarkers()
+        permanentViewModel.loadMarkers()
     }
 
 
     LaunchedEffect(Unit) {
         delay(300) // projection が null でないように少し待つ
         cameraPositionState.projection?.visibleRegion?.latLngBounds?.let { bounds ->
-            val filtered = permanentMarkers.filter { it.position.toLatLng() in bounds }
+            val filtered =
+                permanentViewModel.permanentMarkers.filter { it.position.toLatLng() in bounds }
             mapViewModel.addAllVisibleMarkers(filtered)
         }
         snapshotFlow { cameraPositionState.isMoving }
@@ -113,7 +112,7 @@ fun MapScreen(
                             }
                         } else null
 
-                        val filtered = permanentMarkers.filter { marker ->
+                        val filtered = permanentViewModel.permanentMarkers.filter { marker ->
                             val markerDate: LocalDate? = try {
                                 LocalDateTime.parse(marker.createdAt, originalFormatter)
                                     .toLocalDate()
@@ -319,7 +318,7 @@ fun MapScreen(
                     mapViewModel.addAllVisibleMarkers(listOf(marker))
                 },
                 addMarker = { marker ->
-                    viewModel.addMarker(marker)
+                    permanentViewModel.addMarker(marker)
                 }
 
             )
@@ -335,16 +334,19 @@ fun MapScreen(
                 //uiState = uiState,
                 selectedMarker = uiState.selectedMarker,
                 selectedAddress = markerViewModel.selectedAddress,
-                permanentMarkers = permanentMarkers,
+                permanentMarkers = permanentViewModel.permanentMarkers,
                 focusManager = focusManager,
                 context = context,
                 onMarkerUpdate = { updatedMarker ->
-                    viewModel.updateMarker(updatedMarker)
+                    permanentViewModel.updateMarker(updatedMarker)
                     mapViewModel.changeSelectedMarker(updatedMarker)
-                    mapViewModel.updateVisibleMarkers(cameraPositionState, permanentMarkers)
+                    mapViewModel.updateVisibleMarkers(
+                        cameraPositionState,
+                        permanentViewModel.permanentMarkers
+                    )
                 },
                 onMarkerDelete = { marker ->
-                    viewModel.removeMarker(marker.id)
+                    permanentViewModel.removeMarker(marker.id)
                     mapViewModel.removeVisibleMarkers(marker)
                     mapViewModel.changeSelectedMarker(null)
                     mapViewModel.changeIsEditPanelOpen()

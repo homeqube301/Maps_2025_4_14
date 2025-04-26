@@ -6,7 +6,6 @@ plugins {
     //id ("dagger.hilt.android.plugin")
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
-    //kotlin("kapt") version "2.1.20"
 
 }
 
@@ -71,6 +70,8 @@ dependencies {
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+
+
     implementation("com.squareup.moshi:moshi:1.15.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
 
@@ -78,8 +79,9 @@ dependencies {
     implementation(libs.play.services.location)
 
     implementation("com.google.dagger:hilt-android:2.51.1")
-    //kapt("groupId:artifactId:version")
+
     ksp("com.google.dagger:hilt-android-compiler:2.56.1")
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 

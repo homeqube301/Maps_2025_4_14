@@ -20,7 +20,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,9 +33,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.maps20250414.domain.model.LatLngSerializable
 import com.example.maps20250414.domain.model.NamedMarker
+import com.example.maps20250414.network.fetchEmbedding
+import com.example.maps20250414.network.provideOpenAiApi
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,6 +54,7 @@ fun MarkerListScreen(
     memo: String,
     permanetMarkers: List<NamedMarker>,
 ) {
+
 
     Log.d("FilterParams", "start=$startDate, end=$endDate, name=$markerName, memo=$memo")
     // 日付のフォーマットを定義

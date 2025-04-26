@@ -17,7 +17,7 @@ import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 fun NiaNavHost(
     navController: NavHostController,
     startDestination: String = "map/{latitude}/{longitude}",
-    viewModel: PermanentMarkerViewModel = hiltViewModel(),
+    permanentViewModel: PermanentMarkerViewModel = hiltViewModel(),
     listViewModel: ListViewModel = hiltViewModel(),
     mapViewModel: MapViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
@@ -39,7 +39,8 @@ fun NiaNavHost(
                 longitude = longitude,
                 listviewModel = listViewModel,
                 mapViewModel = mapViewModel,
-                locationViewModel = locationViewModel
+                locationViewModel = locationViewModel,
+                permanentViewModel = permanentViewModel
             )
         }
         composable("marker_list?") {
@@ -50,7 +51,7 @@ fun NiaNavHost(
                 startDate = listViewModel.listState.value.startDate ?: "",
                 endDate = listViewModel.listState.value.endDate ?: "",
                 memo = listViewModel.listState.value.memo ?: "",
-                permanetMarkers = viewModel.permanentMarkers,
+                permanetMarkers = permanentViewModel.permanentMarkers,
             )
         }
         composable("detail_search") {
@@ -58,3 +59,4 @@ fun NiaNavHost(
         }
     }
 }
+

@@ -15,7 +15,6 @@ class ListViewModel @Inject constructor() : ViewModel() {
 
     fun chengeStartDatePicker() {
         _listState.update { it.copy(openStartDatePicker = !it.openStartDatePicker) }
-
     }
 
     fun chengeEndDatePicker() {
