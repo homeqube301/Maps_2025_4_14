@@ -15,8 +15,8 @@ import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 fun NiaNavHost(
     navController: NavHostController,
     startDestination: String = "map",
-    listViewModel: ListViewModel = hiltViewModel(),
     viewModel: PermanentMarkerViewModel = hiltViewModel(),
+    listViewModel: ListViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,
@@ -40,7 +40,7 @@ fun NiaNavHost(
             val startDate = backStackEntry.arguments?.getString("startDate") ?: ""
             val endDate = backStackEntry.arguments?.getString("endDate") ?: ""
             val memo = backStackEntry.arguments?.getString("memo") ?: ""
-//        composable("marker_list") { backStackEntry ->
+
             // MarkerListScreenに検索条件を渡す
             MarkerListScreen(
                 navController = navController,
@@ -48,11 +48,12 @@ fun NiaNavHost(
                 startDate = startDate,
                 endDate = endDate,
                 memo = memo,
-                permanetMarkers = viewModel.permanentMarkers
+                permanetMarkers = viewModel.permanentMarkers,
+                listViewModel = listViewModel
             )
         }
         composable("detail_search") {
-            DetailSearchScreen(navController = navController)
+            DetailSearchScreen(navController = navController, listViewModel = listViewModel)
         }
     }
 }

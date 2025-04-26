@@ -5,6 +5,7 @@ import com.example.maps20250414.ui.state.ListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
@@ -13,12 +14,12 @@ class ListViewModel @Inject constructor() : ViewModel() {
     val listState: StateFlow<ListState> = _listState
 
     fun chengeStartDatePicker(change: Boolean) {
-        _listState.value = _listState.value.copy(openStartDatePicker = change)
+        _listState.update { it.copy(openStartDatePicker = !it.openStartDatePicker) }
 
     }
 
     fun chengeEndDatePicker(change: Boolean) {
-        _listState.value = _listState.value.copy(openEndDatePicker = change)
+        _listState.update { it.copy(openEndDatePicker = !it.openEndDatePicker) }
     }
 
     fun changeMarkerName(change: String) {

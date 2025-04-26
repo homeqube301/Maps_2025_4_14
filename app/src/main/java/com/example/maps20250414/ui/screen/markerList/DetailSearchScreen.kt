@@ -1,5 +1,6 @@
 package com.example.maps20250414.ui.screen.markerList
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.maps20250414.ui.stateholder.ListViewModel
@@ -29,7 +29,8 @@ import java.util.Calendar
 @Composable
 fun DetailSearchScreen(
     navController: NavHostController,
-    listViewModel: ListViewModel = hiltViewModel()
+    //listViewModel: ListViewModel = hiltViewModel()
+    listViewModel: ListViewModel
 ) {
     val listState by listViewModel.listState.collectAsState()
 
@@ -135,23 +136,17 @@ fun DetailSearchScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // 戻るボタン
-        Button(onClick = { navController.popBackStack() }) {
-            Text("戻る")
-        }
-
         // 検索ボタン
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
                 // 検索条件を渡して遷移
                 navController.navigate(
-                    "marker_list"
-//                            +
-//                            "markerName=${Uri.encode(listState.markerName ?: "")}&" +
-//                            "startDate=${Uri.encode(listState.startDate ?: "")}&" +
-//                            "endDate=${Uri.encode(listState.endDate ?: "")}&" +
-//                            "memo=${Uri.encode(listState.memo ?: "")}"
+                    "marker_list?" +
+                            "markerName=${Uri.encode(listState.markerName ?: "")}&" +
+                            "startDate=${Uri.encode(listState.startDate ?: "")}&" +
+                            "endDate=${Uri.encode(listState.endDate ?: "")}&" +
+                            "memo=${Uri.encode(listState.memo ?: "")}"
                 )
             },
             modifier = Modifier.fillMaxWidth()
@@ -196,7 +191,7 @@ fun DatePickerDialog(
 @Composable
 fun DetailSearchScreenPreview() {
     val dummyNavController = rememberNavController()
-    DetailSearchScreen(navController = dummyNavController)
+    DetailSearchScreen(navController = dummyNavController, listViewModel = ListViewModel())
 }
 
 @Preview(showBackground = true)

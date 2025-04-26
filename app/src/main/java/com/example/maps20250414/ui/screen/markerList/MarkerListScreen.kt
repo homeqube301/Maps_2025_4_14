@@ -30,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.maps20250414.domain.model.LatLngSerializable
 import com.example.maps20250414.domain.model.NamedMarker
+import com.example.maps20250414.ui.stateholder.ListViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -42,8 +43,8 @@ fun MarkerListScreen(
     startDate: String,
     endDate: String,
     memo: String,
-    //viewModel: PermanentMarkerViewModel = hiltViewModel(),
     permanetMarkers: List<NamedMarker>,
+    listViewModel: ListViewModel
 ) {
 
     Log.d("FilterParams", "start=$startDate, end=$endDate, name=$markerName, memo=$memo")
@@ -108,7 +109,8 @@ fun MarkerListScreen(
             TopAppBar(
                 title = { Text("マーカー一覧") },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    //IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.navigate("map") }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
                 }
@@ -190,7 +192,8 @@ fun PreviewMarkerListScreen() {
         startDate = "2024-04-01",
         endDate = "2024-04-10",
         memo = "メモ",
-        permanetMarkers = dummyMarkers
+        permanetMarkers = dummyMarkers,
+        listViewModel = ListViewModel()
     )
 }
 
