@@ -4,6 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.Dns
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.HttpException
@@ -45,7 +46,6 @@ data class EmbeddingData(
     @Json(name = "index") val index: Int
 )
 
-
 interface OpenAiApi {
     @POST("embeddings")
     suspend fun getEmbedding(
@@ -58,6 +58,7 @@ fun provideOpenAiApi(apiKey: String): OpenAiApi {
         .add(KotlinJsonAdapterFactory())
         .build()
     val client = OkHttpClient.Builder()
+        .dns(Dns.SYSTEM)
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer $apiKey")

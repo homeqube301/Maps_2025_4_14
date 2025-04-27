@@ -22,27 +22,24 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.maps20250414.BuildConfig
 import com.example.maps20250414.domain.model.LatLngSerializable
 import com.example.maps20250414.domain.model.NamedMarker
 import com.example.maps20250414.network.fetchEmbedding
 import com.example.maps20250414.network.provideOpenAiApi
-import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +52,29 @@ fun MarkerListScreen(
     permanetMarkers: List<NamedMarker>,
 ) {
 
+    // ベクトルを保存するためのState
+    var embedding by remember { mutableStateOf<List<Float>?>(null) }
+
+    val apiKey = BuildConfig.OPENAI_API_KEY
+
+    LaunchedEffect(Unit) {
+        val openAiApi = provideOpenAiApi(apiKey)
+        val inputText = "こんにちは、世界！"
+        val result = fetchEmbedding(openAiApi, inputText)
+        if (result != null) {
+            embedding = result
+            Log.d("Embeddin", "ベクトル取得成功！サイズ: ${result.size}")
+        } else {
+            Log.e("Embeddin", "ベクトル取得失敗")
+        }
+    }
+
+    if (embedding != null) {
+        Text("ベクトルサイズ: ${embedding!!.size}")
+        Text("最初の要素: ${embedding!!.first()}")
+    } else {
+        Text("Embedding取得中、または失敗しました")
+    }
 
     Log.d("FilterParams", "start=$startDate, end=$endDate, name=$markerName, memo=$memo")
     // 日付のフォーマットを定義

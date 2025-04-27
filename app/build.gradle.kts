@@ -13,6 +13,10 @@ android {
     namespace = "com.example.maps20250414"
     compileSdk = 35
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.maps20250414"
         minSdk = 27
@@ -21,10 +25,10 @@ android {
         versionName = "1.0"
 
         //manifestPlaceholders = [ "GOOGLE_MAPS_API_KEY": project.findProperty("GOOGLE_MAPS_API_KEY") ?: "" ]
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] =
             findProperty("GOOGLE_MAPS_API_KEY") as? String ?: ""
+        buildConfigField("String", "OPENAI_API_KEY", "\"${findProperty("OPENAI_API_KEY")}\"")
 
     }
 
