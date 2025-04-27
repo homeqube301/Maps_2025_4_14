@@ -32,7 +32,6 @@ fun SearchMaker(
     onMemoTapped: (NamedMarker) -> Unit,
     onTitleQueryChanged: (String) -> Unit,
     onMemoQueryChanged: (String) -> Unit,
-    //uiState: MapsUiState,
 
 ) {
 
@@ -78,9 +77,7 @@ fun SearchMaker(
             // メモ検索
             OutlinedTextField(
                 value = memoQuery ?: "",
-                //uiState.memoQuery ?: "",
                 onValueChange = {
-                    //mapViewModel.changeMemoQuery(it)
                     onMemoQueryChanged(it)
                 },
                 label = { Text("メモ内容で検索") },

@@ -8,8 +8,7 @@ import javax.inject.Inject
 
 class MarkerRepositoryImpl @Inject constructor(
     private val context: Context,
-
-    ) : MarkerRepository {
+) : MarkerRepository {
 
     override suspend fun loadMarkers(): List<NamedMarker> {
 

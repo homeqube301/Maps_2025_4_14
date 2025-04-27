@@ -64,7 +64,7 @@ fun EditPanel(
     permanentMarkers: List<NamedMarker>,
     focusManager: FocusManager,
     context: Context,
-    selectedAddress: StateFlow<String>
+    selectedAddress: StateFlow<String>,
 ) {
     val address by selectedAddress.collectAsState()
     val mediaPickerLauncher = rememberLauncherForActivityResult(
@@ -400,6 +400,6 @@ fun EditPanelPreview() {
         permanentMarkers = listOf(dummyMarker),
         focusManager = LocalFocusManager.current,
         context = LocalContext.current,
-        selectedAddress = dummyAddress
+        selectedAddress = dummyAddress,
     )
 }

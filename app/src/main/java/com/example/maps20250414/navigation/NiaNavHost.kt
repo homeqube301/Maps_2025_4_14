@@ -14,7 +14,7 @@ import com.example.maps20250414.ui.stateholder.MapViewModel
 import com.example.maps20250414.ui.stateholder.PermanentMarkerViewModel
 
 @Composable
-fun NiaNavHost(
+fun AppNavHost(
     navController: NavHostController,
     startDestination: String = "map/{latitude}/{longitude}",
     permanentViewModel: PermanentMarkerViewModel = hiltViewModel(),
