@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.maps20250414"
+    namespace = "com.mKanta.archivemaps"
     compileSdk = 35
 
     buildFeatures {
@@ -18,7 +18,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.maps20250414"
+        applicationId = "com.mKanta.archivemaps"
         minSdk = 27
         targetSdk = 35
         versionCode = 1
