@@ -3,17 +3,18 @@ package com.mKanta.archivemaps.ui.stateholder
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mKanta.archivemaps.data.repository.MarkerRepository
 import com.mKanta.archivemaps.domain.model.NamedMarker
-import com.mKanta.archivemaps.domain.repoitory.MarkerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PermanentMarkerViewModel @Inject constructor(
+class PermanentMarkerViewModel
+@Inject
+constructor(
     private val markerRepository: MarkerRepository,
 ) : ViewModel() {
-
     // 永続マーカーのリスト
     private val _permanentMarkers = mutableStateListOf<NamedMarker>()
     val permanentMarkers: List<NamedMarker>
@@ -27,14 +28,14 @@ class PermanentMarkerViewModel @Inject constructor(
     // 永続マーカーをロード
     fun loadMarkers() {
         viewModelScope.launch {
-            val loaded = markerRepository.loadMarkers() // リポジトリからマーカーを取得
+            val loaded = markerRepository.loadMarkers()
             _permanentMarkers.clear()
             _permanentMarkers.addAll(loaded)
         }
     }
 
     // 永続マーカーを保存
-    private fun saveMarkers() {
+    fun saveMarkers() {
         viewModelScope.launch {
             markerRepository.saveMarkers(_permanentMarkers)
         }
@@ -58,5 +59,4 @@ class PermanentMarkerViewModel @Inject constructor(
         _permanentMarkers.removeAll { it.id == markerId }
         saveMarkers()
     }
-
 }

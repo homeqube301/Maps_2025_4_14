@@ -3,23 +3,19 @@ package com.mKanta.archivemaps.data.repository
 import android.content.Context
 import com.mKanta.archivemaps.data.local.MarkerLocalDataSource
 import com.mKanta.archivemaps.domain.model.NamedMarker
-import com.mKanta.archivemaps.domain.repoitory.MarkerRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class MarkerRepositoryImpl @Inject constructor(
-    private val context: Context,
+class MarkerRepositoryImpl
+@Inject
+constructor(
+    @ApplicationContext private val context: Context,
+    private val markerLocalDataSource: MarkerLocalDataSource,
 ) : MarkerRepository {
-
-    override suspend fun loadMarkers(): List<NamedMarker> {
-
-        return MarkerLocalDataSource.loadMarkers(context)
-    }
+    override suspend fun loadMarkers(): List<NamedMarker> =
+        markerLocalDataSource.loadMarkers(context)
 
     override suspend fun saveMarkers(markers: List<NamedMarker>) {
-        MarkerLocalDataSource.saveMarkers(context, markers)
+        markerLocalDataSource.saveMarkers(context, markers)
     }
-
 }
-
-
-

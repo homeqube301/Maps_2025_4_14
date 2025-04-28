@@ -20,7 +20,6 @@ import dagger.hilt.android.HiltAndroidApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
     private var isPermissionGranted = false
 
@@ -29,14 +28,14 @@ class MainActivity : ComponentActivity() {
 
         isPermissionGranted = ContextCompat.checkSelfPermission(
             this,
-            Manifest.permission.ACCESS_FINE_LOCATION
+            Manifest.permission.ACCESS_FINE_LOCATION,
         ) == PackageManager.PERMISSION_GRANTED
 
         if (!isPermissionGranted) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
+                LOCATION_PERMISSION_REQUEST_CODE,
             )
         }
 
@@ -45,9 +44,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.background,
                 ) {
-                    //MapScreen(isPermissionGranted = isPermissionGranted)
                     AppNavHost(navController = navController)
                 }
             }
@@ -57,4 +55,3 @@ class MainActivity : ComponentActivity() {
 
 @HiltAndroidApp
 class MyApplication : Application()
-

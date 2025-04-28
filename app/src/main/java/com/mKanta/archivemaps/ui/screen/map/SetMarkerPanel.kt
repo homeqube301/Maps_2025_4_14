@@ -40,9 +40,9 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun SetMarkerPanel(
-    //mapViewModel: MapViewModel = hiltViewModel(),
-    //viewModel: PermanentMarkerViewModel = hiltViewModel(),
-    //tempMarkerName: String?,
+    // mapViewModel: MapViewModel = hiltViewModel(),
+    // viewModel: PermanentMarkerViewModel = hiltViewModel(),
+    // tempMarkerName: String?,
     cameraPositionState: CameraPositionState,
     focusManager: FocusManager,
     tempMarkerName: String?,
@@ -53,32 +53,36 @@ fun SetMarkerPanel(
     addVisibleMarker: (NamedMarker) -> Unit,
     addMarker: (NamedMarker) -> Unit,
 ) {
-    //val uiState by mapViewModel.uiState.collectAsState()
+    // val uiState by mapViewModel.uiState.collectAsState()
     Surface(
-        tonalElevation = 4.dp, modifier = Modifier
-            .width(300.dp)
-            .fillMaxHeight()
+        tonalElevation = 4.dp,
+        modifier =
+            Modifier
+                .width(300.dp)
+                .fillMaxHeight(),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text("マーカー名を入力してください")
             OutlinedTextField(
                 value = tempMarkerName ?: "",
-                //uiState.tempMarkerName ?: "",
+                // uiState.tempMarkerName ?: "",
                 onValueChange = {
-                    //tempMarkerName = it
-                    //mapViewModel.changeTempMarkerName(it)
+                    // tempMarkerName = it
+                    // mapViewModel.changeTempMarkerName(it)
                     changeTempMarkerName(it)
                 },
                 label = { Text("マーカー名") },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus() // ← IME入力を確定
-                    })
+                keyboardActions =
+                    KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus() // ← IME入力を確定
+                        },
+                    ),
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -88,53 +92,53 @@ fun SetMarkerPanel(
             Text("マーカーの色を選んでください")
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                val colorOptions = listOf(
-                    BitmapDescriptorFactory.HUE_RED to "赤",
-                    BitmapDescriptorFactory.HUE_BLUE to "青",
-                    BitmapDescriptorFactory.HUE_GREEN to "緑",
-                    BitmapDescriptorFactory.HUE_YELLOW to "黄"
-                )
+                val colorOptions =
+                    listOf(
+                        BitmapDescriptorFactory.HUE_RED to "赤",
+                        BitmapDescriptorFactory.HUE_BLUE to "青",
+                        BitmapDescriptorFactory.HUE_GREEN to "緑",
+                        BitmapDescriptorFactory.HUE_YELLOW to "黄",
+                    )
                 colorOptions.forEach { (hue, label) ->
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         RadioButton(
                             selected = selectedHue == hue,
-                            onClick = { selectedHue = hue })
+                            onClick = { selectedHue = hue },
+                        )
                         Text(label)
                     }
                 }
             }
 
-
-
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
-
                 focusManager.clearFocus() // ← 変換中なら確定
 
-                //uiState.tempMarkerPosition
+                // uiState.tempMarkerPosition
                 tempMarkerPosition?.let { pos ->
-                    val newMarker = NamedMarker(
-                        position = LatLngSerializable.from(pos),
-                        title = tempMarkerName ?: "",
-                        //uiState.tempMarkerName ?: "",
-                        createdAt = LocalDateTime.now().format(
-                            DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-                        ),
-                        colorHue = selectedHue
-
-                    )
+                    val newMarker =
+                        NamedMarker(
+                            position = LatLngSerializable.from(pos),
+                            title = tempMarkerName ?: "",
+                            // uiState.tempMarkerName ?: "",
+                            createdAt =
+                                LocalDateTime.now().format(
+                                    DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"),
+                                ),
+                            colorHue = selectedHue,
+                        )
                     addMarker(newMarker)
-                    //viewModel.addMarker(newMarker)
-                    //saveMarkers(context, permanentMarkers)
+                    // viewModel.addMarker(newMarker)
+                    // saveMarkers(context, permanentMarkers)
 
                     // 表示範囲に入っていれば visibleMarkers にも追加！
                     val bounds =
                         cameraPositionState.projection?.visibleRegion?.latLngBounds
                     if (bounds != null && bounds.contains(pos)) {
-                        //visibleMarkers.add(newMarker)
-                        //mapViewModel.addAllVisibleMarkers(listOf(newMarker))
+                        // visibleMarkers.add(newMarker)
+                        // mapViewModel.addAllVisibleMarkers(listOf(newMarker))
                         addVisibleMarker(newMarker)
                     }
                 }
@@ -168,9 +172,10 @@ fun SetMarkerPanel(
 @Preview(showBackground = true)
 @Composable
 fun PreviewSetMarkerPanel() {
-    val dummyCameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(LatLng(35.681236, 139.767125), 10f)
-    }
+    val dummyCameraPositionState =
+        rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(LatLng(35.681236, 139.767125), 10f)
+        }
 
     val dummyFocusManager = LocalFocusManager.current
 
@@ -183,6 +188,6 @@ fun PreviewSetMarkerPanel() {
         resetTempMarkers = {},
         changeTempMarkerName = {},
         addVisibleMarker = {},
-        addMarker = {}
+        addMarker = {},
     )
 }

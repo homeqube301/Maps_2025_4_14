@@ -42,7 +42,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-//@SuppressLint("MissingPermission")
+// @SuppressLint("MissingPermission")
 @Composable
 fun MapScreen(
     latitude: Double = 0.0,
@@ -52,7 +52,7 @@ fun MapScreen(
     locationViewModel: LocationViewModel,
     mapViewModel: MapViewModel,
     listviewModel: ListViewModel,
-    markerViewModel: MarkerViewModel = hiltViewModel()
+    markerViewModel: MarkerViewModel = hiltViewModel(),
 ) {
     val uiState by mapViewModel.uiState.collectAsState()
     val listState by listviewModel.listState.collectAsState()
@@ -64,7 +64,7 @@ fun MapScreen(
         if (latitude != 0.0 && longitude != 0.0) {
             cameraPositionState.animate(
                 update = CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 16f),
-                durationMs = 1000
+                durationMs = 1000,
             )
         }
     }
@@ -73,13 +73,13 @@ fun MapScreen(
         locationViewModel.startLocationUpdates(
             context = context,
             cameraPositionState = cameraPositionState,
-            onLocationUpdate = { mapViewModel.changeUserLocation(it) })
+            onLocationUpdate = { mapViewModel.changeUserLocation(it) },
+        )
     }
 
     LaunchedEffect(Unit) {
         permanentViewModel.loadMarkers()
     }
-
 
     LaunchedEffect(Unit) {
         delay(300) // projection が null でないように少し待つ
@@ -96,49 +96,61 @@ fun MapScreen(
                         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                         val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
 
-                        val startDateTime = if (!listState.startDate.isNullOrEmpty()) {
-                            try {
-                                LocalDate.parse(listState.startDate, formatter)
-                            } catch (e: Exception) {
-                                null
-                            }
-                        } else null
-
-                        val endDateTime = if (!listState.endDate.isNullOrEmpty()) {
-                            try {
-                                LocalDate.parse(listState.endDate, formatter)
-                            } catch (e: Exception) {
-                                null
-                            }
-                        } else null
-
-                        val filtered = permanentViewModel.permanentMarkers.filter { marker ->
-                            val markerDate: LocalDate? = try {
-                                LocalDateTime.parse(marker.createdAt, originalFormatter)
-                                    .toLocalDate()
-                            } catch (e: Exception) {
+                        val startDateTime =
+                            if (!listState.startDate.isNullOrEmpty()) {
+                                try {
+                                    LocalDate.parse(listState.startDate, formatter)
+                                } catch (e: Exception) {
+                                    null
+                                }
+                            } else {
                                 null
                             }
 
-                            //val matchesBounds = marker.position.toLatLng() in bounds
-                            val matchesDate = markerDate?.let {
-                                (startDateTime == null || !it.isBefore(startDateTime)) &&
-                                        (endDateTime == null || !it.isAfter(endDateTime))
-                            } ?: false
-                            val matchesName =
-                                listState.markerName.isNullOrEmpty() || marker.title.contains(
-                                    listState.markerName!!,
-                                    ignoreCase = true
-                                )
-                            val matchesMemo =
-                                listState.memo.isNullOrEmpty() || marker.memo?.contains(
-                                    listState.memo!!,
-                                    ignoreCase = true
-                                ) == true
+                        val endDateTime =
+                            if (!listState.endDate.isNullOrEmpty()) {
+                                try {
+                                    LocalDate.parse(listState.endDate, formatter)
+                                } catch (e: Exception) {
+                                    null
+                                }
+                            } else {
+                                null
+                            }
 
-                            //matchesBounds &&
-                            matchesDate && matchesName && matchesMemo
-                        }
+                        val filtered =
+                            permanentViewModel.permanentMarkers.filter { marker ->
+                                val markerDate: LocalDate? =
+                                    try {
+                                        LocalDateTime
+                                            .parse(marker.createdAt, originalFormatter)
+                                            .toLocalDate()
+                                    } catch (e: Exception) {
+                                        null
+                                    }
+
+                                // val matchesBounds = marker.position.toLatLng() in bounds
+                                val matchesDate =
+                                    markerDate?.let {
+                                        (startDateTime == null || !it.isBefore(startDateTime)) &&
+                                                (endDateTime == null || !it.isAfter(endDateTime))
+                                    } ?: false
+                                val matchesName =
+                                    listState.markerName.isNullOrEmpty() ||
+                                            marker.title.contains(
+                                                listState.markerName!!,
+                                                ignoreCase = true,
+                                            )
+                                val matchesMemo =
+                                    listState.memo.isNullOrEmpty() ||
+                                            marker.memo?.contains(
+                                                listState.memo!!,
+                                                ignoreCase = true,
+                                            ) == true
+
+                                // matchesBounds &&
+                                matchesDate && matchesName && matchesMemo
+                            }
 
                         mapViewModel.addAllVisibleMarkers(filtered)
                     }
@@ -146,9 +158,7 @@ fun MapScreen(
             }
     }
 
-
     Box(modifier = Modifier.fillMaxSize()) {
-
         LaunchedEffect(uiState.titleQuery, uiState.memoQuery) {
             mapViewModel.updateSearchList(
                 uiState.titleQuery,
@@ -157,19 +167,22 @@ fun MapScreen(
             )
         }
 
-
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            properties = MapProperties(
-                isMyLocationEnabled = uiState.isPermissionGranted,
-                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)
-            ),
+            properties =
+                MapProperties(
+                    isMyLocationEnabled = uiState.isPermissionGranted,
+                    mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                        context,
+                        R.raw.map_style
+                    ),
+                ),
             onMapClick = { latLng ->
                 mapViewModel.changeTempMarkerPosition(latLng)
                 mapViewModel.changeIsPanelOpen()
-            }) {
-
+            },
+        ) {
             // カメラの表示範囲にある永続マーカーのみ表示
 
             for (marker in uiState.visibleMarkers) {
@@ -178,16 +191,17 @@ fun MapScreen(
                     title = marker.title,
                     icon = BitmapDescriptorFactory.defaultMarker(marker.colorHue),
                     onClick = {
-                        //selectedMarker = marker
+                        // selectedMarker = marker
                         mapViewModel.changeSelectedMarker(marker)
                         markerViewModel.fetchAddressForLatLng(
                             marker.position.latitude,
                             marker.position.longitude,
                         )
-                        //isEditPanelOpen = true
+                        // isEditPanelOpen = true
                         mapViewModel.changeIsEditPanelOpen()
                         true // consume click
-                    })
+                    },
+                )
             }
             // 一時マーカー
             uiState.tempMarkerPosition?.let { temp ->
@@ -195,19 +209,19 @@ fun MapScreen(
                     state = MarkerState(position = temp),
                     title = "一時マーカー",
                     icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
-                    draggable = false
-
+                    draggable = false,
                 )
             }
         }
 
         // 右下の追従モードボタン
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
             verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.End
+            horizontalAlignment = Alignment.End,
         ) {
             Button(onClick = {
                 locationViewModel.toggleFollowing()
@@ -227,22 +241,23 @@ fun MapScreen(
                     }
 
                     mapViewModel.changeSelectedMarker(null)
-                })
+                },
+            )
         }
 
         // 検索ボタンとパネル
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
             verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.End
+            horizontalAlignment = Alignment.End,
         ) {
             Button(onClick = {
                 mapViewModel.changeIsSearchOpen()
                 mapViewModel.changeTitleQuery("")
                 mapViewModel.changeMemoQuery("")
-
             }) {
                 Text(if (uiState.isSearchOpen) "閉じる" else "簡易検索")
             }
@@ -262,8 +277,9 @@ fun MapScreen(
                     mapViewModel.changeIsEditPanelOpen()
                     cameraPositionState.move(
                         CameraUpdateFactory.newLatLngZoom(
-                            marker.position.toLatLng(), 17f
-                        )
+                            marker.position.toLatLng(),
+                            17f,
+                        ),
                     )
                     mapViewModel.changeIsSearchOpen()
                     mapViewModel.changeTitleQuery("")
@@ -274,8 +290,9 @@ fun MapScreen(
                     mapViewModel.changeIsEditPanelOpen()
                     cameraPositionState.move(
                         CameraUpdateFactory.newLatLngZoom(
-                            marker.position.toLatLng(), 17f
-                        )
+                            marker.position.toLatLng(),
+                            17f,
+                        ),
                     )
                     mapViewModel.changeIsSearchOpen()
                     mapViewModel.changeTitleQuery("")
@@ -295,10 +312,11 @@ fun MapScreen(
 
         // 右側から出るパネル
         AnimatedVisibility(
-            visible = uiState.isPanelOpen, modifier = Modifier.align(Alignment.CenterEnd)
+            visible = uiState.isPanelOpen,
+            modifier = Modifier.align(Alignment.CenterEnd),
         ) {
             SetMarkerPanel(
-                //tempMarkerName = null,
+                // tempMarkerName = null,
                 cameraPositionState = cameraPositionState,
                 focusManager = focusManager,
                 tempMarkerPosition = uiState.tempMarkerPosition,
@@ -319,22 +337,23 @@ fun MapScreen(
                 },
                 addMarker = { marker ->
                     permanentViewModel.addMarker(marker)
-                }
-
+                },
             )
-
         }
 
         // 右側から出るパネル(編集用)
         AnimatedVisibility(
             visible = uiState.isEditPanelOpen && uiState.selectedMarker != null,
-            modifier = Modifier.align(Alignment.CenterEnd)
+            modifier = Modifier.align(Alignment.CenterEnd),
         ) {
             EditPanel(
-                //uiState = uiState,
+                // uiState = uiState,
                 selectedMarker = uiState.selectedMarker,
                 selectedAddress = markerViewModel.selectedAddress,
                 permanentMarkers = permanentViewModel.permanentMarkers,
+                mapsSaveMarker = {
+                    permanentViewModel.saveMarkers()
+                },
                 focusManager = focusManager,
                 context = context,
                 onMarkerUpdate = { updatedMarker ->
@@ -342,7 +361,7 @@ fun MapScreen(
                     mapViewModel.changeSelectedMarker(updatedMarker)
                     mapViewModel.updateVisibleMarkers(
                         cameraPositionState,
-                        permanentViewModel.permanentMarkers
+                        permanentViewModel.permanentMarkers,
                     )
                 },
                 onMarkerDelete = { marker ->
@@ -356,11 +375,6 @@ fun MapScreen(
                     mapViewModel.changeSelectedMarker(null)
                 },
             )
-
         }
-
     }
 }
-
-
-

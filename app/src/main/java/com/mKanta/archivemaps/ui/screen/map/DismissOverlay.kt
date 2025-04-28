@@ -12,20 +12,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DismissOverlay(
-    onClosePanel: () -> Unit
-) {
-
+fun DismissOverlay(onClosePanel: () -> Unit) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.001f)) // ほぼ透明なオーバーレイ
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) {
-                onClosePanel()
-            }
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.001f)) // ほぼ透明なオーバーレイ
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                ) {
+                    onClosePanel()
+                },
     )
 }
 
@@ -33,8 +31,6 @@ fun DismissOverlay(
 @Composable
 fun DismissOverlayPreview() {
     DismissOverlay(
-        onClosePanel = {}
+        onClosePanel = {},
     )
 }
-
-

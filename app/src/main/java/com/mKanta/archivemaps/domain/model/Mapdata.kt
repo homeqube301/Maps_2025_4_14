@@ -11,24 +11,17 @@ data class NamedMarker(
     val position: LatLngSerializable,
     val title: String,
     val createdAt: String = "",
-    val imageUri: String? = null, // ← 画像URIを保持
+    val imageUri: String? = null,
     val videoUri: String? = null,
     val memo: String? = null,
     val colorHue: Float = BitmapDescriptorFactory.HUE_RED,
-) {
-//    fun ensureCreatedAt(): NamedMarker {
-//        return if (createdAt.isBlank()) {
-//            this.copy(
-//                createdAt = LocalDateTime.now().format(
-//                    DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-//                )
-//            )
-//        } else this
-//    }
-}
+)
 
 @Serializable
-data class LatLngSerializable(val latitude: Double, val longitude: Double) {
+data class LatLngSerializable(
+    val latitude: Double,
+    val longitude: Double,
+) {
     fun toLatLng() = LatLng(latitude, longitude)
 
     companion object {

@@ -28,7 +28,7 @@ import java.util.Calendar
 @Composable
 fun DetailSearchScreen(
     navController: NavHostController,
-    listViewModel: ListViewModel
+    listViewModel: ListViewModel,
 ) {
     val listState by listViewModel.listState.collectAsState()
 
@@ -43,12 +43,12 @@ fun DetailSearchScreen(
                     "$year-${String.format("%02d", month + 1)}-${
                         String.format(
                             "%02d",
-                            dayOfMonth
+                            dayOfMonth,
                         )
-                    }"
+                    }",
                 )
                 listViewModel.chengeStartDatePicker()
-            }
+            },
         )
     }
 
@@ -63,20 +63,21 @@ fun DetailSearchScreen(
                     "$year-${String.format("%02d", month + 1)}-${
                         String.format(
                             "%02d",
-                            dayOfMonth
+                            dayOfMonth,
                         )
-                    }"
+                    }",
                 )
                 listViewModel.chengeEndDatePicker()
-            }
+            },
         )
     }
 
     // 詳細検索画面のコンテンツ
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
     ) {
         // タイトル
         Text(text = "詳細検索", style = MaterialTheme.typography.bodySmall)
@@ -85,11 +86,11 @@ fun DetailSearchScreen(
         TextField(
             value = listState.markerName ?: "",
             onValueChange = {
-                //markerName = it
+                // markerName = it
                 listViewModel.changeMarkerName(it)
             },
             label = { Text("マーカー名") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         // 作成日（開始日）検索フィールド
@@ -97,14 +98,15 @@ fun DetailSearchScreen(
             onClick = {
                 listViewModel.chengeStartDatePicker()
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text = if (listState.startDate.isNullOrEmpty()) {
-                    "作成日（開始日）を選択"
-                } else {
-                    listState.startDate!!
-                }
+                text =
+                    if (listState.startDate.isNullOrEmpty()) {
+                        "作成日（開始日）を選択"
+                    } else {
+                        listState.startDate!!
+                    },
             )
         }
 
@@ -113,14 +115,15 @@ fun DetailSearchScreen(
             onClick = {
                 listViewModel.chengeEndDatePicker()
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text = if (listState.endDate.isNullOrEmpty()) {
-                    "作成日（開始日）を選択"
-                } else {
-                    listState.endDate!!
-                }
+                text =
+                    if (listState.endDate.isNullOrEmpty()) {
+                        "作成日（開始日）を選択"
+                    } else {
+                        listState.endDate!!
+                    },
             )
         }
 
@@ -131,7 +134,7 @@ fun DetailSearchScreen(
                 listViewModel.changeMemo(it)
             },
             label = { Text("メモ") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         // 検索ボタン
@@ -141,31 +144,31 @@ fun DetailSearchScreen(
                 // 検索条件を渡して遷移
                 navController.navigate("marker_list?")
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Text("検索する")
         }
     }
 }
 
-
 @Composable
 fun DatePickerDialog(
     onDismissRequest: () -> Unit,
-    onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit
+    onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit,
 ) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    val datePickerDialog = android.app.DatePickerDialog(
-        context,
-        { _, year, month, dayOfMonth ->
-            onDateSelected(year, month, dayOfMonth)
-        },
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)
-    )
+    val datePickerDialog =
+        android.app.DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                onDateSelected(year, month, dayOfMonth)
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH),
+        )
 
     // ダイアログの表示
     LaunchedEffect(Unit) {
@@ -192,6 +195,6 @@ fun DetailSearchScreenPreview() {
 fun DatePickerDialogPreview() {
     DatePickerDialog(
         onDismissRequest = {},
-        onDateSelected = { _, _, _ -> }
+        onDateSelected = { _, _, _ -> },
     )
 }

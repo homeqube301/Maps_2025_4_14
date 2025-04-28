@@ -26,49 +26,56 @@ interface NominatimApiService {
     fun reverseGeocode(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("format") format: String = "json"
+        @Query("format") format: String = "json",
     ): Call<NominatimResponse>
 }
 
 @JsonClass(generateAdapter = true)
 data class EmbeddingRequest(
     @Json(name = "input") val input: String,
-    @Json(name = "model") val model: String = "text-embedding-ada-002"
+    @Json(name = "model") val model: String = "text-embedding-ada-002",
 )
 
 data class EmbeddingResponse(
-    @Json(name = "data") val data: List<EmbeddingData>
+    @Json(name = "data") val data: List<EmbeddingData>,
 )
 
 @JsonClass(generateAdapter = true)
 data class EmbeddingData(
     @Json(name = "embedding") val embedding: List<Float>,
-    @Json(name = "index") val index: Int
+    @Json(name = "index") val index: Int,
 )
 
 interface OpenAiApi {
     @POST("embeddings")
     suspend fun getEmbedding(
-        @Body request: EmbeddingRequest
+        @Body request: EmbeddingRequest,
     ): EmbeddingResponse
 }
 
 fun provideOpenAiApi(apiKey: String): OpenAiApi {
-    val moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory())
-        .build()
-    val client = OkHttpClient.Builder()
-        .dns(Dns.SYSTEM)
-        .addInterceptor { chain ->
-            val request = chain.request().newBuilder()
-                .addHeader("Authorization", "Bearer $apiKey")
-                .addHeader("Content-Type", "application/json")
-                .build()
-            chain.proceed(request)
-        }
-        .build()
+    val moshi =
+        Moshi
+            .Builder()
+            .add(KotlinJsonAdapterFactory())
+            .build()
+    val client =
+        OkHttpClient
+            .Builder()
+            .dns(Dns.SYSTEM)
+            .addInterceptor { chain ->
+                val request =
+                    chain
+                        .request()
+                        .newBuilder()
+                        .addHeader("Authorization", "Bearer $apiKey")
+                        .addHeader("Content-Type", "application/json")
+                        .build()
+                chain.proceed(request)
+            }.build()
 
-    return Retrofit.Builder()
+    return Retrofit
+        .Builder()
         .baseUrl("https://api.openai.com/v1/")
         .client(client)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
@@ -76,8 +83,11 @@ fun provideOpenAiApi(apiKey: String): OpenAiApi {
         .create(OpenAiApi::class.java)
 }
 
-suspend fun fetchEmbedding(api: OpenAiApi, inputText: String): List<Float>? {
-    return try {
+suspend fun fetchEmbedding(
+    api: OpenAiApi,
+    inputText: String,
+): List<Float>? =
+    try {
         val request = EmbeddingRequest(input = inputText)
         val response = api.getEmbedding(request)
         response.data.firstOrNull()?.embedding
@@ -88,14 +98,13 @@ suspend fun fetchEmbedding(api: OpenAiApi, inputText: String): List<Float>? {
         e.printStackTrace()
         null
     }
-}
 
 // ベクトルを保存するためのState
-//var embedding by remember { mutableStateOf<List<Float>?>(null) }
+// var embedding by remember { mutableStateOf<List<Float>?>(null) }
 //
-//val apiKey = BuildConfig.OPENAI_API_KEY
+// val apiKey = BuildConfig.OPENAI_API_KEY
 //
-//LaunchedEffect(Unit) {
+// LaunchedEffect(Unit) {
 //    val openAiApi = provideOpenAiApi(apiKey)
 //    val inputText = "こんにちは、世界！"
 //    val result = fetchEmbedding(openAiApi, inputText)
@@ -105,11 +114,11 @@ suspend fun fetchEmbedding(api: OpenAiApi, inputText: String): List<Float>? {
 //    } else {
 //        Log.e("Embeddin", "ベクトル取得失敗")
 //    }
-//}
+// }
 //
-//if (embedding != null) {
+// if (embedding != null) {
 //    Text("ベクトルサイズ: ${embedding!!.size}")
 //    Text("最初の要素: ${embedding!!.first()}")
-//} else {
+// } else {
 //    Text("Embedding取得中、または失敗しました")
-//}
+// }

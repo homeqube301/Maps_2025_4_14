@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class ListViewModel @Inject constructor() : ViewModel() {
+class ListViewModel
+@Inject
+constructor() : ViewModel() {
     private val _listState = MutableStateFlow(ListState())
     val listState: StateFlow<ListState> = _listState
 
@@ -36,5 +38,4 @@ class ListViewModel @Inject constructor() : ViewModel() {
     fun changeEndDate(change: String) {
         _listState.value = _listState.value.copy(endDate = change)
     }
-
 }

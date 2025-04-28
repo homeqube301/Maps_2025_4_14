@@ -3,8 +3,10 @@ package com.mKanta.archivemaps.di
 import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.mKanta.archivemaps.data.local.MarkerLocalDataSource
+import com.mKanta.archivemaps.data.repository.MarkerRepository
 import com.mKanta.archivemaps.data.repository.MarkerRepositoryImpl
-import com.mKanta.archivemaps.domain.repoitory.MarkerRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,20 +17,23 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     @Provides
     @Singleton
     fun provideFusedLocationProviderClient(
-        @ApplicationContext context: Context
-    ): FusedLocationProviderClient {
-        return LocationServices.getFusedLocationProviderClient(context)
-    }
+        @ApplicationContext context: Context,
+    ): FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
     @Provides
     @Singleton
-    fun provideMarkerRepository(@ApplicationContext context: Context): MarkerRepository {
-        return MarkerRepositoryImpl(context)
-    }
+    fun provideMarkerLocalDataSource(
+        @ApplicationContext context: Context,
+    ): MarkerLocalDataSource = MarkerLocalDataSource(context)
 }
 
-
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindMarkerRepository(markerRepositoryImpl: MarkerRepositoryImpl): MarkerRepository
+}

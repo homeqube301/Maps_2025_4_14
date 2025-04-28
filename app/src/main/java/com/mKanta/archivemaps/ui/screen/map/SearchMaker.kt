@@ -32,43 +32,44 @@ fun SearchMaker(
     onMemoTapped: (NamedMarker) -> Unit,
     onTitleQueryChanged: (String) -> Unit,
     onMemoQueryChanged: (String) -> Unit,
-
 ) {
-
     Surface(
-        modifier = Modifier
-            .padding(top = 8.dp)
-            .background(Color.White, shape = RoundedCornerShape(8.dp))
-            .widthIn(max = 300.dp)
-            .padding(12.dp), shadowElevation = 4.dp
+        modifier =
+            Modifier
+                .padding(top = 8.dp)
+                .background(Color.White, shape = RoundedCornerShape(8.dp))
+                .widthIn(max = 300.dp)
+                .padding(12.dp),
+        shadowElevation = 4.dp,
     ) {
         Column {
-
             // マーカー名検索
             OutlinedTextField(
                 value = titleQuery ?: "",
-                //uiState.titleQuery ?: "",
+                // uiState.titleQuery ?: "",
                 onValueChange = {
-                    //mapViewModel.changeTitleQuery(it)
+                    // mapViewModel.changeTitleQuery(it)
                     onTitleQueryChanged(it)
                 },
                 label = { Text("マーカー名で検索") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             LazyColumn {
                 items(
-                    //uiState.titleResults
-                    titleResults
+                    // uiState.titleResults
+                    titleResults,
                 ) { marker ->
                     Text(
                         text = marker.title,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                onMarkerTapped(marker)
-                            }
-                            .padding(8.dp))
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onMarkerTapped(marker)
+                                }
+                                .padding(8.dp),
+                    )
                 }
             }
 
@@ -81,22 +82,24 @@ fun SearchMaker(
                     onMemoQueryChanged(it)
                 },
                 label = { Text("メモ内容で検索") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             LazyColumn {
                 items(
-                    //uiState.memoResults
-                    memoResults
+                    // uiState.memoResults
+                    memoResults,
                 ) { marker ->
                     Text(
                         text = marker.title + "（メモ一致）",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                onMemoTapped(marker)
-                            }
-                            .padding(8.dp))
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onMemoTapped(marker)
+                                }
+                                .padding(8.dp),
+                    )
                 }
             }
         }
@@ -106,24 +109,25 @@ fun SearchMaker(
 @Preview(showBackground = true)
 @Composable
 fun PreviewSearchMaker() {
-    val dummyMarkers = listOf(
-        NamedMarker(
-            id = "1",
-            title = "東京タワー",
-            memo = "夜景がきれい",
-            position = LatLngSerializable(35.3606, 138.7274),
-            colorHue = 0f
-        ),
-        NamedMarker(
-            id = "2",
-            title = "スカイツリー",
-            memo = "観光地",
-            position = LatLngSerializable(35.6252, 139.2430),
-            colorHue = 120f
+    val dummyMarkers =
+        listOf(
+            NamedMarker(
+                id = "1",
+                title = "東京タワー",
+                memo = "夜景がきれい",
+                position = LatLngSerializable(35.3606, 138.7274),
+                colorHue = 0f,
+            ),
+            NamedMarker(
+                id = "2",
+                title = "スカイツリー",
+                memo = "観光地",
+                position = LatLngSerializable(35.6252, 139.2430),
+                colorHue = 120f,
+            ),
         )
-    )
     SearchMaker(
-        //uiState = dummyState,
+        // uiState = dummyState,
         titleQuery = "東京",
         memoQuery = "観光",
         titleResults = dummyMarkers,
@@ -134,4 +138,3 @@ fun PreviewSearchMaker() {
         onMemoTapped = {},
     )
 }
-

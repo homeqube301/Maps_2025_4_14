@@ -13,15 +13,11 @@ data class MapsUiState(
     val isFollowing: Boolean = false,
     val userLocation: LatLng? = null,
     val tempMarkerPosition: LatLng? = null,
-
     val isSearchOpen: Boolean = false,
     val titleQuery: String? = null,
     val memoQuery: String? = null,
-
     val titleResults: List<NamedMarker> = emptyList(),
     val memoResults: List<NamedMarker> = emptyList(),
     val visibleMarkers: List<NamedMarker> = emptyList(),
-
     val editname: String? = null,
-
-    )
+)

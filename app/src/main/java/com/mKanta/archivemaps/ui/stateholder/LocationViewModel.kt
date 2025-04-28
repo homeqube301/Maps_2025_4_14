@@ -18,10 +18,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class LocationViewModel @Inject constructor(
+class LocationViewModel
+@Inject
+constructor(
     private val fusedLocationClient: FusedLocationProviderClient,
 ) : ViewModel() {
-
     private var locationCallback: LocationCallback? = null
 
     // StateFlowで追従状態を管理
@@ -34,12 +35,13 @@ class LocationViewModel @Inject constructor(
     fun startLocationUpdates(
         context: Context,
         cameraPositionState: CameraPositionState,
-        onLocationUpdate: (LatLng) -> Unit
+        onLocationUpdate: (LatLng) -> Unit,
     ) {
-
-        val hasPermission = ContextCompat.checkSelfPermission(
-            context, Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
+        val hasPermission =
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
 
         if (!hasPermission) {
             return
@@ -47,29 +49,34 @@ class LocationViewModel @Inject constructor(
 
         stopLocationUpdates()
 
-        val locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY, 3000L // 3秒間隔
-        )
-            .setMinUpdateIntervalMillis(2000L)     // 最短2秒間隔
-            .build()
+        val locationRequest =
+            LocationRequest
+                .Builder(
+                    Priority.PRIORITY_HIGH_ACCURACY,
+                    3000L, // 3秒間隔
+                ).setMinUpdateIntervalMillis(2000L) // 最短2秒間隔
+                .build()
 
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(result: LocationResult) {
-                val location = result.lastLocation
-                location?.let {
-                    val latLng = LatLng(it.latitude, it.longitude)
-                    onLocationUpdate(latLng)
+        locationCallback =
+            object : LocationCallback() {
+                override fun onLocationResult(result: LocationResult) {
+                    val location = result.lastLocation
+                    location?.let {
+                        val latLng = LatLng(it.latitude, it.longitude)
+                        onLocationUpdate(latLng)
 
-                    // StateFlowの値を使う（現在の追従状態）
-                    if (_isFollowing.value) {
-                        cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
+                        // StateFlowの値を使う（現在の追従状態）
+                        if (_isFollowing.value) {
+                            cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(latLng, 17f))
+                        }
                     }
                 }
             }
-        }
 
         fusedLocationClient.requestLocationUpdates(
-            locationRequest, locationCallback!!, context.mainLooper
+            locationRequest,
+            locationCallback!!,
+            context.mainLooper,
         )
     }
 
@@ -85,5 +92,4 @@ class LocationViewModel @Inject constructor(
         // ViewModelが破棄されるときにも解除
         stopLocationUpdates()
     }
-
 }

@@ -21,11 +21,10 @@ fun AppNavHost(
     listViewModel: ListViewModel = hiltViewModel(),
     mapViewModel: MapViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel = hiltViewModel(),
-
-    ) {
+) {
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
     ) {
         composable("map/{latitude}/{longitude}") { backStackEntry ->
             // ナビゲーションパラメータ（緯度、経度）を取得
@@ -40,7 +39,7 @@ fun AppNavHost(
                 listviewModel = listViewModel,
                 mapViewModel = mapViewModel,
                 locationViewModel = locationViewModel,
-                permanentViewModel = permanentViewModel
+                permanentViewModel = permanentViewModel,
             )
         }
         composable("marker_list?") {
@@ -59,4 +58,3 @@ fun AppNavHost(
         }
     }
 }
-

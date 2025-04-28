@@ -44,74 +44,81 @@ fun MarkerListScreen(
     memo: String,
     permanetMarkers: List<NamedMarker>,
 ) {
-
     Log.d("FilterParams", "start=$startDate, end=$endDate, name=$markerName, memo=$memo")
     // 日付のフォーマットを定義
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
 
-    val markerListState = remember {
-        derivedStateOf {
-            //viewModel.permanentMarkers.sortedBy { it.createdAt }
-            permanetMarkers.sortedBy { it.createdAt }
+    val markerListState =
+        remember {
+            derivedStateOf {
+                // viewModel.permanentMarkers.sortedBy { it.createdAt }
+                permanetMarkers.sortedBy { it.createdAt }
+            }
         }
-    }
 
     // startDate と endDate を LocalDateTime に変換
-    val startDateTime = if (startDate.isNotEmpty()) {
-        try {
-            LocalDate.parse(startDate, formatter)
-
-        } catch (e: Exception) {
-            Log.e("MarkerListScreen", "startDate の変換に失敗しました: $e")
-            null // パースできなかった場合は null にする
-        }
-    } else null
-
-    val endDateTime = if (endDate.isNotEmpty()) {
-        try {
-            LocalDate.parse(endDate, formatter)
-        } catch (e: Exception) {
-            null // パースできなかった場合は null にする
-        }
-    } else null
-
-    val filteredMarkerList = markerListState.value.filter { marker ->
-        // マーカー名でフィルタリング（空ならスキップ）
-        val markerDate: LocalDate? = try {
-            val dateTime = LocalDateTime.parse(marker.createdAt, originalFormatter)
-            dateTime.toLocalDate()
-        } catch (e: Exception) {
-            Log.e("MarkerListScreen", "marker.createdAtのパースに失敗: ${marker.createdAt}")
+    val startDateTime =
+        if (startDate.isNotEmpty()) {
+            try {
+                LocalDate.parse(startDate, formatter)
+            } catch (e: Exception) {
+                Log.e("MarkerListScreen", "startDate の変換に失敗しました: $e")
+                null // パースできなかった場合は null にする
+            }
+        } else {
             null
         }
 
-        val matchesDate = if (markerDate != null) {
-            (startDateTime == null || !markerDate.isBefore(startDateTime)) &&
-                    (endDateTime == null || !markerDate.isAfter(endDateTime))
+    val endDateTime =
+        if (endDate.isNotEmpty()) {
+            try {
+                LocalDate.parse(endDate, formatter)
+            } catch (e: Exception) {
+                null // パースできなかった場合は null にする
+            }
         } else {
-            false
+            null
         }
 
-        val matchesName =
-            markerName.isEmpty() || marker.title.contains(markerName, ignoreCase = true)
-        val matchesMemo = memo.isEmpty() || marker.memo?.contains(memo, ignoreCase = true) == true
+    val filteredMarkerList =
+        markerListState.value.filter { marker ->
+            // マーカー名でフィルタリング（空ならスキップ）
+            val markerDate: LocalDate? =
+                try {
+                    val dateTime = LocalDateTime.parse(marker.createdAt, originalFormatter)
+                    dateTime.toLocalDate()
+                } catch (e: Exception) {
+                    Log.e("MarkerListScreen", "marker.createdAtのパースに失敗: ${marker.createdAt}")
+                    null
+                }
 
-        matchesName && matchesDate && matchesMemo
+            val matchesDate =
+                if (markerDate != null) {
+                    (startDateTime == null || !markerDate.isBefore(startDateTime)) &&
+                            (endDateTime == null || !markerDate.isAfter(endDateTime))
+                } else {
+                    false
+                }
 
-    }
+            val matchesName =
+                markerName.isEmpty() || marker.title.contains(markerName, ignoreCase = true)
+            val matchesMemo =
+                memo.isEmpty() || marker.memo?.contains(memo, ignoreCase = true) == true
 
+            matchesName && matchesDate && matchesMemo
+        }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("マーカー一覧") },
                 navigationIcon = {
-                    //IconButton(onClick = { navController.popBackStack() }) {
+                    // IconButton(onClick = { navController.popBackStack() }) {
                     IconButton(onClick = { navController.navigate("map/{latitude}/{longitude}") }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
@@ -119,9 +126,9 @@ fun MarkerListScreen(
                 onClick = { navController.navigate("detail_search") },
                 content = {
                     Icon(Icons.Filled.Search, contentDescription = "詳細検索")
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
             items(filteredMarkerList) { marker ->
@@ -129,7 +136,7 @@ fun MarkerListScreen(
                     marker = marker,
                     onClick = {
                         navController.navigate("map/${marker.position.latitude}/${marker.position.longitude}")
-                    }
+                    },
                 )
                 HorizontalDivider()
             }
@@ -138,14 +145,17 @@ fun MarkerListScreen(
 }
 
 @Composable
-fun MarkerItem(marker: NamedMarker, onClick: () -> Unit) {
+fun MarkerItem(
+    marker: NamedMarker,
+    onClick: () -> Unit,
+) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .clickable { onClick() }
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clickable { onClick() },
     ) {
-
         Text(text = "ID: ${marker.id}", style = MaterialTheme.typography.bodySmall)
         Text(text = marker.title, style = MaterialTheme.typography.titleMedium)
         if (!marker.memo.isNullOrBlank()) {
@@ -153,13 +163,13 @@ fun MarkerItem(marker: NamedMarker, onClick: () -> Unit) {
                 text = marker.memo,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
         Text(
             text = "作成日時: ${marker.createdAt}",
             style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 4.dp)
+            modifier = Modifier.padding(top = 4.dp),
         )
     }
 }
@@ -169,20 +179,21 @@ fun MarkerItem(marker: NamedMarker, onClick: () -> Unit) {
 fun PreviewMarkerListScreen() {
     val dummyNavController = rememberNavController()
 
-    val dummyMarkers = listOf(
-        NamedMarker(
-            title = "テストマーカー1",
-            memo = "これはメモ1です",
-            createdAt = "2024/04/01 00:00:00",
-            position = LatLngSerializable(35.0, 139.0)
-        ),
-        NamedMarker(
-            title = "テストマーカー2",
-            memo = "これはメモ2です",
-            createdAt = "2024/04/05 00:00:00",
-            position = LatLngSerializable(36.0, 140.0)
+    val dummyMarkers =
+        listOf(
+            NamedMarker(
+                title = "テストマーカー1",
+                memo = "これはメモ1です",
+                createdAt = "2024/04/01 00:00:00",
+                position = LatLngSerializable(35.0, 139.0),
+            ),
+            NamedMarker(
+                title = "テストマーカー2",
+                memo = "これはメモ2です",
+                createdAt = "2024/04/05 00:00:00",
+                position = LatLngSerializable(36.0, 140.0),
+            ),
         )
-    )
 
     MarkerListScreen(
         navController = dummyNavController,
@@ -197,17 +208,16 @@ fun PreviewMarkerListScreen() {
 @Preview(showBackground = true)
 @Composable
 fun MarkerItemPreview() {
-    val dummyMarker = NamedMarker(
-        id = 1.toString(),
-        title = "東京タワー",
-        memo = "観光地の名所です。",
-        createdAt = "2025/04/24 18:00:36",
-        position = LatLngSerializable(35.6586, 139.7454)
-    )
+    val dummyMarker =
+        NamedMarker(
+            id = 1.toString(),
+            title = "東京タワー",
+            memo = "観光地の名所です。",
+            createdAt = "2025/04/24 18:00:36",
+            position = LatLngSerializable(35.6586, 139.7454),
+        )
 
     MaterialTheme {
         MarkerItem(marker = dummyMarker, onClick = {})
     }
 }
-
-

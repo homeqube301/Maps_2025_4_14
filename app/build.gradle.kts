@@ -3,10 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
-    //id ("dagger.hilt.android.plugin")
+    // id ("dagger.hilt.android.plugin")
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
-
 }
 
 android {
@@ -24,12 +23,11 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        //manifestPlaceholders = [ "GOOGLE_MAPS_API_KEY": project.findProperty("GOOGLE_MAPS_API_KEY") ?: "" ]
+        // manifestPlaceholders = [ "GOOGLE_MAPS_API_KEY": project.findProperty("GOOGLE_MAPS_API_KEY") ?: "" ]
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] =
             findProperty("GOOGLE_MAPS_API_KEY") as? String ?: ""
         buildConfigField("String", "OPENAI_API_KEY", "\"${findProperty("OPENAI_API_KEY")}\"")
-
     }
 
     buildTypes {
@@ -37,7 +35,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -75,10 +73,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
 
-
     implementation("com.squareup.moshi:moshi:1.15.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
-
 
     implementation(libs.play.services.location)
 
@@ -89,7 +85,6 @@ dependencies {
 
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -97,5 +92,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }

@@ -8,5 +8,4 @@ data class ListState(
     // DatePicker用の状態
     val openStartDatePicker: Boolean = false,
     val openEndDatePicker: Boolean = false,
-
-    )
+)
