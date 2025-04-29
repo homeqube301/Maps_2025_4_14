@@ -43,10 +43,8 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.ui.stateholder.ListViewModel
-import com.mKanta.archivemaps.ui.stateholder.LocationViewModel
 import com.mKanta.archivemaps.ui.stateholder.MapViewModel
 import com.mKanta.archivemaps.ui.stateholder.MarkerViewModel
-import com.mKanta.archivemaps.ui.stateholder.PermanentMarkerViewModel
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -58,8 +56,6 @@ fun MapScreen(
     latitude: Double = 0.0,
     longitude: Double = 0.0,
     navController: NavHostController,
-    permanentViewModel: PermanentMarkerViewModel,
-    locationViewModel: LocationViewModel,
     mapViewModel: MapViewModel,
     listviewModel: ListViewModel,
     markerViewModel: MarkerViewModel = hiltViewModel(),
@@ -80,7 +76,7 @@ fun MapScreen(
     }
 
     LaunchedEffect(Unit) {
-        locationViewModel.startLocationUpdates(
+        mapViewModel.startLocationUpdates(
             context = context,
             cameraPositionState = cameraPositionState,
             onLocationUpdate = { mapViewModel.changeUserLocation(it) },
@@ -88,14 +84,14 @@ fun MapScreen(
     }
 
     LaunchedEffect(Unit) {
-        permanentViewModel.loadMarkers()
+        mapViewModel.loadMarkers()
     }
 
     LaunchedEffect(Unit) {
         delay(300) // projection が null でないように少し待つ
         cameraPositionState.projection?.visibleRegion?.latLngBounds?.let { bounds ->
             val filtered =
-                permanentViewModel.permanentMarkers.filter { it.position.toLatLng() in bounds }
+                mapViewModel.permanentMarkers.filter { it.position.toLatLng() in bounds }
             mapViewModel.addAllVisibleMarkers(filtered)
         }
         snapshotFlow { cameraPositionState.isMoving }
@@ -129,7 +125,7 @@ fun MapScreen(
                             }
 
                         val filtered =
-                            permanentViewModel.permanentMarkers.filter { marker ->
+                            mapViewModel.permanentMarkers.filter { marker ->
                                 val markerDate: LocalDate? =
                                     try {
                                         LocalDateTime
@@ -158,11 +154,10 @@ fun MapScreen(
                                                 ignoreCase = true,
                                             ) == true
 
-                                // matchesBounds &&
                                 matchesDate && matchesName && matchesMemo
                             }
 
-                        mapViewModel.addAllVisibleMarkers(filtered)
+                        mapViewModel.setVisibleMarkers(filtered)
                     }
                 }
             }
@@ -171,9 +166,10 @@ fun MapScreen(
         topBar = {
             TopAppBar(
                 title = { Text("") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Blue.copy(alpha = 0.5f)
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Blue.copy(alpha = 0.5f),
+                    ),
                 actions = {
                     // 簡易検索ボタン
                     IconButton(onClick = {
@@ -181,15 +177,16 @@ fun MapScreen(
                     }) {
                         Icon(Icons.Default.Search, contentDescription = "検索")
                     }
-                }
+                },
             )
         },
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .systemBarsPadding()
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .systemBarsPadding(),
         ) {
             LaunchedEffect(uiState.titleQuery, uiState.memoQuery) {
                 mapViewModel.updateSearchList(
@@ -205,10 +202,11 @@ fun MapScreen(
                 properties =
                     MapProperties(
                         isMyLocationEnabled = uiState.isPermissionGranted,
-                        mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
-                            context,
-                            R.raw.map_style
-                        ),
+                        mapStyleOptions =
+                            MapStyleOptions.loadRawResourceStyle(
+                                context,
+                                R.raw.map_style,
+                            ),
                     ),
                 onMapClick = { latLng ->
                     mapViewModel.changeTempMarkerPosition(latLng)
@@ -246,7 +244,6 @@ fun MapScreen(
                 }
             }
 
-
             if (uiState.isEditPanelOpen || uiState.isPanelOpen || uiState.isSearchOpen) {
                 DismissOverlay(
                     onClosePanel = {
@@ -261,29 +258,29 @@ fun MapScreen(
                 )
             }
 
-
             FloatingActionButton(
                 onClick = { navController.navigate("marker_list") },
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(start = 16.dp, top = 5.dp)
+                modifier =
+                    Modifier
+                        .align(Alignment.TopStart)
+                        .padding(start = 16.dp, top = 5.dp),
             ) {
                 Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
             }
 
-
             FloatingActionButton(
                 onClick = {
-                    locationViewModel.toggleFollowing()
+                    mapViewModel.toggleFollowing()
                     mapViewModel.changeIsFollowing()
                 },
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = 16.dp, top = 5.dp)
+                modifier =
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 16.dp, top = 5.dp),
             ) {
                 Icon(
                     imageVector = if (uiState.isFollowing) Icons.Default.LocationOn else Icons.Default.LocationOn,
-                    contentDescription = "追従"
+                    contentDescription = "追従",
                 )
             }
 
@@ -353,7 +350,7 @@ fun MapScreen(
                         mapViewModel.addAllVisibleMarkers(listOf(marker))
                     },
                     addMarker = { marker ->
-                        permanentViewModel.addMarker(marker)
+                        mapViewModel.addMarker(marker)
                     },
                 )
             }
@@ -367,22 +364,22 @@ fun MapScreen(
                     // uiState = uiState,
                     selectedMarker = uiState.selectedMarker,
                     selectedAddress = markerViewModel.selectedAddress,
-                    permanentMarkers = permanentViewModel.permanentMarkers,
+                    permanentMarkers = mapViewModel.permanentMarkers,
                     mapsSaveMarker = {
-                        permanentViewModel.saveMarkers()
+                        mapViewModel.saveMarkers()
                     },
                     focusManager = focusManager,
                     context = context,
                     onMarkerUpdate = { updatedMarker ->
-                        permanentViewModel.updateMarker(updatedMarker)
+                        mapViewModel.updateMarker(updatedMarker)
                         mapViewModel.changeSelectedMarker(updatedMarker)
                         mapViewModel.updateVisibleMarkers(
                             cameraPositionState,
-                            permanentViewModel.permanentMarkers,
+                            mapViewModel.permanentMarkers,
                         )
                     },
                     onMarkerDelete = { marker ->
-                        permanentViewModel.removeMarker(marker.id)
+                        mapViewModel.removeMarker(marker.id)
                         mapViewModel.removeVisibleMarkers(marker)
                         mapViewModel.changeSelectedMarker(null)
                         mapViewModel.changeIsEditPanelOpen()
@@ -396,4 +393,3 @@ fun MapScreen(
         }
     }
 }
-

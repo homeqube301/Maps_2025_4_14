@@ -66,10 +66,15 @@ fun DetailSearchScreen(
             },
             onDateSelected = { year, month, dayOfMonth ->
                 listViewModel.changeEndDate(
-                    "$year-${String.format("%02d", month + 1)}-${String.format("%02d", dayOfMonth)}"
+                    "$year-${String.format("%02d", month + 1)}-${
+                        String.format(
+                            "%02d",
+                            dayOfMonth,
+                        )
+                    }",
                 )
                 listViewModel.chengeEndDatePicker()
-            }
+            },
         )
     }
 
@@ -163,10 +168,10 @@ fun ComposeDatePickerDialog(
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
             shape = MaterialTheme.shapes.medium,
-            tonalElevation = 8.dp
+            tonalElevation = 8.dp,
         ) {
             Column(
-                modifier = Modifier.padding(24.dp)
+                modifier = Modifier.padding(24.dp),
             ) {
                 DatePicker(state = datePickerState)
 
@@ -174,7 +179,7 @@ fun ComposeDatePickerDialog(
 
                 Row(
                     horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     TextButton(onClick = {
                         onDismissRequest()
@@ -185,13 +190,15 @@ fun ComposeDatePickerDialog(
                     TextButton(onClick = {
                         onDismissRequest()
                         datePickerState.selectedDateMillis?.let { millis ->
-                            val date = Instant.ofEpochMilli(millis)
-                                .atZone(ZoneId.systemDefault())
-                                .toLocalDate()
+                            val date =
+                                Instant
+                                    .ofEpochMilli(millis)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
                             onDateSelected(date.year, date.monthValue - 1, date.dayOfMonth)
+                            onDismissRequest()
                         }
-                    })
-                    {
+                    }) {
                         Text("OK")
                     }
                 }
@@ -199,7 +206,6 @@ fun ComposeDatePickerDialog(
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

@@ -9,18 +9,14 @@ import com.mKanta.archivemaps.ui.screen.map.MapScreen
 import com.mKanta.archivemaps.ui.screen.markerList.DetailSearchScreen
 import com.mKanta.archivemaps.ui.screen.markerList.MarkerListScreen
 import com.mKanta.archivemaps.ui.stateholder.ListViewModel
-import com.mKanta.archivemaps.ui.stateholder.LocationViewModel
 import com.mKanta.archivemaps.ui.stateholder.MapViewModel
-import com.mKanta.archivemaps.ui.stateholder.PermanentMarkerViewModel
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     startDestination: String = "map/{latitude}/{longitude}",
-    permanentViewModel: PermanentMarkerViewModel = hiltViewModel(),
     listViewModel: ListViewModel = hiltViewModel(),
     mapViewModel: MapViewModel = hiltViewModel(),
-    locationViewModel: LocationViewModel = hiltViewModel(),
 ) {
     NavHost(
         navController = navController,
@@ -38,8 +34,6 @@ fun AppNavHost(
                 longitude = longitude,
                 listviewModel = listViewModel,
                 mapViewModel = mapViewModel,
-                locationViewModel = locationViewModel,
-                permanentViewModel = permanentViewModel,
             )
         }
         composable("marker_list?") {
@@ -50,7 +44,7 @@ fun AppNavHost(
                 startDate = listViewModel.listState.value.startDate ?: "",
                 endDate = listViewModel.listState.value.endDate ?: "",
                 memo = listViewModel.listState.value.memo ?: "",
-                permanetMarkers = permanentViewModel.permanentMarkers,
+                permanetMarkers = mapViewModel.permanentMarkers,
             )
         }
         composable("detail_search") {

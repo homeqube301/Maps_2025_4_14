@@ -7,7 +7,7 @@ import com.mKanta.archivemaps.domain.model.NamedMarker
 import kotlinx.serialization.json.Json
 
 class MarkerLocalDataSource(
-    context: Context
+    context: Context,
 ) {
     fun saveMarkers(
         context: Context,

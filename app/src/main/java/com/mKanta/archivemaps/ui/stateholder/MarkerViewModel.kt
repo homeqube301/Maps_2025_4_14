@@ -11,9 +11,7 @@ import retrofit2.Call
 import javax.inject.Inject
 
 @HiltViewModel
-class MarkerViewModel
-@Inject
-constructor(
+class MarkerViewModel @Inject constructor(
     private val apiService: NominatimApiService,
 ) : ViewModel() {
     private val _selectedAddress = MutableStateFlow("読み込み中…")
