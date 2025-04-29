@@ -3,7 +3,6 @@ package com.mKanta.archivemaps.ui.stateholder
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
-import com.mKanta.archivemaps.data.repository.MarkerRepositoryImpl
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.ui.state.MapsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,9 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MapViewModel
 @Inject
-constructor(
-    private val markerRepository: MarkerRepositoryImpl,
-) : ViewModel() {
+constructor() : ViewModel() {
     private val _uiState = MutableStateFlow(MapsUiState())
     val uiState: StateFlow<MapsUiState> = _uiState
 

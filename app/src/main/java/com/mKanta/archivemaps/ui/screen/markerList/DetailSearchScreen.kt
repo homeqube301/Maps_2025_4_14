@@ -1,29 +1,35 @@
 package com.mKanta.archivemaps.ui.screen.markerList
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.mKanta.archivemaps.ui.stateholder.ListViewModel
-import java.util.Calendar
+import java.time.Instant
+import java.time.ZoneId
 
 @Composable
 fun DetailSearchScreen(
@@ -34,7 +40,7 @@ fun DetailSearchScreen(
 
     // 作成日（開始日）選択用
     if (listState.openStartDatePicker) {
-        DatePickerDialog(
+        ComposeDatePickerDialog(
             onDismissRequest = {
                 listViewModel.chengeStartDatePicker()
             },
@@ -54,21 +60,16 @@ fun DetailSearchScreen(
 
     // 作成日（終了日）選択用
     if (listState.openEndDatePicker) {
-        DatePickerDialog(
+        ComposeDatePickerDialog(
             onDismissRequest = {
                 listViewModel.chengeEndDatePicker()
             },
             onDateSelected = { year, month, dayOfMonth ->
                 listViewModel.changeEndDate(
-                    "$year-${String.format("%02d", month + 1)}-${
-                        String.format(
-                            "%02d",
-                            dayOfMonth,
-                        )
-                    }",
+                    "$year-${String.format("%02d", month + 1)}-${String.format("%02d", dayOfMonth)}"
                 )
                 listViewModel.chengeEndDatePicker()
-            },
+            }
         )
     }
 
@@ -151,37 +152,54 @@ fun DetailSearchScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerDialog(
+fun ComposeDatePickerDialog(
     onDismissRequest: () -> Unit,
     onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit,
 ) {
-    val context = LocalContext.current
-    val calendar = Calendar.getInstance()
+    val datePickerState = rememberDatePickerState()
 
-    val datePickerDialog =
-        android.app.DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                onDateSelected(year, month, dayOfMonth)
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH),
-        )
+    Dialog(onDismissRequest = onDismissRequest) {
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            tonalElevation = 8.dp
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp)
+            ) {
+                DatePicker(state = datePickerState)
 
-    // ダイアログの表示
-    LaunchedEffect(Unit) {
-        datePickerDialog.show()
-    }
+                Spacer(modifier = Modifier.height(16.dp))
 
-    // ダイアログが閉じられた時に呼び出される処理
-    DisposableEffect(onDismissRequest) {
-        onDispose {
-            datePickerDialog.dismiss()
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = {
+                        onDismissRequest()
+                    }) {
+                        Text("キャンセル")
+                    }
+
+                    TextButton(onClick = {
+                        onDismissRequest()
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val date = Instant.ofEpochMilli(millis)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                            onDateSelected(date.year, date.monthValue - 1, date.dayOfMonth)
+                        }
+                    })
+                    {
+                        Text("OK")
+                    }
+                }
+            }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -193,7 +211,7 @@ fun DetailSearchScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun DatePickerDialogPreview() {
-    DatePickerDialog(
+    ComposeDatePickerDialog(
         onDismissRequest = {},
         onDateSelected = { _, _, _ -> },
     )
