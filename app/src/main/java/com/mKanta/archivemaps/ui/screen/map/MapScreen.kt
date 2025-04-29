@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -44,7 +43,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.ui.stateholder.ListViewModel
 import com.mKanta.archivemaps.ui.stateholder.MapViewModel
-import com.mKanta.archivemaps.ui.stateholder.MarkerViewModel
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -58,7 +56,6 @@ fun MapScreen(
     navController: NavHostController,
     mapViewModel: MapViewModel,
     listviewModel: ListViewModel,
-    markerViewModel: MarkerViewModel = hiltViewModel(),
 ) {
     val uiState by mapViewModel.uiState.collectAsState()
     val listState by listviewModel.listState.collectAsState()
@@ -223,7 +220,7 @@ fun MapScreen(
                         onClick = {
                             // selectedMarker = marker
                             mapViewModel.changeSelectedMarker(marker)
-                            markerViewModel.fetchAddressForLatLng(
+                            mapViewModel.fetchAddressForLatLng(
                                 marker.position.latitude,
                                 marker.position.longitude,
                             )
@@ -363,7 +360,7 @@ fun MapScreen(
                 EditPanel(
                     // uiState = uiState,
                     selectedMarker = uiState.selectedMarker,
-                    selectedAddress = markerViewModel.selectedAddress,
+                    selectedAddress = mapViewModel.selectedAddress,
                     permanentMarkers = mapViewModel.permanentMarkers,
                     mapsSaveMarker = {
                         mapViewModel.saveMarkers()
