@@ -81,27 +81,3 @@ suspend fun fetchEmbedding(
         Log.d("Supabase", "マーカーのメモを更新３ $api ")
         null
     }
-
-// ベクトルを保存するためのState
-// var embedding by remember { mutableStateOf<List<Float>?>(null) }
-//
-// val apiKey = BuildConfig.OPENAI_API_KEY
-//
-// LaunchedEffect(Unit) {
-//    val openAiApi = provideOpenAiApi(apiKey)
-//    val inputText = "こんにちは、世界！"
-//    val result = fetchEmbedding(openAiApi, inputText)
-//    if (result != null) {
-//        embedding = result
-//        Log.d("Embeddin", "ベクトル取得成功！サイズ: ${result.size}")
-//    } else {
-//        Log.e("Embeddin", "ベクトル取得失敗")
-//    }
-// }
-//
-// if (embedding != null) {
-//    Text("ベクトルサイズ: ${embedding!!.size}")
-//    Text("最初の要素: ${embedding!!.first()}")
-// } else {
-//    Text("Embedding取得中、または失敗しました")
-// }

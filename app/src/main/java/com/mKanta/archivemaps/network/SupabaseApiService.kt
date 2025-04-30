@@ -8,6 +8,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.Headers
 import retrofit2.http.POST
 
 data class MemoEmbeddingInsertRequest(
@@ -17,8 +18,9 @@ data class MemoEmbeddingInsertRequest(
 )
 
 interface SupabaseApi {
-    @POST("memo_beddings999")
-    suspend fun insertMemoEmbedding(
+    @Headers("Prefer: resolution=merge-duplicates")
+    @POST("memo_embeddings?on_conflict=marker_id")
+    suspend fun upsertMemoEmbedding(
         @Body request: MemoEmbeddingInsertRequest
     ): Response<Unit>
 }
@@ -46,27 +48,3 @@ fun provideSupabaseApi(
         .build()
         .create(SupabaseApi::class.java)
 }
-
-suspend fun insertMemoWithEmbedding(
-    openAiApi: OpenAiApi,
-    supabaseApi: SupabaseApi,
-    markerId: String,
-    memoText: String
-): Boolean {
-    val embedding = fetchEmbedding(openAiApi, memoText) ?: return false
-
-    val request = MemoEmbeddingInsertRequest(
-        marker_id = markerId,
-        memo = memoText,
-        embedding = embedding
-    )
-
-    return try {
-        val response = supabaseApi.insertMemoEmbedding(request)
-        response.isSuccessful
-    } catch (e: Exception) {
-        e.printStackTrace()
-        false
-    }
-}
-

@@ -21,7 +21,7 @@ class MemoRepository @Inject constructor(
         )
 
         return try {
-            val response = supabaseApi.insertMemoEmbedding(request)
+            val response = supabaseApi.upsertMemoEmbedding(request)
             Log.d("Supabase", "マーカーのメモを更新: $memoText と $embedding")
             response.isSuccessful
         } catch (e: Exception) {
