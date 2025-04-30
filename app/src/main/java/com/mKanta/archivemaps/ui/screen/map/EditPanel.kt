@@ -314,16 +314,7 @@ fun EditPanel(
                                 permanentMarkers.indexOfFirst { it.id == marker.id }
                             if (index != -1) {
                                 val updatedMarker = marker.copy(memo = newText)
-                                // permanentMarkers[index] = updatedMarker
-//                                viewModel.updateMarker(updatedMarker)
-//                                //selectedMarker = updatedMarker // UI更新
-//                                mapViewModel.changeSelectedMarker(updatedMarker)
-//                                mapViewModel.updateVisibleMarkers(
-//                                    cameraPositionState,
-//                                    permanentMarkers
-//                                )
                                 onMarkerUpdate(updatedMarker)
-                                // saveMarkers(context, permanentMarkers)
                             }
                         }
                     },
@@ -331,7 +322,6 @@ fun EditPanel(
                         Modifier
                             .fillMaxWidth()
                             .height(150.dp),
-                    // .background(Color.White),
                     placeholder = { Text("ここにメモを書いてください") },
                     singleLine = false,
                     maxLines = 10,
@@ -340,16 +330,7 @@ fun EditPanel(
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = {
-                    // permanentMarkers.removeIf { it.id == marker.id }
-                    // saveMarkers(context, permanentMarkers)
                     onMarkerDelete(marker)
-//                    viewModel.removeMarker(marker.id)
-//                    //visibleMarkers.remove(marker)
-//                    mapViewModel.removeVisibleMarkers(marker)
-//                    mapViewModel.changeIsEditPanelOpen()
-//                    mapViewModel.changeSelectedMarker(null)
-                    // isEditPanelOpen = false
-                    // selectedMarker = null
                 }) {
                     Text("削除する")
                 }

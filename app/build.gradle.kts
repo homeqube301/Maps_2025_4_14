@@ -28,6 +28,7 @@ android {
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] =
             findProperty("GOOGLE_MAPS_API_KEY") as? String ?: ""
         buildConfigField("String", "OPENAI_API_KEY", "\"${findProperty("OPENAI_API_KEY")}\"")
+        buildConfigField("String", "SUPABASE_API_KEY", "\"${findProperty("SUPABASE_API_KEY")}\"")
     }
 
     buildTypes {

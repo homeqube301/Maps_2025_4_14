@@ -44,6 +44,7 @@ fun MarkerListScreen(
     memo: String,
     permanetMarkers: List<NamedMarker>,
 ) {
+
     Log.d("FilterParams", "start=$startDate, end=$endDate, name=$markerName, memo=$memo")
     // 日付のフォーマットを定義
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
