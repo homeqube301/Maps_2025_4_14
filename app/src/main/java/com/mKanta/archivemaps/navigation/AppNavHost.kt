@@ -32,7 +32,8 @@ fun AppNavHost(
                 navController = navController,
                 latitude = latitude,
                 longitude = longitude,
-                listviewModel = listViewModel,
+                uiState = mapViewModel.uiState.value,
+                listState = listViewModel.listState.value,
                 mapViewModel = mapViewModel,
             )
         }

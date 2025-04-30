@@ -21,8 +21,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +39,8 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.mKanta.archivemaps.R
-import com.mKanta.archivemaps.ui.stateholder.ListViewModel
+import com.mKanta.archivemaps.ui.state.ListState
+import com.mKanta.archivemaps.ui.state.MapsUiState
 import com.mKanta.archivemaps.ui.stateholder.MapViewModel
 import kotlinx.coroutines.delay
 import java.time.LocalDate
@@ -54,11 +53,10 @@ fun MapScreen(
     latitude: Double = 0.0,
     longitude: Double = 0.0,
     navController: NavHostController,
+    uiState: MapsUiState,
+    listState: ListState,
     mapViewModel: MapViewModel,
-    listviewModel: ListViewModel,
 ) {
-    val uiState by mapViewModel.uiState.collectAsState()
-    val listState by listviewModel.listState.collectAsState()
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val cameraPositionState = rememberCameraPositionState()
@@ -141,13 +139,13 @@ fun MapScreen(
                                 val matchesName =
                                     listState.markerName.isNullOrEmpty() ||
                                             marker.title.contains(
-                                                listState.markerName!!,
+                                                listState.markerName,
                                                 ignoreCase = true,
                                             )
                                 val matchesMemo =
                                     listState.memo.isNullOrEmpty() ||
                                             marker.memo?.contains(
-                                                listState.memo!!,
+                                                listState.memo,
                                                 ignoreCase = true,
                                             ) == true
 
