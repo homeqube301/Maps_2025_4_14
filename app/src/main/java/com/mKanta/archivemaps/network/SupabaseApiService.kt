@@ -17,10 +17,10 @@ data class MemoEmbeddingInsertRequest(
 )
 
 interface SupabaseApi {
-    @POST("memo_embeddings")
+    @POST("memo_beddings999")
     suspend fun insertMemoEmbedding(
         @Body request: MemoEmbeddingInsertRequest
-    ): Response<Unit>  // Supabaseからの応答に応じて変えてください
+    ): Response<Unit>
 }
 
 fun provideSupabaseApi(

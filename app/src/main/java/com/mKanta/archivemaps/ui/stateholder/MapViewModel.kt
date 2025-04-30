@@ -17,6 +17,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.mKanta.archivemaps.data.repository.MarkerRepository
+import com.mKanta.archivemaps.data.repository.MemoRepository
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.network.NominatimApiService
 import com.mKanta.archivemaps.network.NominatimResponse
@@ -34,6 +35,7 @@ class MapViewModel
 @Inject
 constructor(
     private val markerRepository: MarkerRepository,
+    private val memoRepository: MemoRepository,
     private val fusedLocationClient: FusedLocationProviderClient,
     private val apiService: NominatimApiService,
 ) : ViewModel() {
@@ -190,6 +192,16 @@ constructor(
         if (index != -1) {
             _permanentMarkers[index] = updatedMarker
             saveMarkers() // 更新後に保存
+        }
+    }
+
+    fun updateMarkerMemoEmbedding(marker: NamedMarker, newMemo: String) {
+        val updatedMarker = marker.copy(memo = newMemo)
+        val index = _permanentMarkers.indexOfFirst { it.id == updatedMarker.id }
+        if (index != -1) {
+            viewModelScope.launch {
+                memoRepository.saveMemoEmbedding(marker.id, newMemo)
+            }
         }
     }
 

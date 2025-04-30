@@ -1,5 +1,7 @@
 package com.mKanta.archivemaps.network
 
+import android.util.Log
+import com.mKanta.archivemaps.BuildConfig
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
@@ -35,7 +37,7 @@ interface OpenAiApi {
     ): EmbeddingResponse
 }
 
-fun provideOpenAiApi(apiKey: String): OpenAiApi {
+fun provideOpenAiApi(apiKey: String = BuildConfig.OPENAI_API_KEY): OpenAiApi {
     val moshi =
         Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
@@ -72,9 +74,11 @@ suspend fun fetchEmbedding(
         response.data.firstOrNull()?.embedding
     } catch (e: HttpException) {
         val errorBody = e.response()?.errorBody()?.string()
+        Log.d("Supabase", "マーカーのメモを更新２　$api")
         null
     } catch (e: Exception) {
         e.printStackTrace()
+        Log.d("Supabase", "マーカーのメモを更新３ $api ")
         null
     }
 

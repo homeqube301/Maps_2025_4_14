@@ -3,9 +3,14 @@ package com.mKanta.archivemaps.di
 import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.mKanta.archivemaps.BuildConfig
 import com.mKanta.archivemaps.data.local.MarkerLocalDataSource
 import com.mKanta.archivemaps.data.repository.MarkerRepository
 import com.mKanta.archivemaps.data.repository.MarkerRepositoryImpl
+import com.mKanta.archivemaps.network.OpenAiApi
+import com.mKanta.archivemaps.network.SupabaseApi
+import com.mKanta.archivemaps.network.provideOpenAiApi
+import com.mKanta.archivemaps.network.provideSupabaseApi
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -28,6 +33,22 @@ object AppModule {
     fun provideMarkerLocalDataSource(
         @ApplicationContext context: Context,
     ): MarkerLocalDataSource = MarkerLocalDataSource(context)
+
+    @Provides
+    @Singleton
+    fun provideOpenAiApi(): OpenAiApi {
+        val apiKey = BuildConfig.OPENAI_API_KEY
+        return provideOpenAiApi(apiKey)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSupabaseApi(): SupabaseApi {
+        val supabaseUrl = "https://tnhcquguhtwjpzixskrw.supabase.co"
+        val apiKey = BuildConfig.SUPABASE_API_KEY
+        return provideSupabaseApi(supabaseUrl, apiKey)
+    }
+
 }
 
 @Module
