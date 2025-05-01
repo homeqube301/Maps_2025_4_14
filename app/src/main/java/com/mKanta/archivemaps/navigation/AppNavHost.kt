@@ -1,6 +1,8 @@
 package com.mKanta.archivemaps.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -28,12 +30,15 @@ fun AppNavHost(
                 backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull() ?: 0.0
             val longitude =
                 backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull() ?: 0.0
+            val uiState by mapViewModel.uiState.collectAsState()
+            val listState by listViewModel.listState.collectAsState()
             MapScreen(
                 navController = navController,
                 latitude = latitude,
                 longitude = longitude,
-                listViewModel = listViewModel,
                 mapViewModel = mapViewModel,
+                uiState = uiState,
+                listState = listState,
             )
         }
         composable("marker_list?") {
