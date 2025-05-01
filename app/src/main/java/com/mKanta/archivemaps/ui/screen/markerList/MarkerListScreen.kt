@@ -21,20 +21,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
-import com.mKanta.archivemaps.ui.stateholder.ListViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -49,13 +45,14 @@ fun MarkerListScreen(
     memo: String,
     embeddingMemo: String,
     permanetMarkers: List<NamedMarker>,
+    similarMarkerIds: List<String>,
+    changeEmbeddingMemo: (String) -> Unit = {},
+    searchSimilarMarkers: () -> Unit = {},
 ) {
-    val viewModel: ListViewModel = hiltViewModel()
-    val listState by viewModel.listState.collectAsState()
     LaunchedEffect(embeddingMemo) {
         if (embeddingMemo.isNotEmpty()) {
-            viewModel.changeEmbeddingMemo(embeddingMemo)
-            viewModel.searchSimilarMarkers()
+            changeEmbeddingMemo(embeddingMemo)
+            searchSimilarMarkers()
         }
     }
 
@@ -125,7 +122,7 @@ fun MarkerListScreen(
                 memo.isEmpty() || marker.memo?.contains(memo, ignoreCase = true) == true
 
             val matchesEmbedding =
-                listState.similarMarkerIds.isEmpty() || marker.id in listState.similarMarkerIds
+                similarMarkerIds.isEmpty() || marker.id in similarMarkerIds
 
             matchesName && matchesDate && matchesMemo && matchesEmbedding
         }
@@ -224,6 +221,9 @@ fun PreviewMarkerListScreen() {
         memo = "メモ",
         embeddingMemo = "埋め込みメモ",
         permanetMarkers = dummyMarkers,
+        similarMarkerIds = emptyList(),
+        changeEmbeddingMemo = {},
+        searchSimilarMarkers = {},
     )
 }
 

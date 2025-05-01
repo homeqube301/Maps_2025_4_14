@@ -148,7 +148,7 @@ fun MapScreen(
                                         )
                                 val matchesMemo =
                                     listState.memo.isNullOrEmpty() ||
-                                            marker.memo?.contains(
+                                        marker.memo?.contains(
                                             listState.memo!!,
                                             ignoreCase = true,
                                         ) == true

@@ -46,6 +46,11 @@ fun AppNavHost(
                 memo = listViewModel.listState.value.memo ?: "",
                 embeddingMemo = listViewModel.listState.value.embeddingMemo ?: "",
                 permanetMarkers = mapViewModel.permanentMarkers,
+                similarMarkerIds = listViewModel.listState.value.similarMarkerIds,
+                changeEmbeddingMemo = { embeddingMemo ->
+                    listViewModel.changeEmbeddingMemo(embeddingMemo)
+                },
+                searchSimilarMarkers = { listViewModel.searchSimilarMarkers() },
             )
         }
         composable("detail_search") {
