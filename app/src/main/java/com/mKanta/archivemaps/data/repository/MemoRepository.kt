@@ -12,7 +12,7 @@ import javax.inject.Inject
 class MemoRepository
     @Inject
     constructor(
-        val openAiApi: OpenAiApi,
+        private val openAiApi: OpenAiApi,
         private val supabaseApi: SupabaseApi,
     ) {
         suspend fun saveMemoEmbedding(
@@ -39,7 +39,13 @@ class MemoRepository
             }
         }
 
-        suspend fun getSimilarMemos(embedding: List<Float>): List<SimilarMemoResponse>? =
+        suspend fun getSimilarMarkerIds(memoText: String): List<String>? {
+            val embedding = fetchEmbedding(openAiApi, memoText) ?: return null
+            val similarMemos = getSimilarMemos(embedding) ?: return null
+            return similarMemos.map { it.marker_id }
+        }
+
+        private suspend fun getSimilarMemos(embedding: List<Float>): List<SimilarMemoResponse>? =
             try {
                 val response = supabaseApi.getSimilarMemos(SimilarMemoRequest(embedding))
                 if (response.isSuccessful) {

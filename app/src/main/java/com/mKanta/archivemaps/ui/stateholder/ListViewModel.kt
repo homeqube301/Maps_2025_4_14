@@ -3,7 +3,6 @@ package com.mKanta.archivemaps.ui.stateholder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mKanta.archivemaps.data.repository.MemoRepository
-import com.mKanta.archivemaps.network.fetchEmbedding
 import com.mKanta.archivemaps.ui.state.ListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,15 +51,9 @@ class ListViewModel
         fun searchSimilarMarkers() {
             viewModelScope.launch {
                 val query = listState.value.embeddingMemo
-                if (query != null) {
-                    if (query.isBlank()) return@launch
-                }
+                if (query.isNullOrBlank()) return@launch
 
-                val embedding =
-                    query?.let { fetchEmbedding(memoRepository.openAiApi, it) } ?: return@launch
-                val similarMemos = memoRepository.getSimilarMemos(embedding) ?: return@launch
-
-                val matchedIds = similarMemos.map { it.marker_id }
+                val matchedIds = memoRepository.getSimilarMarkerIds(query) ?: return@launch
 
                 _listState.update {
                     it.copy(similarMarkerIds = matchedIds)

@@ -97,8 +97,7 @@ fun SearchMaker(
                                 .fillMaxWidth()
                                 .clickable {
                                     onMemoTapped(marker)
-                                }
-                                .padding(8.dp),
+                                }.padding(8.dp),
                     )
                 }
             }
