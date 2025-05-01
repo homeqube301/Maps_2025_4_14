@@ -59,7 +59,18 @@ fun AppNavHost(
             )
         }
         composable("detail_search") {
-            DetailSearchScreen(navController = navController, listViewModel = listViewModel)
+            val listState by listViewModel.listState.collectAsState()
+            DetailSearchScreen(
+                navController = navController,
+                listState = listState,
+                chengeStartDatePicker = { listViewModel.chengeStartDatePicker() },
+                chengeEndDatePicker = { listViewModel.chengeEndDatePicker() },
+                changeMarkerName = { listViewModel.changeMarkerName(it) },
+                changeStartDate = { listViewModel.changeStartDate(it) },
+                changeEndDate = { listViewModel.changeEndDate(it) },
+                changeEmbeddingMemo = { listViewModel.changeEmbeddingMemo(it) },
+                changeMemo = { listViewModel.changeMemo(it) },
+            )
         }
     }
 }

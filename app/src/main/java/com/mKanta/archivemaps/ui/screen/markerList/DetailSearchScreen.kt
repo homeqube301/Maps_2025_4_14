@@ -19,32 +19,35 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import com.mKanta.archivemaps.ui.stateholder.ListViewModel
+import androidx.navigation.compose.rememberNavController
+import com.mKanta.archivemaps.ui.state.ListState
 import java.time.Instant
 import java.time.ZoneId
 
 @Composable
 fun DetailSearchScreen(
     navController: NavHostController,
-    listViewModel: ListViewModel,
+    chengeStartDatePicker: () -> Unit = {},
+    chengeEndDatePicker: () -> Unit = {},
+    changeMarkerName: (String) -> Unit = {},
+    changeStartDate: (String) -> Unit = {},
+    changeEndDate: (String) -> Unit = {},
+    changeEmbeddingMemo: (String) -> Unit = {},
+    changeMemo: (String) -> Unit = {},
+    listState: ListState,
 ) {
-    val listState by listViewModel.listState.collectAsState()
-
-    // 作成日（開始日）選択用
     if (listState.openStartDatePicker) {
         ComposeDatePickerDialog(
             onDismissRequest = {
-                listViewModel.chengeStartDatePicker()
+                chengeStartDatePicker()
             },
             onDateSelected = { year, month, dayOfMonth ->
-                listViewModel.changeStartDate(
+                changeStartDate(
                     "$year-${String.format("%02d", month + 1)}-${
                         String.format(
                             "%02d",
@@ -52,7 +55,7 @@ fun DetailSearchScreen(
                         )
                     }",
                 )
-                listViewModel.chengeStartDatePicker()
+                chengeStartDatePicker()
             },
         )
     }
@@ -61,10 +64,10 @@ fun DetailSearchScreen(
     if (listState.openEndDatePicker) {
         ComposeDatePickerDialog(
             onDismissRequest = {
-                listViewModel.chengeEndDatePicker()
+                chengeEndDatePicker()
             },
             onDateSelected = { year, month, dayOfMonth ->
-                listViewModel.changeEndDate(
+                changeEndDate(
                     "$year-${String.format("%02d", month + 1)}-${
                         String.format(
                             "%02d",
@@ -72,7 +75,7 @@ fun DetailSearchScreen(
                         )
                     }",
                 )
-                listViewModel.chengeEndDatePicker()
+                chengeEndDatePicker()
             },
         )
     }
@@ -92,7 +95,7 @@ fun DetailSearchScreen(
             value = listState.markerName ?: "",
             onValueChange = {
                 // markerName = it
-                listViewModel.changeMarkerName(it)
+                changeMarkerName(it)
             },
             label = { Text("マーカー名") },
             modifier = Modifier.fillMaxWidth(),
@@ -101,7 +104,7 @@ fun DetailSearchScreen(
         // 作成日（開始日）検索フィールド
         OutlinedButton(
             onClick = {
-                listViewModel.chengeStartDatePicker()
+                chengeStartDatePicker()
             },
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -110,7 +113,7 @@ fun DetailSearchScreen(
                     if (listState.startDate.isNullOrEmpty()) {
                         "作成日（開始日）を選択"
                     } else {
-                        listState.startDate!!
+                        listState.startDate
                     },
             )
         }
@@ -118,7 +121,7 @@ fun DetailSearchScreen(
         // 作成日（終了日）検索フィールド
         OutlinedButton(
             onClick = {
-                listViewModel.chengeEndDatePicker()
+                chengeEndDatePicker()
             },
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -127,7 +130,7 @@ fun DetailSearchScreen(
                     if (listState.endDate.isNullOrEmpty()) {
                         "作成日（開始日）を選択"
                     } else {
-                        listState.endDate!!
+                        listState.endDate
                     },
             )
         }
@@ -136,7 +139,7 @@ fun DetailSearchScreen(
         TextField(
             value = listState.embeddingMemo ?: "",
             onValueChange = {
-                listViewModel.changeEmbeddingMemo(it)
+                changeEmbeddingMemo(it)
             },
             label = { Text("AIメモ検索(意味検索)") },
             modifier =
@@ -147,7 +150,7 @@ fun DetailSearchScreen(
         TextField(
             value = listState.memo ?: "",
             onValueChange = {
-                listViewModel.changeMemo(it)
+                changeMemo(it)
             },
             label = { Text("メモ(完全一致)") },
             modifier =
@@ -220,12 +223,32 @@ fun ComposeDatePickerDialog(
     }
 }
 
-// @Preview(showBackground = true)
-// @Composable
-// fun DetailSearchScreenPreview() {
-//    val dummyNavController = rememberNavController()
-//    DetailSearchScreen(navController = dummyNavController, listViewModel = ListViewModel())
-// }
+@Preview(showBackground = true)
+@Composable
+fun DetailSearchScreenPreview() {
+    val dummyNavController = rememberNavController()
+    DetailSearchScreen(
+        navController = dummyNavController,
+        chengeStartDatePicker = {},
+        chengeEndDatePicker = {},
+        changeMarkerName = {},
+        changeStartDate = {},
+        changeEndDate = {},
+        changeEmbeddingMemo = {},
+        changeMemo = {},
+        listState =
+            ListState(
+                markerName = "テストマーカー",
+                startDate = "2025-01-01",
+                endDate = "2025-12-31",
+                memo = "これはテスト用メモです",
+                embeddingMemo = "意味的検索用テキスト",
+                openStartDatePicker = false,
+                openEndDatePicker = false,
+                similarMarkerIds = listOf("id1", "id2", "id3"),
+            ),
+    )
+}
 
 @Preview(showBackground = true)
 @Composable
