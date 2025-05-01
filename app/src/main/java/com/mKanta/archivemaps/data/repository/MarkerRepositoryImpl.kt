@@ -16,5 +16,5 @@ class MarkerRepositoryImpl
 
         override suspend fun saveMarkers(markers: List<NamedMarker>) {
             markerLocalDataSource.saveMarkers(context, markers)
+        }
     }
-}

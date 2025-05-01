@@ -142,7 +142,7 @@ fun MapScreen(
                                     } ?: false
                                 val matchesName =
                                     listState.markerName.isNullOrEmpty() ||
-                                            marker.title.contains(
+                                        marker.title.contains(
                                             listState.markerName!!,
                                             ignoreCase = true,
                                         )

@@ -114,7 +114,7 @@ fun MarkerListScreen(
             val matchesDate =
                 if (markerDate != null) {
                     (startDateTime == null || !markerDate.isBefore(startDateTime)) &&
-                            (endDateTime == null || !markerDate.isAfter(endDateTime))
+                        (endDateTime == null || !markerDate.isAfter(endDateTime))
                 } else {
                     false
                 }

@@ -303,26 +303,26 @@ class MapViewModel
                 object : retrofit2.Callback<NominatimResponse> {
                     override fun onResponse(
                         call: Call<NominatimResponse>,
-                    response: retrofit2.Response<NominatimResponse>,
-                ) {
-                    _selectedAddress.value =
-                        if (response.isSuccessful) {
-                            Log.e("API", "ステータスコード: ${response.code()}")
-                            Log.e("API", "メッセージ: ${response.message()}")
-                            Log.e("API", "エラー本文: ${response.errorBody()?.string()}")
-                            response.body()?.displayName ?: "住所が見つかりません"
-                        } else {
-                            "住所の取得に失敗"
-                        }
-                }
+                        response: retrofit2.Response<NominatimResponse>,
+                    ) {
+                        _selectedAddress.value =
+                            if (response.isSuccessful) {
+                                Log.e("API", "ステータスコード: ${response.code()}")
+                                Log.e("API", "メッセージ: ${response.message()}")
+                                Log.e("API", "エラー本文: ${response.errorBody()?.string()}")
+                                response.body()?.displayName ?: "住所が見つかりません"
+                            } else {
+                                "住所の取得に失敗"
+                            }
+                    }
 
-                override fun onFailure(
-                    call: Call<NominatimResponse>,
-                    t: Throwable,
-                ) {
-                    _selectedAddress.value = "ネットワークエラー: ${t.message}"
-                }
-            },
-        )
+                    override fun onFailure(
+                        call: Call<NominatimResponse>,
+                        t: Throwable,
+                    ) {
+                        _selectedAddress.value = "ネットワークエラー: ${t.message}"
+                    }
+                },
+            )
+        }
     }
-}

@@ -62,9 +62,9 @@ class ListViewModel
 
                 val matchedIds = similarMemos.map { it.marker_id }
 
-            _listState.update {
-                it.copy(similarMarkerIds = matchedIds)
+                _listState.update {
+                    it.copy(similarMarkerIds = matchedIds)
+                }
             }
         }
     }
-}

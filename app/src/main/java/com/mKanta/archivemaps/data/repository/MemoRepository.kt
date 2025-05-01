@@ -48,9 +48,9 @@ class MemoRepository
                 } else {
                     Log.e("MemoRepository", "getSimilarMemos: エラー ${response.errorBody()?.string()}")
                     null
+                }
+            } catch (e: Exception) {
+                Log.e("MemoRepository", "getSimilarMemos: 例外", e)
+                null
             }
-        } catch (e: Exception) {
-            Log.e("MemoRepository", "getSimilarMemos: 例外", e)
-            null
-        }
-}
+    }
