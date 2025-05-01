@@ -7,4 +7,3 @@ interface MarkerRepository {
 
     suspend fun saveMarkers(markers: List<NamedMarker>)
 }
-

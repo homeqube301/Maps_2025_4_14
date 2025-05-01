@@ -44,6 +44,7 @@ fun AppNavHost(
                 startDate = listViewModel.listState.value.startDate ?: "",
                 endDate = listViewModel.listState.value.endDate ?: "",
                 memo = listViewModel.listState.value.memo ?: "",
+                embeddingMemo = listViewModel.listState.value.embeddingMemo ?: "",
                 permanetMarkers = mapViewModel.permanentMarkers,
             )
         }

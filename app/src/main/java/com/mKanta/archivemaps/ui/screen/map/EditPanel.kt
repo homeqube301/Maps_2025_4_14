@@ -310,14 +310,15 @@ fun EditPanel(
                             }
                         }
                     },
-                    modifier = Modifier
-                        .onFocusChanged {
-                            if (!it.isFocused) {
-                                memoEmbedding(selectedMarker, memoText)
+                    modifier =
+                        Modifier
+                            .onFocusChanged {
+                                if (!it.isFocused) {
+                                    memoEmbedding(selectedMarker, memoText)
+                                }
                             }
-                        }
-                        .fillMaxWidth()
-                        .height(150.dp),
+                            .fillMaxWidth()
+                            .height(150.dp),
                     placeholder = { Text("ここにメモを書いてください") },
                     singleLine = false,
                     maxLines = 10,
@@ -371,6 +372,6 @@ fun EditPanelPreview() {
         context = LocalContext.current,
         selectedAddress = dummyAddress,
         mapsSaveMarker = {},
-        memoEmbedding = { _, _ -> }
+        memoEmbedding = { _, _ -> },
     )
 }

@@ -39,11 +39,13 @@ interface OpenAiApi {
 
 fun provideOpenAiApi(apiKey: String = BuildConfig.OPENAI_API_KEY): OpenAiApi {
     val moshi =
-        Moshi.Builder()
+        Moshi
+            .Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
     val client =
-        OkHttpClient.Builder()
+        OkHttpClient
+            .Builder()
             .dns(Dns.SYSTEM)
             .addInterceptor { chain ->
                 val request =
@@ -56,7 +58,8 @@ fun provideOpenAiApi(apiKey: String = BuildConfig.OPENAI_API_KEY): OpenAiApi {
                 chain.proceed(request)
             }.build()
 
-    return Retrofit.Builder()
+    return Retrofit
+        .Builder()
         .baseUrl("https://api.openai.com/v1/")
         .client(client)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
@@ -71,6 +74,7 @@ suspend fun fetchEmbedding(
     try {
         val request = EmbeddingRequest(input = inputText)
         val response = api.getEmbedding(request)
+        Log.d("Supabase", "マーカーのメモを更新１　$response")
         response.data.firstOrNull()?.embedding
     } catch (e: HttpException) {
         val errorBody = e.response()?.errorBody()?.string()

@@ -138,20 +138,20 @@ fun MapScreen(
                                 val matchesDate =
                                     markerDate?.let {
                                         (startDateTime == null || !it.isBefore(startDateTime)) &&
-                                                (endDateTime == null || !it.isAfter(endDateTime))
+                                            (endDateTime == null || !it.isAfter(endDateTime))
                                     } ?: false
                                 val matchesName =
                                     listState.markerName.isNullOrEmpty() ||
                                             marker.title.contains(
-                                                listState.markerName!!,
-                                                ignoreCase = true,
-                                            )
+                                            listState.markerName!!,
+                                            ignoreCase = true,
+                                        )
                                 val matchesMemo =
                                     listState.memo.isNullOrEmpty() ||
                                             marker.memo?.contains(
-                                                listState.memo!!,
-                                                ignoreCase = true,
-                                            ) == true
+                                            listState.memo!!,
+                                            ignoreCase = true,
+                                        ) == true
 
                                 matchesDate && matchesName && matchesMemo
                             }
@@ -387,7 +387,7 @@ fun MapScreen(
                         mapViewModel.changeIsEditPanelOpen()
                         mapViewModel.changeSelectedMarker(null)
                     },
-                    memoEmbedding = mapViewModel::updateMarkerMemoEmbedding
+                    memoEmbedding = mapViewModel::updateMarkerMemoEmbedding,
                 )
             }
         }

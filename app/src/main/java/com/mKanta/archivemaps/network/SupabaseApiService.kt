@@ -11,37 +11,58 @@ import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
+data class SimilarMemoRequest(
+    val query_embedding: List<Float>,
+)
+
+data class SimilarMemoResponse(
+    val marker_id: String,
+    val memo: String,
+    val similarity: Float,
+)
+
 data class MemoEmbeddingInsertRequest(
     val marker_id: String,
     val memo: String,
-    val embedding: List<Float>
+    val embedding: List<Float>,
 )
 
 interface SupabaseApi {
     @Headers("Prefer: resolution=merge-duplicates")
     @POST("memo_embeddings?on_conflict=marker_id")
     suspend fun upsertMemoEmbedding(
-        @Body request: MemoEmbeddingInsertRequest
+        @Body request: MemoEmbeddingInsertRequest,
     ): Response<Unit>
+
+    @POST("rpc/match_memos_by_embedding")
+    suspend fun getSimilarMemos(
+        @Body request: SimilarMemoRequest,
+    ): Response<List<SimilarMemoResponse>>
 }
 
 fun provideSupabaseApi(
     supabaseUrl: String = "https://tnhcquguhtwjpzixskrw.supabase.co",
-    supabaseKey: String = BuildConfig.SUPABASE_API_KEY
+    supabaseKey: String = BuildConfig.SUPABASE_API_KEY,
 ): SupabaseApi {
     val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
-    val client = OkHttpClient.Builder()
-        .addInterceptor { chain ->
-            val request = chain.request().newBuilder()
-                .addHeader("apikey", supabaseKey)
-                .addHeader("Authorization", "Bearer $supabaseKey")
-                .addHeader("Content-Type", "application/json")
-                .build()
-            chain.proceed(request)
-        }.build()
+    val client =
+        OkHttpClient
+            .Builder()
+            .addInterceptor { chain ->
+                val request =
+                    chain
+                        .request()
+                        .newBuilder()
+                        .addHeader("apikey", supabaseKey)
+                        .addHeader("Authorization", "Bearer $supabaseKey")
+                        .addHeader("Content-Type", "application/json")
+                        .build()
+                chain.proceed(request)
+            }.build()
 
-    return Retrofit.Builder()
+    return Retrofit
+        .Builder()
         .baseUrl("$supabaseUrl/rest/v1/")
         .client(client)
         .addConverterFactory(MoshiConverterFactory.create(moshi))

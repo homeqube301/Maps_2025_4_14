@@ -48,7 +48,6 @@ object AppModule {
         val apiKey = BuildConfig.SUPABASE_API_KEY
         return provideSupabaseApi(supabaseUrl, apiKey)
     }
-
 }
 
 @Module

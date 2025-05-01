@@ -26,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.mKanta.archivemaps.ui.stateholder.ListViewModel
 import java.time.Instant
 import java.time.ZoneId
@@ -133,14 +132,28 @@ fun DetailSearchScreen(
             )
         }
 
+        // 意味検索フィールド
+        TextField(
+            value = listState.embeddingMemo ?: "",
+            onValueChange = {
+                listViewModel.changeEmbeddingMemo(it)
+            },
+            label = { Text("AIメモ検索(意味検索)") },
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
+        )
         // メモ検索フィールド
         TextField(
             value = listState.memo ?: "",
             onValueChange = {
                 listViewModel.changeMemo(it)
             },
-            label = { Text("メモ") },
-            modifier = Modifier.fillMaxWidth(),
+            label = { Text("メモ(完全一致)") },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
         )
 
         // 検索ボタン
@@ -207,12 +220,12 @@ fun ComposeDatePickerDialog(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DetailSearchScreenPreview() {
-    val dummyNavController = rememberNavController()
-    DetailSearchScreen(navController = dummyNavController, listViewModel = ListViewModel())
-}
+// @Preview(showBackground = true)
+// @Composable
+// fun DetailSearchScreenPreview() {
+//    val dummyNavController = rememberNavController()
+//    DetailSearchScreen(navController = dummyNavController, listViewModel = ListViewModel())
+// }
 
 @Preview(showBackground = true)
 @Composable
