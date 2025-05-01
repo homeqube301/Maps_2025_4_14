@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -64,6 +65,7 @@ fun EditPanel(
     focusManager: FocusManager,
     context: Context,
     selectedAddress: StateFlow<String>,
+    memoEmbedding: (NamedMarker, String) -> Unit,
 ) {
     val address by selectedAddress.collectAsState()
     val mediaPickerLauncher =
@@ -281,17 +283,7 @@ fun EditPanel(
                                         imageUri = null,
                                         videoUri = null,
                                     )
-                                // permanentMarkers[index] = updatedMarker
                                 onMarkerUpdate(updatedMarker)
-//                                viewModel.updateMarker(updatedMarker)
-//                                //selectedMarker = updatedMarker
-//                                mapViewModel.changeSelectedMarker(updatedMarker)
-//                                mapViewModel.updateVisibleMarkers(
-//                                    cameraPositionState,
-//                                    permanentMarkers
-//                                )
-
-                                // saveMarkers(context, permanentMarkers)
                             }
                         }
                     }) {
@@ -314,24 +306,19 @@ fun EditPanel(
                                 permanentMarkers.indexOfFirst { it.id == marker.id }
                             if (index != -1) {
                                 val updatedMarker = marker.copy(memo = newText)
-                                // permanentMarkers[index] = updatedMarker
-//                                viewModel.updateMarker(updatedMarker)
-//                                //selectedMarker = updatedMarker // UI更新
-//                                mapViewModel.changeSelectedMarker(updatedMarker)
-//                                mapViewModel.updateVisibleMarkers(
-//                                    cameraPositionState,
-//                                    permanentMarkers
-//                                )
                                 onMarkerUpdate(updatedMarker)
-                                // saveMarkers(context, permanentMarkers)
                             }
                         }
                     },
                     modifier =
                         Modifier
+                            .onFocusChanged {
+                                if (!it.isFocused) {
+                                    memoEmbedding(selectedMarker, memoText)
+                                }
+                            }
                             .fillMaxWidth()
                             .height(150.dp),
-                    // .background(Color.White),
                     placeholder = { Text("ここにメモを書いてください") },
                     singleLine = false,
                     maxLines = 10,
@@ -340,16 +327,7 @@ fun EditPanel(
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = {
-                    // permanentMarkers.removeIf { it.id == marker.id }
-                    // saveMarkers(context, permanentMarkers)
                     onMarkerDelete(marker)
-//                    viewModel.removeMarker(marker.id)
-//                    //visibleMarkers.remove(marker)
-//                    mapViewModel.removeVisibleMarkers(marker)
-//                    mapViewModel.changeIsEditPanelOpen()
-//                    mapViewModel.changeSelectedMarker(null)
-                    // isEditPanelOpen = false
-                    // selectedMarker = null
                 }) {
                     Text("削除する")
                 }
@@ -394,5 +372,6 @@ fun EditPanelPreview() {
         context = LocalContext.current,
         selectedAddress = dummyAddress,
         mapsSaveMarker = {},
+        memoEmbedding = { _, _ -> },
     )
 }

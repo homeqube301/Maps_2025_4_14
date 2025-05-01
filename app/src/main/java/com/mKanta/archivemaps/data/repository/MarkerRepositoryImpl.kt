@@ -7,15 +7,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class MarkerRepositoryImpl
-@Inject
-constructor(
-    @ApplicationContext private val context: Context,
-    private val markerLocalDataSource: MarkerLocalDataSource,
-) : MarkerRepository {
-    override suspend fun loadMarkers(): List<NamedMarker> =
-        markerLocalDataSource.loadMarkers(context)
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+        private val markerLocalDataSource: MarkerLocalDataSource,
+    ) : MarkerRepository {
+        override suspend fun loadMarkers(): List<NamedMarker> = markerLocalDataSource.loadMarkers(context)
 
-    override suspend fun saveMarkers(markers: List<NamedMarker>) {
-        markerLocalDataSource.saveMarkers(context, markers)
+        override suspend fun saveMarkers(markers: List<NamedMarker>) {
+            markerLocalDataSource.saveMarkers(context, markers)
+        }
     }
-}

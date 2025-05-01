@@ -20,16 +20,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
+import com.mKanta.archivemaps.ui.stateholder.ListViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -42,9 +47,22 @@ fun MarkerListScreen(
     startDate: String,
     endDate: String,
     memo: String,
+    embeddingMemo: String,
     permanetMarkers: List<NamedMarker>,
 ) {
-    Log.d("FilterParams", "start=$startDate, end=$endDate, name=$markerName, memo=$memo")
+    val viewModel: ListViewModel = hiltViewModel()
+    val listState by viewModel.listState.collectAsState()
+    LaunchedEffect(embeddingMemo) {
+        if (embeddingMemo.isNotEmpty()) {
+            viewModel.changeEmbeddingMemo(embeddingMemo)
+            viewModel.searchSimilarMarkers()
+        }
+    }
+
+    Log.d(
+        "FilterParams",
+        "start=$startDate, end=$endDate, name=$markerName, memo=$memo, embeddingMemo=$embeddingMemo",
+    )
     // 日付のフォーマットを定義
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
@@ -96,7 +114,7 @@ fun MarkerListScreen(
             val matchesDate =
                 if (markerDate != null) {
                     (startDateTime == null || !markerDate.isBefore(startDateTime)) &&
-                            (endDateTime == null || !markerDate.isAfter(endDateTime))
+                        (endDateTime == null || !markerDate.isAfter(endDateTime))
                 } else {
                     false
                 }
@@ -106,7 +124,10 @@ fun MarkerListScreen(
             val matchesMemo =
                 memo.isEmpty() || marker.memo?.contains(memo, ignoreCase = true) == true
 
-            matchesName && matchesDate && matchesMemo
+            val matchesEmbedding =
+                listState.similarMarkerIds.isEmpty() || marker.id in listState.similarMarkerIds
+
+            matchesName && matchesDate && matchesMemo && matchesEmbedding
         }
 
     Scaffold(
@@ -201,6 +222,7 @@ fun PreviewMarkerListScreen() {
         startDate = "2024-04-01",
         endDate = "2024-04-10",
         memo = "メモ",
+        embeddingMemo = "埋め込みメモ",
         permanetMarkers = dummyMarkers,
     )
 }
