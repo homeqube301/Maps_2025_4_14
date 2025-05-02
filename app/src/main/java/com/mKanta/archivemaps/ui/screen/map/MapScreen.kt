@@ -28,8 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -45,6 +47,7 @@ import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.ui.state.ListState
 import com.mKanta.archivemaps.ui.state.MapsUiState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -424,4 +427,49 @@ fun MapScreen(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun MapScreenPreview() {
+    val dummyNavController = rememberNavController()
+
+    val dummyUiState = MapsUiState()
+    val dummyListState = ListState()
+    val dummySelectedAddress = MutableStateFlow("東京都渋谷区")
+
+    MapScreen(
+        latitude = 35.6812,
+        longitude = 139.7671,
+        navController = dummyNavController,
+        uiState = dummyUiState,
+        listState = dummyListState,
+        changeIsFollowing = {},
+        changeIsEditPanelOpen = {},
+        changeIsPanelOpen = {},
+        changeIsSearchOpen = {},
+        changeTitleQuery = {},
+        changeMemoQuery = {},
+        changeSelectedMarker = {},
+        changeTempMarkerName = {},
+        changeTempMarkerPosition = {},
+        updateVisibleMarkers = { _, _ -> },
+        removeVisibleMarkers = {},
+        addAllVisibleMarkers = {},
+        changeUserLocation = {},
+        changePanelOpen = {},
+        loadMarkers = {},
+        saveMarkers = {},
+        updateMarker = {},
+        toggleFollowing = {},
+        startLocationUpdates = { _, _, _ -> },
+        fetchAddressForLatLng = { _, _ -> },
+        updateSearchList = { _, _, _ -> },
+        selectedAddress = dummySelectedAddress,
+        permanentMarkers = emptyList(),
+        setVisibleMarkers = {},
+        addMarker = {},
+        removeMarker = {},
+        updateMarkerMemoEmbedding = { _, _ -> },
+    )
 }
