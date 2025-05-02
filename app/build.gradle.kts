@@ -86,6 +86,9 @@ dependencies {
 
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
+    implementation("com.github.takusemba:spotlight:2.0.5")
+    implementation("com.canopas.intro-showcase-view:introshowcaseview:2.0.1")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

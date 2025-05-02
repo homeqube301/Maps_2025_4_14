@@ -2,8 +2,12 @@ package com.mKanta.archivemaps.ui.screen.map
 
 import android.content.Context
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -22,16 +26,24 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.canopas.lib.showcase.IntroShowcase
+import com.canopas.lib.showcase.component.ShowcaseStyle
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
@@ -103,6 +115,9 @@ fun MapScreen(
     val setSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
+    var showAppIntro by remember {
+        mutableStateOf(true)
+    }
     LaunchedEffect(latitude, longitude) {
         if (latitude != 0.0 && longitude != 0.0) {
             cameraPositionState.animate(
@@ -133,224 +148,266 @@ fun MapScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("") },
-                colors =
-                    TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Blue.copy(alpha = 0.2f),
-                    ),
-                actions = {
-                    // 簡易検索ボタン
-                    IconButton(onClick = {
-                        changeIsSearchOpen()
-                    }) {
-                        Icon(Icons.Default.Search, contentDescription = "検索")
-                    }
-                },
-            )
+    IntroShowcase(
+        showIntroShowCase = showAppIntro,
+        dismissOnClickOutside = false,
+        onShowCaseCompleted = {
+            showAppIntro = false
         },
-    ) { innerPadding ->
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .systemBarsPadding(),
-        ) {
-            LaunchedEffect(uiState.titleQuery, uiState.memoQuery) {
-                updateSearchList(
-                    uiState.titleQuery,
-                    uiState.memoQuery,
-                    uiState.visibleMarkers,
-                )
-            }
-
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState,
-                properties =
-                    MapProperties(
-                        isMyLocationEnabled = uiState.isPermissionGranted,
-                        mapStyleOptions =
-                            MapStyleOptions.loadRawResourceStyle(
-                                context,
-                                R.raw.map_style,
-                            ),
-                    ),
-                onMapClick = { latLng ->
-                    changeTempMarkerPosition(latLng)
-                    changeIsPanelOpen()
-                },
-            ) {
-                for (marker in uiState.visibleMarkers) {
-                    Marker(
-                        state = MarkerState(position = marker.position.toLatLng()),
-                        title = marker.title,
-                        icon = BitmapDescriptorFactory.defaultMarker(marker.colorHue),
-                        onClick = {
-                            changeSelectedMarker(marker)
-                            fetchAddressForLatLng(
-                                marker.position.latitude,
-                                marker.position.longitude,
-                            )
-                            changeIsEditPanelOpen()
-                            true
-                        },
-                    )
-                }
-                uiState.tempMarkerPosition?.let { temp ->
-                    Marker(
-                        state = MarkerState(position = temp),
-                        title = "一時マーカー",
-                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
-                        draggable = false,
-                    )
-                }
-            }
-
-            if (uiState.isEditPanelOpen || uiState.isPanelOpen || uiState.isSearchOpen) {
-                DismissOverlay(
-                    onClosePanel = {
-                        when {
-                            uiState.isPanelOpen -> changeIsPanelOpen()
-                            uiState.isSearchOpen -> changeIsSearchOpen()
-                            else -> changeIsEditPanelOpen()
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("") },
+                    colors =
+                        TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Blue.copy(alpha = 0.2f),
+                        ),
+                    actions = {
+                        // 簡易検索ボタン
+                        IconButton(onClick = {
+                            changeIsSearchOpen()
+                        }) {
+                            Icon(Icons.Default.Search, contentDescription = "検索")
                         }
-
-                        changeSelectedMarker(null)
                     },
                 )
-            }
-
-            FloatingActionButton(
-                onClick = { navController.navigate("marker_list") },
+            },
+        ) { innerPadding ->
+            Box(
                 modifier =
                     Modifier
-                        .align(Alignment.TopStart)
-                        .padding(start = 16.dp, top = 5.dp),
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .systemBarsPadding(),
             ) {
-                Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
-            }
-
-            FloatingActionButton(
-                onClick = {
-                    toggleFollowing()
-                    changeIsFollowing()
-                },
-                modifier =
-                    Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(end = 16.dp, top = 5.dp),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "追従",
-                    tint =
-                        if (uiState.isFollowing) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onSurface.copy(
-                                alpha = 0.9f,
-                            )
-                        },
-                )
-            }
-
-            // 検索パネル
-            if (uiState.isSearchOpen) {
-                SearchMaker(
-                    titleResults = uiState.titleResults,
-                    memoResults = uiState.memoResults,
-                    titleQuery = uiState.titleQuery,
-                    memoQuery = uiState.memoQuery,
-                    onTitleQueryChanged = { changeTitleQuery(it) },
-                    onMemoQueryChanged = { changeMemoQuery(it) },
-                    onMarkerTapped = { marker ->
-                        changeSelectedMarker(marker)
-                        changeIsEditPanelOpen()
-                        cameraPositionState.move(
-                            CameraUpdateFactory.newLatLngZoom(
-                                marker.position.toLatLng(),
-                                17f,
-                            ),
-                        )
-                        changeIsSearchOpen()
-                        changeTitleQuery("")
-                        changeMemoQuery("")
-                    },
-                    onMemoTapped = { marker ->
-                        changeSelectedMarker(marker)
-                        changeIsEditPanelOpen()
-                        cameraPositionState.move(
-                            CameraUpdateFactory.newLatLngZoom(
-                                marker.position.toLatLng(),
-                                17f,
-                            ),
-                        )
-                        changeIsSearchOpen()
-                        changeTitleQuery("")
-                        changeMemoQuery("")
-                    },
-                )
-            }
-
-            if (uiState.isPanelOpen) {
-                ModalBottomSheet(
-                    onDismissRequest = { changePanelOpen(false) },
-                    sheetState = setSheetState,
-                ) {
-                    SetMarkerPanel(
-                        cameraPositionState = cameraPositionState,
-                        focusManager = focusManager,
-                        tempMarkerPosition = uiState.tempMarkerPosition,
-                        tempMarkerName = uiState.tempMarkerName,
-                        onClose = { changePanelOpen(false) },
-                        resetTempMarkers = {
-                            changeTempMarkerPosition(null)
-                            changeTempMarkerName(null)
-                            changeIsPanelOpen()
-                        },
-                        changeTempMarkerName = { changeTempMarkerName(it) },
-                        addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
-                        addMarker = { addMarker(it) },
+                LaunchedEffect(uiState.titleQuery, uiState.memoQuery) {
+                    updateSearchList(
+                        uiState.titleQuery,
+                        uiState.memoQuery,
+                        uiState.visibleMarkers,
                     )
                 }
-            }
 
-            if (uiState.isEditPanelOpen && uiState.selectedMarker != null) {
-                ModalBottomSheet(
-                    onDismissRequest = {
-                        changeIsEditPanelOpen()
-                        changeSelectedMarker(null)
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    properties =
+                        MapProperties(
+                            isMyLocationEnabled = uiState.isPermissionGranted,
+                            mapStyleOptions =
+                                MapStyleOptions.loadRawResourceStyle(
+                                    context,
+                                    R.raw.map_style,
+                                ),
+                        ),
+                    onMapClick = { latLng ->
+                        changeTempMarkerPosition(latLng)
+                        changeIsPanelOpen()
                     },
-                    sheetState = editSheetState,
                 ) {
-                    EditPanel(
-                        selectedMarker = uiState.selectedMarker,
-                        selectedAddress = selectedAddress,
-                        permanentMarkers = permanentMarkers,
-                        mapsSaveMarker = { saveMarkers() },
-                        focusManager = focusManager,
-                        context = context,
-                        onMarkerUpdate = { updatedMarker ->
-                            updateMarker(updatedMarker)
-                            changeSelectedMarker(updatedMarker)
-                            updateVisibleMarkers(cameraPositionState, permanentMarkers)
-                        },
-                        onMarkerDelete = { marker ->
-                            removeMarker(marker.id)
-                            removeVisibleMarkers(marker)
+                    for (marker in uiState.visibleMarkers) {
+                        Marker(
+                            state = MarkerState(position = marker.position.toLatLng()),
+                            title = marker.title,
+                            icon = BitmapDescriptorFactory.defaultMarker(marker.colorHue),
+                            onClick = {
+                                changeSelectedMarker(marker)
+                                fetchAddressForLatLng(
+                                    marker.position.latitude,
+                                    marker.position.longitude,
+                                )
+                                changeIsEditPanelOpen()
+                                true
+                            },
+                        )
+                    }
+                    uiState.tempMarkerPosition?.let { temp ->
+                        Marker(
+                            state = MarkerState(position = temp),
+                            title = "一時マーカー",
+                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
+                            draggable = false,
+                        )
+                    }
+                }
+
+                if (uiState.isEditPanelOpen || uiState.isPanelOpen || uiState.isSearchOpen) {
+                    DismissOverlay(
+                        onClosePanel = {
+                            when {
+                                uiState.isPanelOpen -> changeIsPanelOpen()
+                                uiState.isSearchOpen -> changeIsSearchOpen()
+                                else -> changeIsEditPanelOpen()
+                            }
+
                             changeSelectedMarker(null)
-                            changeIsEditPanelOpen()
                         },
-                        onPanelClose = {
-                            changeIsEditPanelOpen()
-                            changeSelectedMarker(null)
-                        },
-                        memoEmbedding = updateMarkerMemoEmbedding,
                     )
+                }
+
+                FloatingActionButton(
+                    onClick = { navController.navigate("marker_list") },
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopStart)
+                            .padding(start = 16.dp, top = 5.dp),
+                ) {
+                    Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
+                }
+
+                FloatingActionButton(
+                    onClick = {
+                        toggleFollowing()
+                        changeIsFollowing()
+                    },
+                    modifier =
+                        Modifier
+                            .introShowCaseTarget(
+                                index = 0,
+                                style =
+                                    ShowcaseStyle.Default.copy(
+                                        backgroundColor = Color(0xFF1C0A00), // specify color of background
+                                        backgroundAlpha = 0.98f, // specify transparency of background
+                                        targetCircleColor = Color.White, // specify color of target circle
+                                    ),
+                                // specify the content to show to introduce app feature
+                                content = {
+                                    Column {
+                                        Text(
+                                            text = "Check emails",
+                                            color = Color.White,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                        Text(
+                                            text = "Click here to check/send emails",
+                                            color = Color.White,
+                                            fontSize = 16.sp,
+                                        )
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Icon(
+                                            Icons.Default.Menu,
+                                            contentDescription = null,
+                                            modifier =
+                                                Modifier
+                                                    .size(80.dp)
+                                                    .align(Alignment.End),
+                                            tint = Color.White,
+                                        )
+                                    }
+                                },
+                            ).align(Alignment.TopEnd)
+                            .padding(end = 16.dp, top = 5.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "追従",
+                        tint =
+                            if (uiState.isFollowing) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface.copy(
+                                    alpha = 0.9f,
+                                )
+                            },
+                    )
+                }
+
+                // 検索パネル
+                if (uiState.isSearchOpen) {
+                    SearchMaker(
+                        titleResults = uiState.titleResults,
+                        memoResults = uiState.memoResults,
+                        titleQuery = uiState.titleQuery,
+                        memoQuery = uiState.memoQuery,
+                        onTitleQueryChanged = { changeTitleQuery(it) },
+                        onMemoQueryChanged = { changeMemoQuery(it) },
+                        onMarkerTapped = { marker ->
+                            changeSelectedMarker(marker)
+                            changeIsEditPanelOpen()
+                            cameraPositionState.move(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    marker.position.toLatLng(),
+                                    17f,
+                                ),
+                            )
+                            changeIsSearchOpen()
+                            changeTitleQuery("")
+                            changeMemoQuery("")
+                        },
+                        onMemoTapped = { marker ->
+                            changeSelectedMarker(marker)
+                            changeIsEditPanelOpen()
+                            cameraPositionState.move(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    marker.position.toLatLng(),
+                                    17f,
+                                ),
+                            )
+                            changeIsSearchOpen()
+                            changeTitleQuery("")
+                            changeMemoQuery("")
+                        },
+                    )
+                }
+
+                if (uiState.isPanelOpen) {
+                    ModalBottomSheet(
+                        onDismissRequest = { changePanelOpen(false) },
+                        sheetState = setSheetState,
+                    ) {
+                        SetMarkerPanel(
+                            cameraPositionState = cameraPositionState,
+                            focusManager = focusManager,
+                            tempMarkerPosition = uiState.tempMarkerPosition,
+                            tempMarkerName = uiState.tempMarkerName,
+                            onClose = { changePanelOpen(false) },
+                            resetTempMarkers = {
+                                changeTempMarkerPosition(null)
+                                changeTempMarkerName(null)
+                                changeIsPanelOpen()
+                            },
+                            changeTempMarkerName = { changeTempMarkerName(it) },
+                            addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
+                            addMarker = { addMarker(it) },
+                        )
+                    }
+                }
+
+                if (uiState.isEditPanelOpen && uiState.selectedMarker != null) {
+                    ModalBottomSheet(
+                        onDismissRequest = {
+                            changeIsEditPanelOpen()
+                            changeSelectedMarker(null)
+                        },
+                        sheetState = editSheetState,
+                    ) {
+                        EditPanel(
+                            selectedMarker = uiState.selectedMarker,
+                            selectedAddress = selectedAddress,
+                            permanentMarkers = permanentMarkers,
+                            mapsSaveMarker = { saveMarkers() },
+                            focusManager = focusManager,
+                            context = context,
+                            onMarkerUpdate = { updatedMarker ->
+                                updateMarker(updatedMarker)
+                                changeSelectedMarker(updatedMarker)
+                                updateVisibleMarkers(cameraPositionState, permanentMarkers)
+                            },
+                            onMarkerDelete = { marker ->
+                                removeMarker(marker.id)
+                                removeVisibleMarkers(marker)
+                                changeSelectedMarker(null)
+                                changeIsEditPanelOpen()
+                            },
+                            onPanelClose = {
+                                changeIsEditPanelOpen()
+                                changeSelectedMarker(null)
+                            },
+                            memoEmbedding = updateMarkerMemoEmbedding,
+                        )
+                    }
                 }
             }
         }
