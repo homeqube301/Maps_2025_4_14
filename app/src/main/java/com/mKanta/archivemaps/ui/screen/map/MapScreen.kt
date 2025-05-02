@@ -59,7 +59,6 @@ fun MapScreen(
     latitude: Double = 0.0,
     longitude: Double = 0.0,
     navController: NavHostController,
-    // mapViewModel: MapViewModel,
     uiState: MapsUiState,
     listState: ListState,
     changeIsFollowing: () -> Unit,
@@ -123,80 +122,15 @@ fun MapScreen(
     }
 
     LaunchedEffect(Unit) {
-        delay(300) // projection が null でないように少し待つ
-        cameraPositionState.projection?.visibleRegion?.latLngBounds?.let { bounds ->
-            val filtered =
-                permanentMarkers.filter { it.position.toLatLng() in bounds }
-            addAllVisibleMarkers(filtered)
-        }
-        snapshotFlow { cameraPositionState.isMoving }
-            .collect { isMoving ->
-                if (!isMoving) {
-                    val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
-                    bounds?.let {
-                        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                        val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-
-                        val startDateTime =
-                            if (!listState.startDate.isNullOrEmpty()) {
-                                try {
-                                    LocalDate.parse(listState.startDate, formatter)
-                                } catch (e: Exception) {
-                                    null
-                                }
-                            } else {
-                                null
-                            }
-
-                        val endDateTime =
-                            if (!listState.endDate.isNullOrEmpty()) {
-                                try {
-                                    LocalDate.parse(listState.endDate, formatter)
-                                } catch (e: Exception) {
-                                    null
-                                }
-                            } else {
-                                null
-                            }
-
-                        val filtered =
-                            permanentMarkers.filter { marker ->
-                                val markerDate: LocalDate? =
-                                    try {
-                                        LocalDateTime
-                                            .parse(marker.createdAt, originalFormatter)
-                                            .toLocalDate()
-                                    } catch (e: Exception) {
-                                        null
-                                    }
-
-                                // val matchesBounds = marker.position.toLatLng() in bounds
-                                val matchesDate =
-                                    markerDate?.let {
-                                        (startDateTime == null || !it.isBefore(startDateTime)) &&
-                                            (endDateTime == null || !it.isAfter(endDateTime))
-                                    } ?: false
-                                val matchesName =
-                                    listState.markerName.isNullOrEmpty() ||
-                                        marker.title.contains(
-                                            listState.markerName,
-                                            ignoreCase = true,
-                                        )
-                                val matchesMemo =
-                                    listState.memo.isNullOrEmpty() ||
-                                        marker.memo?.contains(
-                                            listState.memo,
-                                            ignoreCase = true,
-                                        ) == true
-
-                                matchesDate && matchesName && matchesMemo
-                            }
-
-                        setVisibleMarkers(filtered)
-                    }
-                }
-            }
+        observeCameraAndFilterMarkers(
+            cameraPositionState = cameraPositionState,
+            permanentMarkers = permanentMarkers,
+            listState = listState,
+            addAllVisibleMarkers = addAllVisibleMarkers,
+            setVisibleMarkers = setVisibleMarkers,
+        )
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -427,6 +361,77 @@ fun MapScreen(
             }
         }
     }
+}
+
+private suspend fun observeCameraAndFilterMarkers(
+    cameraPositionState: CameraPositionState,
+    permanentMarkers: List<NamedMarker>,
+    listState: ListState,
+    addAllVisibleMarkers: (List<NamedMarker>) -> Unit,
+    setVisibleMarkers: (List<NamedMarker>) -> Unit,
+) {
+    delay(300)
+    cameraPositionState.projection?.visibleRegion?.latLngBounds?.let { bounds ->
+        val filtered = permanentMarkers.filter { it.position.toLatLng() in bounds }
+        addAllVisibleMarkers(filtered)
+    }
+
+    snapshotFlow { cameraPositionState.isMoving }
+        .collect { isMoving ->
+            if (!isMoving) {
+                val bounds =
+                    cameraPositionState.projection?.visibleRegion?.latLngBounds ?: return@collect
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+
+                val startDateTime =
+                    listState.startDate?.let {
+                        try {
+                            LocalDate.parse(it, formatter)
+                        } catch (_: Exception) {
+                            null
+                        }
+                    }
+                val endDateTime =
+                    listState.endDate?.let {
+                        try {
+                            LocalDate.parse(it, formatter)
+                        } catch (_: Exception) {
+                            null
+                        }
+                    }
+
+                val filtered =
+                    permanentMarkers.filter { marker ->
+                        val markerDate =
+                            try {
+                                LocalDateTime
+                                    .parse(marker.createdAt, originalFormatter)
+                                    .toLocalDate()
+                            } catch (_: Exception) {
+                                null
+                            }
+
+                        val matchesDate =
+                            markerDate?.let {
+                                (startDateTime == null || !it.isBefore(startDateTime)) &&
+                                    (endDateTime == null || !it.isAfter(endDateTime))
+                            } ?: false
+
+                        val matchesName =
+                            listState.markerName.isNullOrEmpty() ||
+                                marker.title.contains(listState.markerName, ignoreCase = true)
+
+                        val matchesMemo =
+                            listState.memo.isNullOrEmpty() ||
+                                marker.memo?.contains(listState.memo, ignoreCase = true) == true
+
+                        marker.position.toLatLng() in bounds && matchesDate && matchesName && matchesMemo
+                    }
+
+                setVisibleMarkers(filtered)
+            }
+        }
 }
 
 @Preview(showBackground = true)

@@ -25,7 +25,6 @@ fun AppNavHost(
         startDestination = startDestination,
     ) {
         composable("map/{latitude}/{longitude}") { backStackEntry ->
-            // ナビゲーションパラメータ（緯度、経度）を取得
             val latitude =
                 backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull() ?: 0.0
             val longitude =
@@ -36,7 +35,6 @@ fun AppNavHost(
                 navController = navController,
                 latitude = latitude,
                 longitude = longitude,
-                // mapViewModel = mapViewModel,
                 uiState = uiState,
                 listState = listState,
                 changeIsFollowing = { mapViewModel.changeIsFollowing() },
