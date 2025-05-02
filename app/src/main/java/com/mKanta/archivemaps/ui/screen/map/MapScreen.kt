@@ -1,11 +1,8 @@
 package com.mKanta.archivemaps.ui.screen.map
 
 import android.content.Context
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
@@ -16,10 +13,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
@@ -100,6 +99,8 @@ fun MapScreen(
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val cameraPositionState = rememberCameraPositionState()
+    val setSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     LaunchedEffect(latitude, longitude) {
         if (latitude != 0.0 && longitude != 0.0) {
@@ -291,73 +292,62 @@ fun MapScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // 右側から出るパネル
-            AnimatedVisibility(
-                visible = uiState.isPanelOpen,
-                modifier = Modifier.align(Alignment.CenterEnd),
-            ) {
-                SetMarkerPanel(
-                    // tempMarkerName = null,
-                    cameraPositionState = cameraPositionState,
-                    focusManager = focusManager,
-                    tempMarkerPosition = uiState.tempMarkerPosition,
-                    tempMarkerName = uiState.tempMarkerName,
-                    onClose = {
-                        changePanelOpen(false)
-                    },
-                    resetTempMarkers = {
-                        changeTempMarkerPosition(null)
-                        changeTempMarkerName(null)
-                        changeIsPanelOpen()
-                    },
-                    changeTempMarkerName = { name ->
-                        changeTempMarkerName(name)
-                    },
-                    addVisibleMarker = { marker ->
-                        addAllVisibleMarkers(listOf(marker))
-                    },
-                    addMarker = { marker ->
-                        addMarker(marker)
-                    },
-                )
+            if (uiState.isPanelOpen) {
+                ModalBottomSheet(
+                    onDismissRequest = { changePanelOpen(false) },
+                    sheetState = setSheetState,
+                ) {
+                    SetMarkerPanel(
+                        cameraPositionState = cameraPositionState,
+                        focusManager = focusManager,
+                        tempMarkerPosition = uiState.tempMarkerPosition,
+                        tempMarkerName = uiState.tempMarkerName,
+                        onClose = { changePanelOpen(false) },
+                        resetTempMarkers = {
+                            changeTempMarkerPosition(null)
+                            changeTempMarkerName(null)
+                            changeIsPanelOpen()
+                        },
+                        changeTempMarkerName = { changeTempMarkerName(it) },
+                        addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
+                        addMarker = { addMarker(it) },
+                    )
+                }
             }
 
-            // 右側から出るパネル(編集用)
-            AnimatedVisibility(
-                visible = uiState.isEditPanelOpen && uiState.selectedMarker != null,
-                modifier = Modifier.align(Alignment.CenterEnd),
-            ) {
-                EditPanel(
-                    selectedMarker = uiState.selectedMarker,
-                    selectedAddress = selectedAddress,
-                    permanentMarkers = permanentMarkers,
-                    mapsSaveMarker = {
-                        saveMarkers()
-                    },
-                    focusManager = focusManager,
-                    context = context,
-                    onMarkerUpdate = { updatedMarker ->
-                        updateMarker(updatedMarker)
-                        changeSelectedMarker(updatedMarker)
-                        updateVisibleMarkers(
-                            cameraPositionState,
-                            permanentMarkers,
-                        )
-                    },
-                    onMarkerDelete = { marker ->
-                        removeMarker(marker.id)
-                        removeVisibleMarkers(marker)
-                        changeSelectedMarker(null)
-                        changeIsEditPanelOpen()
-                    },
-                    onPanelClose = {
+            if (uiState.isEditPanelOpen && uiState.selectedMarker != null) {
+                ModalBottomSheet(
+                    onDismissRequest = {
                         changeIsEditPanelOpen()
                         changeSelectedMarker(null)
                     },
-                    memoEmbedding = updateMarkerMemoEmbedding,
-                )
+                    sheetState = editSheetState,
+                ) {
+                    EditPanel(
+                        selectedMarker = uiState.selectedMarker,
+                        selectedAddress = selectedAddress,
+                        permanentMarkers = permanentMarkers,
+                        mapsSaveMarker = { saveMarkers() },
+                        focusManager = focusManager,
+                        context = context,
+                        onMarkerUpdate = { updatedMarker ->
+                            updateMarker(updatedMarker)
+                            changeSelectedMarker(updatedMarker)
+                            updateVisibleMarkers(cameraPositionState, permanentMarkers)
+                        },
+                        onMarkerDelete = { marker ->
+                            removeMarker(marker.id)
+                            removeVisibleMarkers(marker)
+                            changeSelectedMarker(null)
+                            changeIsEditPanelOpen()
+                        },
+                        onPanelClose = {
+                            changeIsEditPanelOpen()
+                            changeSelectedMarker(null)
+                        },
+                        memoEmbedding = updateMarkerMemoEmbedding,
+                    )
+                }
             }
         }
     }
