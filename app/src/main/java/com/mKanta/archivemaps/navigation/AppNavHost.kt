@@ -36,9 +36,57 @@ fun AppNavHost(
                 navController = navController,
                 latitude = latitude,
                 longitude = longitude,
-                mapViewModel = mapViewModel,
+                // mapViewModel = mapViewModel,
                 uiState = uiState,
                 listState = listState,
+                changeIsFollowing = { mapViewModel.changeIsFollowing() },
+                changeIsEditPanelOpen = { mapViewModel.changeIsEditPanelOpen() },
+                changeIsPanelOpen = { mapViewModel.changeIsPanelOpen() },
+                changeIsSearchOpen = { mapViewModel.changeIsSearchOpen() },
+                changeTitleQuery = { mapViewModel.changeTitleQuery(it) },
+                changeMemoQuery = { mapViewModel.changeMemoQuery(it) },
+                changeSelectedMarker = { mapViewModel.changeSelectedMarker(it) },
+                changeTempMarkerName = { mapViewModel.changeTempMarkerName(it) },
+                changeTempMarkerPosition = { mapViewModel.changeTempMarkerPosition(it) },
+                updateVisibleMarkers = { cameraPositionState, permanentMarkers ->
+                    mapViewModel.updateVisibleMarkers(
+                        cameraPositionState,
+                        permanentMarkers,
+                    )
+                },
+                removeVisibleMarkers = { mapViewModel.removeVisibleMarkers(it) },
+                addAllVisibleMarkers = { mapViewModel.addAllVisibleMarkers(it) },
+                changeUserLocation = { mapViewModel.changeUserLocation(it) },
+                changePanelOpen = { mapViewModel.changePanelOpen(it) },
+                loadMarkers = { mapViewModel.loadMarkers() },
+                saveMarkers = { mapViewModel.saveMarkers() },
+                updateMarker = { mapViewModel.updateMarker(it) },
+                updateMarkerMemoEmbedding = { marker, newMemo ->
+                    mapViewModel.updateMarkerMemoEmbedding(marker, newMemo)
+                },
+                addMarker = { mapViewModel.addMarker(it) },
+                removeMarker = { mapViewModel.removeMarker(it) },
+                toggleFollowing = { mapViewModel.toggleFollowing() },
+                startLocationUpdates = { context, cameraPositionState, onLocationUpdate ->
+                    mapViewModel.startLocationUpdates(
+                        context,
+                        cameraPositionState,
+                        onLocationUpdate,
+                    )
+                },
+                fetchAddressForLatLng = { lat, lon ->
+                    mapViewModel.fetchAddressForLatLng(lat, lon)
+                },
+                setVisibleMarkers = { mapViewModel.setVisibleMarkers(it) },
+                updateSearchList = { titleQuery, memoQuery, visibleMarkers ->
+                    mapViewModel.updateSearchList(
+                        titleQuery,
+                        memoQuery,
+                        visibleMarkers,
+                    )
+                },
+                selectedAddress = mapViewModel.selectedAddress,
+                permanentMarkers = mapViewModel.permanentMarkers,
             )
         }
         composable("marker_list?") {
