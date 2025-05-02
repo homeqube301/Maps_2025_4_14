@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -138,7 +139,7 @@ fun MapScreen(
                 title = { Text("") },
                 colors =
                     TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Blue.copy(alpha = 0.5f),
+                        containerColor = Color.Blue.copy(alpha = 0.2f),
                     ),
                 actions = {
                     // 簡易検索ボタン
@@ -183,27 +184,22 @@ fun MapScreen(
                     changeIsPanelOpen()
                 },
             ) {
-                // カメラの表示範囲にある永続マーカーのみ表示
-
                 for (marker in uiState.visibleMarkers) {
                     Marker(
                         state = MarkerState(position = marker.position.toLatLng()),
                         title = marker.title,
                         icon = BitmapDescriptorFactory.defaultMarker(marker.colorHue),
                         onClick = {
-                            // selectedMarker = marker
                             changeSelectedMarker(marker)
                             fetchAddressForLatLng(
                                 marker.position.latitude,
                                 marker.position.longitude,
                             )
-                            // isEditPanelOpen = true
                             changeIsEditPanelOpen()
-                            true // consume click
+                            true
                         },
                     )
                 }
-                // 一時マーカー
                 uiState.tempMarkerPosition?.let { temp ->
                     Marker(
                         state = MarkerState(position = temp),
@@ -249,8 +245,16 @@ fun MapScreen(
                         .padding(end = 16.dp, top = 5.dp),
             ) {
                 Icon(
-                    imageVector = if (uiState.isFollowing) Icons.Default.LocationOn else Icons.Default.LocationOn,
+                    imageVector = Icons.Default.LocationOn,
                     contentDescription = "追従",
+                    tint =
+                        if (uiState.isFollowing) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = 0.9f,
+                            )
+                        },
                 )
             }
 
