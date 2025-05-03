@@ -3,6 +3,7 @@ package com.mKanta.archivemaps.ui.stateholder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mKanta.archivemaps.data.repository.MemoRepository
+import com.mKanta.archivemaps.data.repository.UserPreferencesRepository
 import com.mKanta.archivemaps.ui.state.ListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,17 +17,31 @@ class ListViewModel
     @Inject
     constructor(
         private val memoRepository: MemoRepository,
+        private val preferencesRepository: UserPreferencesRepository,
     ) : ViewModel() {
         private val _listState = MutableStateFlow(ListState())
         val listState: StateFlow<ListState> = _listState
+
+        init {
+            viewModelScope.launch {
+                preferencesRepository.showListIntroFlow.collect { savedValue ->
+                    _listState.update { it.copy(showListIntro = savedValue) }
+                }
+            }
+    }
 
         fun changeShowDetailIntro() {
             _listState.update { it.copy(showDetailIntro = !it.showDetailIntro) }
         }
 
         fun changeShowListIntro() {
-            _listState.update { it.copy(showListIntro = !it.showListIntro) }
-    }
+            val newValue = !_listState.value.showListIntro
+            _listState.update { it.copy(showListIntro = newValue) }
+
+            viewModelScope.launch {
+                preferencesRepository.setShowListIntro(newValue)
+            }
+        }
 
         fun chengeStartDatePicker() {
             _listState.update { it.copy(openStartDatePicker = !it.openStartDatePicker) }
