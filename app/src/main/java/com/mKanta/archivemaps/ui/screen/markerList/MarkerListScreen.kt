@@ -99,7 +99,7 @@ fun MarkerListScreen(
         if (endDate.isNotEmpty()) {
             try {
                 LocalDate.parse(endDate, formatter)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         } else {
@@ -112,7 +112,7 @@ fun MarkerListScreen(
                 try {
                     val dateTime = LocalDateTime.parse(marker.createdAt, originalFormatter)
                     dateTime.toLocalDate()
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     Log.e("MarkerListScreen", "marker.createdAtのパースに失敗: ${marker.createdAt}")
                     null
                 }

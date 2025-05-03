@@ -377,8 +377,7 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            )
-                            .align(Alignment.TopStart)
+                            ).align(Alignment.TopStart)
                             .padding(start = 3.dp, top = 5.dp),
                 ) {
                     Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
@@ -424,8 +423,7 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            )
-                            .align(Alignment.TopEnd)
+                            ).align(Alignment.TopEnd)
                             .padding(end = 3.dp, top = 5.dp),
                 ) {
                     Icon(
@@ -595,7 +593,7 @@ private suspend fun observeCameraAndFilterMarkers(
                             markerDate?.let {
                                 (startDateTime == null || !it.isBefore(startDateTime)) &&
                                     (endDateTime == null || !it.isAfter(endDateTime))
-                            } ?: false
+                            } == true
 
                         val matchesName =
                             listState.markerName.isNullOrEmpty() ||
