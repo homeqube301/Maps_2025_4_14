@@ -154,7 +154,7 @@ fun MapScreen(
                 Modifier.fillMaxSize(),
         ) {
             Text(
-                text = "",
+                text = "マーカーチュートリアル",
                 modifier =
                     Modifier
                         .introShowCaseTarget(
@@ -162,13 +162,13 @@ fun MapScreen(
                             style =
                                 ShowcaseStyle.Default.copy(
                                     backgroundColor = Color(0xFF1C0A00),
-                                    backgroundAlpha = 0.95f,
-                                    targetCircleColor = Color.White,
+                                    backgroundAlpha = 0.98f,
+                                    targetCircleColor = Color(0xFF343434),
                                 ),
                             content = {
                                 Column {
                                     Text(
-                                        text = "まずはマーカーをセット！",
+                                        text = "・まずはマーカーをセット！",
                                         color = Color.White,
                                         fontSize = 24.sp,
                                         fontWeight = FontWeight.Bold,
@@ -178,7 +178,21 @@ fun MapScreen(
                                         color = Color.White,
                                         fontSize = 16.sp,
                                     )
+                                    Spacer(modifier = Modifier.height(15.dp))
+
+                                    Text(
+                                        text = "・そして",
+                                        color = Color.White,
+                                        fontSize = 24.sp,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                    Text(
+                                        text = "設置したマーカーをタップするとマーカーを編集できます",
+                                        color = Color.White,
+                                        fontSize = 16.sp,
+                                    )
                                     Spacer(modifier = Modifier.height(10.dp))
+
                                     Icon(
                                         Icons.Default.Menu,
                                         contentDescription = null,
@@ -190,8 +204,7 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
@@ -363,8 +376,7 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            )
-                            .align(Alignment.TopStart)
+                            ).align(Alignment.TopStart)
                             .padding(start = 3.dp, top = 5.dp),
                 ) {
                     Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
@@ -388,7 +400,7 @@ fun MapScreen(
                                 content = {
                                     Column {
                                         Text(
-                                            text = "これは　追従ボタン　です",
+                                            text = "追従ボタン",
                                             color = Color.White,
                                             fontSize = 24.sp,
                                             fontWeight = FontWeight.Bold,
@@ -410,7 +422,8 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            ).align(Alignment.TopEnd)
+                            )
+                            .align(Alignment.TopEnd)
                             .padding(end = 3.dp, top = 5.dp),
                 ) {
                     Icon(
