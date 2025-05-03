@@ -9,4 +9,6 @@ data class ListState(
     val openStartDatePicker: Boolean = false,
     val openEndDatePicker: Boolean = false,
     val similarMarkerIds: List<String> = emptyList(),
+    val showListIntro: Boolean = true,
+    val showDetailIntro: Boolean = true,
 )

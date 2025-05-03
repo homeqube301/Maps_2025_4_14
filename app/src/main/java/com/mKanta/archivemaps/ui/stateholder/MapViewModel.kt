@@ -55,6 +55,10 @@ class MapViewModel
             loadMarkers()
         }
 
+        fun changeShowMapIntro() {
+            _uiState.update { it.copy(showMapIntro = !it.showMapIntro) }
+        }
+
         fun changeIsFollowing() {
             _uiState.update { it.copy(isFollowing = !it.isFollowing) }
         }

@@ -20,4 +20,5 @@ data class MapsUiState(
     val memoResults: List<NamedMarker> = emptyList(),
     val visibleMarkers: List<NamedMarker> = emptyList(),
     val editname: String? = null,
+    val showMapIntro: Boolean = true,
 )

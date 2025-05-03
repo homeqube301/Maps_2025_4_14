@@ -8,27 +8,35 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.mKanta.archivemaps.ui.state.ListState
 import java.time.Instant
 import java.time.ZoneId
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailSearchScreen(
     navController: NavHostController,
@@ -80,95 +88,99 @@ fun DetailSearchScreen(
         )
     }
 
-    // 詳細検索画面のコンテンツ
-    Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-    ) {
-        // タイトル
-        Text(text = "詳細検索", style = MaterialTheme.typography.bodySmall)
-
-        // マーカー名検索フィールド
-        TextField(
-            value = listState.markerName ?: "",
-            onValueChange = {
-                // markerName = it
-                changeMarkerName(it)
-            },
-            label = { Text("マーカー名") },
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        // 作成日（開始日）検索フィールド
-        OutlinedButton(
-            onClick = {
-                chengeStartDatePicker()
-            },
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text =
-                    if (listState.startDate.isNullOrEmpty()) {
-                        "作成日（開始日）を選択"
-                    } else {
-                        listState.startDate
-                    },
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("詳細検索") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                    }
+                },
             )
-        }
-
-        // 作成日（終了日）検索フィールド
-        OutlinedButton(
-            onClick = {
-                chengeEndDatePicker()
-            },
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text =
-                    if (listState.endDate.isNullOrEmpty()) {
-                        "作成日（開始日）を選択"
-                    } else {
-                        listState.endDate
-                    },
-            )
-        }
-
-        // 意味検索フィールド
-        TextField(
-            value = listState.embeddingMemo ?: "",
-            onValueChange = {
-                changeEmbeddingMemo(it)
-            },
-            label = { Text("AIメモ検索(意味検索)") },
+        },
+    ) { paddingValues ->
+        Column(
             modifier =
                 Modifier
-                    .fillMaxWidth(),
-        )
-        // メモ検索フィールド
-        TextField(
-            value = listState.memo ?: "",
-            onValueChange = {
-                changeMemo(it)
-            },
-            label = { Text("メモ(完全一致)") },
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-        )
-
-        // 検索ボタン
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                // 検索条件を渡して遷移
-                navController.navigate("marker_list?")
-            },
-            modifier = Modifier.fillMaxWidth(),
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp),
         ) {
-            Text("検索する")
+            TextField(
+                value = listState.markerName ?: "",
+                onValueChange = {
+                    changeMarkerName(it)
+                },
+                label = { Text("マーカー名") },
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            OutlinedButton(
+                onClick = {
+                    chengeStartDatePicker()
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text =
+                        if (listState.startDate.isNullOrEmpty()) {
+                            "作成日（開始日）を選択"
+                        } else {
+                            listState.startDate
+                        },
+                )
+            }
+
+            OutlinedButton(
+                onClick = {
+                    chengeEndDatePicker()
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text =
+                        if (listState.endDate.isNullOrEmpty()) {
+                            "作成日（開始日）を選択"
+                        } else {
+                            listState.endDate
+                        },
+                )
+            }
+
+            // 意味検索フィールド
+            TextField(
+                value = listState.embeddingMemo ?: "",
+                onValueChange = {
+                    changeEmbeddingMemo(it)
+                },
+                label = { Text("AIメモ検索(意味検索)") },
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
+            )
+
+            TextField(
+                value = listState.memo ?: "",
+                onValueChange = {
+                    changeMemo(it)
+                },
+                label = { Text("メモ(完全一致)") },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    navController.navigate("marker_list?")
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text("検索する")
+            }
         }
     }
 }
@@ -181,15 +193,25 @@ fun ComposeDatePickerDialog(
 ) {
     val datePickerState = rememberDatePickerState()
 
-    Dialog(onDismissRequest = onDismissRequest) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+    ) {
         Surface(
             shape = MaterialTheme.shapes.medium,
             tonalElevation = 8.dp,
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
-                modifier = Modifier.padding(24.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(0.dp),
             ) {
-                DatePicker(state = datePickerState)
+                DatePicker(
+                    state = datePickerState,
+                    modifier = Modifier.fillMaxWidth(),
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
 

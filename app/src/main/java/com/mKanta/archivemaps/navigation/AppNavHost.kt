@@ -46,6 +46,7 @@ fun AppNavHost(
                 changeSelectedMarker = { mapViewModel.changeSelectedMarker(it) },
                 changeTempMarkerName = { mapViewModel.changeTempMarkerName(it) },
                 changeTempMarkerPosition = { mapViewModel.changeTempMarkerPosition(it) },
+                changeShowMapIntro = { mapViewModel.changeShowMapIntro() },
                 updateVisibleMarkers = { cameraPositionState, permanentMarkers ->
                     mapViewModel.updateVisibleMarkers(
                         cameraPositionState,
@@ -96,12 +97,14 @@ fun AppNavHost(
                 endDate = listViewModel.listState.value.endDate ?: "",
                 memo = listViewModel.listState.value.memo ?: "",
                 embeddingMemo = listViewModel.listState.value.embeddingMemo ?: "",
+                showListIntro = listViewModel.listState.value.showListIntro,
                 permanetMarkers = mapViewModel.permanentMarkers,
                 similarMarkerIds = listViewModel.listState.value.similarMarkerIds,
                 changeEmbeddingMemo = { embeddingMemo ->
                     listViewModel.changeEmbeddingMemo(embeddingMemo)
                 },
                 searchSimilarMarkers = { listViewModel.searchSimilarMarkers() },
+                changeShowListIntro = { listViewModel.changeShowListIntro() },
             )
         }
         composable("detail_search") {

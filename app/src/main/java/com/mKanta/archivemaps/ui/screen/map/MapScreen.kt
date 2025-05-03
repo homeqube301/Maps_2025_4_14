@@ -26,10 +26,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -108,6 +104,7 @@ fun MapScreen(
     addMarker: (NamedMarker) -> Unit,
     removeMarker: (String) -> Unit,
     updateMarkerMemoEmbedding: (NamedMarker, String) -> Unit,
+    changeShowMapIntro: () -> Unit,
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -115,9 +112,6 @@ fun MapScreen(
     val setSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    var showAppIntro by remember {
-        mutableStateOf(true)
-    }
     LaunchedEffect(latitude, longitude) {
         if (latitude != 0.0 && longitude != 0.0) {
             cameraPositionState.animate(
@@ -149,10 +143,10 @@ fun MapScreen(
     }
 
     IntroShowcase(
-        showIntroShowCase = showAppIntro,
-        dismissOnClickOutside = false,
+        showIntroShowCase = uiState.showMapIntro,
+        dismissOnClickOutside = true,
         onShowCaseCompleted = {
-            showAppIntro = false
+            changeShowMapIntro()
         },
     ) {
         Scaffold(
@@ -165,9 +159,47 @@ fun MapScreen(
                         ),
                     actions = {
                         // 簡易検索ボタン
-                        IconButton(onClick = {
-                            changeIsSearchOpen()
-                        }) {
+                        IconButton(
+                            onClick = {
+                                changeIsSearchOpen()
+                            },
+                            modifier =
+                                Modifier
+                                    .introShowCaseTarget(
+                                        index = 2,
+                                        style =
+                                            ShowcaseStyle.Default.copy(
+                                                backgroundColor = Color(0xFF1C0A00),
+                                                backgroundAlpha = 0.90f,
+                                                targetCircleColor = Color.White,
+                                            ),
+                                        content = {
+                                            Column {
+                                                Text(
+                                                    text = "簡易検索ボタン",
+                                                    color = Color.White,
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                )
+                                                Text(
+                                                    text = "タップすると設置したマーカーを簡単な条件で検索できます",
+                                                    color = Color.White,
+                                                    fontSize = 16.sp,
+                                                )
+                                                Spacer(modifier = Modifier.height(10.dp))
+                                                Icon(
+                                                    Icons.Default.Menu,
+                                                    contentDescription = null,
+                                                    modifier =
+                                                        Modifier
+                                                            .size(80.dp)
+                                                            .align(Alignment.End),
+                                                    tint = Color.Transparent,
+                                                )
+                                            }
+                                        },
+                                    ),
+                        ) {
                             Icon(Icons.Default.Search, contentDescription = "検索")
                         }
                     },
@@ -250,7 +282,40 @@ fun MapScreen(
                     onClick = { navController.navigate("marker_list") },
                     modifier =
                         Modifier
-                            .align(Alignment.TopStart)
+                            .introShowCaseTarget(
+                                index = 1,
+                                style =
+                                    ShowcaseStyle.Default.copy(
+                                        backgroundColor = Color(0xFF1C0A00),
+                                        backgroundAlpha = 0.90f,
+                                        targetCircleColor = Color.White,
+                                    ),
+                                content = {
+                                    Column {
+                                        Text(
+                                            text = "マーカ一覧ボタン",
+                                            color = Color.White,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                        Text(
+                                            text = "タップすると設置したマーカーを一覧で表示されます",
+                                            color = Color.White,
+                                            fontSize = 16.sp,
+                                        )
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Icon(
+                                            Icons.Default.Menu,
+                                            contentDescription = null,
+                                            modifier =
+                                                Modifier
+                                                    .size(80.dp)
+                                                    .align(Alignment.End),
+                                            tint = Color.Transparent,
+                                        )
+                                    }
+                                },
+                            ).align(Alignment.TopStart)
                             .padding(start = 16.dp, top = 5.dp),
                 ) {
                     Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
@@ -267,21 +332,20 @@ fun MapScreen(
                                 index = 0,
                                 style =
                                     ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF1C0A00), // specify color of background
-                                        backgroundAlpha = 0.98f, // specify transparency of background
-                                        targetCircleColor = Color.White, // specify color of target circle
+                                        backgroundColor = Color(0xFF1C0A00),
+                                        backgroundAlpha = 0.90f,
+                                        targetCircleColor = Color.White,
                                     ),
-                                // specify the content to show to introduce app feature
                                 content = {
                                     Column {
                                         Text(
-                                            text = "Check emails",
+                                            text = "これは　追従ボタン　です",
                                             color = Color.White,
                                             fontSize = 24.sp,
                                             fontWeight = FontWeight.Bold,
                                         )
                                         Text(
-                                            text = "Click here to check/send emails",
+                                            text = "タップすると一定時間ごとに現在地にカメラが戻ります",
                                             color = Color.White,
                                             fontSize = 16.sp,
                                         )
@@ -293,11 +357,12 @@ fun MapScreen(
                                                 Modifier
                                                     .size(80.dp)
                                                     .align(Alignment.End),
-                                            tint = Color.White,
+                                            tint = Color.Transparent,
                                         )
                                     }
                                 },
-                            ).align(Alignment.TopEnd)
+                            )
+                            .align(Alignment.TopEnd)
                             .padding(end = 16.dp, top = 5.dp),
                 ) {
                     Icon(
@@ -527,5 +592,6 @@ fun MapScreenPreview() {
         addMarker = {},
         removeMarker = {},
         updateMarkerMemoEmbedding = { _, _ -> },
+        changeShowMapIntro = {},
     )
 }

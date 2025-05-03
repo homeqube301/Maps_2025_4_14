@@ -20,6 +20,14 @@ class ListViewModel
         private val _listState = MutableStateFlow(ListState())
         val listState: StateFlow<ListState> = _listState
 
+        fun changeShowDetailIntro() {
+            _listState.update { it.copy(showDetailIntro = !it.showDetailIntro) }
+        }
+
+        fun changeShowListIntro() {
+            _listState.update { it.copy(showListIntro = !it.showListIntro) }
+    }
+
         fun chengeStartDatePicker() {
             _listState.update { it.copy(openStartDatePicker = !it.openStartDatePicker) }
         }

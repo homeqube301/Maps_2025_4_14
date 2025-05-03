@@ -3,12 +3,16 @@ package com.mKanta.archivemaps.ui.screen.markerList
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -23,12 +27,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.canopas.lib.showcase.IntroShowcase
+import com.canopas.lib.showcase.component.ShowcaseStyle
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import java.time.LocalDate
@@ -48,6 +58,8 @@ fun MarkerListScreen(
     similarMarkerIds: List<String>,
     changeEmbeddingMemo: (String) -> Unit = {},
     searchSimilarMarkers: () -> Unit = {},
+    showListIntro: Boolean = true,
+    changeShowListIntro: () -> Unit = {},
 ) {
     LaunchedEffect(embeddingMemo) {
         if (embeddingMemo.isNotEmpty()) {
@@ -60,26 +72,24 @@ fun MarkerListScreen(
         "FilterParams",
         "start=$startDate, end=$endDate, name=$markerName, memo=$memo, embeddingMemo=$embeddingMemo",
     )
-    // 日付のフォーマットを定義
+
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
 
     val markerListState =
         remember {
             derivedStateOf {
-                // viewModel.permanentMarkers.sortedBy { it.createdAt }
                 permanetMarkers.sortedBy { it.createdAt }
             }
         }
 
-    // startDate と endDate を LocalDateTime に変換
     val startDateTime =
         if (startDate.isNotEmpty()) {
             try {
                 LocalDate.parse(startDate, formatter)
             } catch (e: Exception) {
                 Log.e("MarkerListScreen", "startDate の変換に失敗しました: $e")
-                null // パースできなかった場合は null にする
+                null
             }
         } else {
             null
@@ -90,7 +100,7 @@ fun MarkerListScreen(
             try {
                 LocalDate.parse(endDate, formatter)
             } catch (e: Exception) {
-                null // パースできなかった場合は null にする
+                null
             }
         } else {
             null
@@ -98,7 +108,6 @@ fun MarkerListScreen(
 
     val filteredMarkerList =
         markerListState.value.filter { marker ->
-            // マーカー名でフィルタリング（空ならスキップ）
             val markerDate: LocalDate? =
                 try {
                     val dateTime = LocalDateTime.parse(marker.createdAt, originalFormatter)
@@ -127,36 +136,79 @@ fun MarkerListScreen(
             matchesName && matchesDate && matchesMemo && matchesEmbedding
         }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("マーカー一覧") },
-                navigationIcon = {
-                    // IconButton(onClick = { navController.popBackStack() }) {
-                    IconButton(onClick = { navController.navigate("map/{latitude}/{longitude}") }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
-                    }
-                },
-            )
+    IntroShowcase(
+        showIntroShowCase = showListIntro,
+        dismissOnClickOutside = true,
+        onShowCaseCompleted = {
+            changeShowListIntro()
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate("detail_search") },
-                content = {
-                    Icon(Icons.Filled.Search, contentDescription = "詳細検索")
-                },
-            )
-        },
-    ) { padding ->
-        LazyColumn(modifier = Modifier.padding(padding)) {
-            items(filteredMarkerList) { marker ->
-                MarkerItem(
-                    marker = marker,
-                    onClick = {
-                        navController.navigate("map/${marker.position.latitude}/${marker.position.longitude}")
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("マーカー一覧") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.navigate("map/{latitude}/{longitude}") }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                        }
                     },
                 )
-                HorizontalDivider()
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { navController.navigate("detail_search") },
+                    modifier =
+                        Modifier
+                            .introShowCaseTarget(
+                                index = 0,
+                                style =
+                                    ShowcaseStyle.Default.copy(
+                                        backgroundColor = Color(0xFF1C0A00),
+                                        backgroundAlpha = 0.90f,
+                                        targetCircleColor = Color.White,
+                                    ),
+                                content = {
+                                    Column {
+                                        Text(
+                                            text = "詳細検索ボタン",
+                                            color = Color.White,
+                                            fontSize = 24.sp,
+                                            fontWeight = FontWeight.Bold,
+                                        )
+                                        Text(
+                                            text = "タップすると設置したマーカーを細かい条件で検索できます",
+                                            color = Color.White,
+                                            fontSize = 16.sp,
+                                        )
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        Icon(
+                                            Icons.Default.Menu,
+                                            contentDescription = null,
+                                            modifier =
+                                                Modifier
+                                                    .size(80.dp)
+                                                    .align(Alignment.End),
+                                            tint = Color.Transparent,
+                                        )
+                                    }
+                                },
+                            ),
+                    content = {
+                        Icon(Icons.Filled.Search, contentDescription = "詳細検索")
+                    },
+                )
+            },
+        ) { padding ->
+            LazyColumn(modifier = Modifier.padding(padding)) {
+                items(filteredMarkerList) { marker ->
+                    MarkerItem(
+                        marker = marker,
+                        onClick = {
+                            navController.navigate("map/${marker.position.latitude}/${marker.position.longitude}")
+                        },
+                    )
+                    HorizontalDivider()
+                }
             }
         }
     }
@@ -224,6 +276,8 @@ fun PreviewMarkerListScreen() {
         similarMarkerIds = emptyList(),
         changeEmbeddingMemo = {},
         searchSimilarMarkers = {},
+        showListIntro = false,
+        changeShowListIntro = {},
     )
 }
 
