@@ -149,6 +149,52 @@ fun MapScreen(
             changeShowMapIntro()
         },
     ) {
+        Box(
+            modifier =
+                Modifier.fillMaxSize(),
+        ) {
+            Text(
+                text = "",
+                modifier =
+                    Modifier
+                        .introShowCaseTarget(
+                            index = 3,
+                            style =
+                                ShowcaseStyle.Default.copy(
+                                    backgroundColor = Color(0xFF1C0A00),
+                                    backgroundAlpha = 0.95f,
+                                    targetCircleColor = Color.White,
+                                ),
+                            content = {
+                                Column {
+                                    Text(
+                                        text = "まずはマーカーをセット！",
+                                        color = Color.White,
+                                        fontSize = 24.sp,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                    Text(
+                                        text = "マップ上をタップすると新しくマーカーを設置できます",
+                                        color = Color.White,
+                                        fontSize = 16.sp,
+                                    )
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Icon(
+                                        Icons.Default.Menu,
+                                        contentDescription = null,
+                                        modifier =
+                                            Modifier
+                                                .size(80.dp)
+                                                .align(Alignment.End),
+                                        tint = Color.Transparent,
+                                    )
+                                }
+                            },
+                        )
+                        .align(Alignment.Center),
+            )
+        }
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -222,7 +268,9 @@ fun MapScreen(
                 }
 
                 GoogleMap(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
                     cameraPositionState = cameraPositionState,
                     properties =
                         MapProperties(
@@ -315,7 +363,8 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            ).align(Alignment.TopStart)
+                            )
+                            .align(Alignment.TopStart)
                             .padding(start = 3.dp, top = 5.dp),
                 ) {
                     Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
@@ -361,8 +410,7 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            )
-                            .align(Alignment.TopEnd)
+                            ).align(Alignment.TopEnd)
                             .padding(end = 3.dp, top = 5.dp),
                 ) {
                     Icon(
