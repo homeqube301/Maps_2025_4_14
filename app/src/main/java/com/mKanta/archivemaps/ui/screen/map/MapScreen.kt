@@ -204,7 +204,8 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
@@ -376,7 +377,8 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            ).align(Alignment.TopStart)
+                            )
+                            .align(Alignment.TopStart)
                             .padding(start = 3.dp, top = 5.dp),
                 ) {
                     Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")

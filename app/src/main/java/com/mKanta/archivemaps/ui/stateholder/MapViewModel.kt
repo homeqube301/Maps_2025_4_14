@@ -16,11 +16,11 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
+import com.mKanta.archivemaps.data.repository.GeocodingRepository
 import com.mKanta.archivemaps.data.repository.MarkerRepository
 import com.mKanta.archivemaps.data.repository.MemoRepository
 import com.mKanta.archivemaps.data.repository.UserPreferencesRepository
 import com.mKanta.archivemaps.domain.model.NamedMarker
-import com.mKanta.archivemaps.network.NominatimApiService
 import com.mKanta.archivemaps.network.NominatimResponse
 import com.mKanta.archivemaps.ui.state.MapsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +39,7 @@ class MapViewModel
         private val memoRepository: MemoRepository,
         private val preferencesRepository: UserPreferencesRepository,
         private val fusedLocationClient: FusedLocationProviderClient,
-        private val apiService: NominatimApiService,
+        private val geocodingRepository: GeocodingRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(MapsUiState())
         private var locationCallback: LocationCallback? = null
@@ -316,7 +316,7 @@ class MapViewModel
 
             Log.d("MarkerViewModel", "住所取得リクエスト: lat=$lat, lon=$lon")
 
-            apiService.reverseGeocode(lat, lon).enqueue(
+            geocodingRepository.reverseGeocode(lat, lon).enqueue(
                 object : retrofit2.Callback<NominatimResponse> {
                     override fun onResponse(
                         call: Call<NominatimResponse>,
