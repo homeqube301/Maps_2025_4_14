@@ -119,6 +119,7 @@ fun AppNavHost(
                 changeEndDate = { listViewModel.changeEndDate(it) },
                 changeEmbeddingMemo = { listViewModel.changeEmbeddingMemo(it) },
                 changeMemo = { listViewModel.changeMemo(it) },
+                changeShowDetailIntro = { listViewModel.changeShowDetailIntro() },
             )
         }
     }

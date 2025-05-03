@@ -22,5 +22,5 @@ class UserPreferencesRepository
 
         suspend fun setShowDetailIntro(value: Boolean) {
             userPreferences.saveShowDetailIntro(value)
-    }
+        }
     }

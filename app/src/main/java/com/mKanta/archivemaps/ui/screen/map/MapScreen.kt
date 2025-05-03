@@ -170,7 +170,7 @@ fun MapScreen(
                                         style =
                                             ShowcaseStyle.Default.copy(
                                                 backgroundColor = Color(0xFF1C0A00),
-                                                backgroundAlpha = 0.90f,
+                                                backgroundAlpha = 0.95f,
                                                 targetCircleColor = Color.White,
                                             ),
                                         content = {
@@ -287,7 +287,7 @@ fun MapScreen(
                                 style =
                                     ShowcaseStyle.Default.copy(
                                         backgroundColor = Color(0xFF1C0A00),
-                                        backgroundAlpha = 0.90f,
+                                        backgroundAlpha = 0.95f,
                                         targetCircleColor = Color.White,
                                     ),
                                 content = {
@@ -315,9 +315,8 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            )
-                            .align(Alignment.TopStart)
-                            .padding(start = 16.dp, top = 5.dp),
+                            ).align(Alignment.TopStart)
+                            .padding(start = 3.dp, top = 5.dp),
                 ) {
                     Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
                 }
@@ -334,7 +333,7 @@ fun MapScreen(
                                 style =
                                     ShowcaseStyle.Default.copy(
                                         backgroundColor = Color(0xFF1C0A00),
-                                        backgroundAlpha = 0.90f,
+                                        backgroundAlpha = 0.95f,
                                         targetCircleColor = Color.White,
                                     ),
                                 content = {
@@ -362,8 +361,9 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            ).align(Alignment.TopEnd)
-                            .padding(end = 16.dp, top = 5.dp),
+                            )
+                            .align(Alignment.TopEnd)
+                            .padding(end = 3.dp, top = 5.dp),
                 ) {
                     Icon(
                         imageVector = Icons.Default.LocationOn,

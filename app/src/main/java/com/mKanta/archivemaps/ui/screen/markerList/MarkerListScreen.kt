@@ -164,7 +164,7 @@ fun MarkerListScreen(
                                 style =
                                     ShowcaseStyle.Default.copy(
                                         backgroundColor = Color(0xFF1C0A00),
-                                        backgroundAlpha = 0.90f,
+                                        backgroundAlpha = 0.94f,
                                         targetCircleColor = Color.White,
                                     ),
                                 content = {
