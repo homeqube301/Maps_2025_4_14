@@ -23,15 +23,26 @@ class ListViewModel
         val listState: StateFlow<ListState> = _listState
 
         init {
-            viewModelScope.launch {
-                preferencesRepository.showListIntroFlow.collect { savedValue ->
-                    _listState.update { it.copy(showListIntro = savedValue) }
-                }
-            }
-    }
+//            viewModelScope.launch {
+//                preferencesRepository.showListIntroFlow.collect { savedValue ->
+//                    _listState.update { it.copy(showListIntro = savedValue) }
+//                }
+//            }
+//
+//            viewModelScope.launch {
+//                preferencesRepository.showDetailIntroFlow.collect { savedValue ->
+//                    _listState.update { it.copy(showDetailIntro = savedValue) }
+//                }
+//            }
+        }
 
         fun changeShowDetailIntro() {
-            _listState.update { it.copy(showDetailIntro = !it.showDetailIntro) }
+            val newValue = !_listState.value.showDetailIntro
+            _listState.update { it.copy(showDetailIntro = newValue) }
+
+            viewModelScope.launch {
+                preferencesRepository.setShowDetailIntro(newValue)
+            }
         }
 
         fun changeShowListIntro() {

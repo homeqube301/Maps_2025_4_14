@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.mKanta.archivemaps.data.repository.MarkerRepository
 import com.mKanta.archivemaps.data.repository.MemoRepository
+import com.mKanta.archivemaps.data.repository.UserPreferencesRepository
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.network.NominatimApiService
 import com.mKanta.archivemaps.network.NominatimResponse
@@ -36,6 +37,7 @@ class MapViewModel
     constructor(
         private val markerRepository: MarkerRepository,
         private val memoRepository: MemoRepository,
+        private val preferencesRepository: UserPreferencesRepository,
         private val fusedLocationClient: FusedLocationProviderClient,
         private val apiService: NominatimApiService,
     ) : ViewModel() {
@@ -53,10 +55,21 @@ class MapViewModel
 
         init {
             loadMarkers()
+
+//            viewModelScope.launch {
+//                preferencesRepository.showMapIntroFlow.collect { savedValue ->
+//                    _uiState.update { it.copy(showMapIntro = savedValue) }
+//                }
+//            }
         }
 
         fun changeShowMapIntro() {
-            _uiState.update { it.copy(showMapIntro = !it.showMapIntro) }
+            val newValue = !_uiState.value.showMapIntro
+            _uiState.update { it.copy(showMapIntro = newValue) }
+
+            viewModelScope.launch {
+                preferencesRepository.setShowMapIntro(newValue)
+            }
         }
 
         fun changeIsFollowing() {

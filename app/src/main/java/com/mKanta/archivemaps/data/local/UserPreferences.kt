@@ -17,9 +17,29 @@ class UserPreferences(
         context.dataStore.data
             .map { it[PreferenceKeys.SHOW_LIST_INTRO] ?: true }
 
+    val showMapIntroFlow: Flow<Boolean> =
+        context.dataStore.data
+            .map { it[PreferenceKeys.SHOW_MAP_INTRO] ?: true }
+
+    val showDetailIntroFlow: Flow<Boolean> =
+        context.dataStore.data
+            .map { it[PreferenceKeys.SHOW_DETAIL_INTRO] ?: true }
+
     suspend fun saveShowListIntro(value: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[PreferenceKeys.SHOW_LIST_INTRO] = value
+        }
+    }
+
+    suspend fun saveShowMapIntro(value: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferenceKeys.SHOW_MAP_INTRO] = value
+        }
+    }
+
+    suspend fun saveShowDetailIntro(value: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferenceKeys.SHOW_DETAIL_INTRO] = value
         }
     }
 }
