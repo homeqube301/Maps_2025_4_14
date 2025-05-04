@@ -89,7 +89,8 @@ fun AppNavHost(
             )
         }
         composable("marker_list?") {
-            // MarkerListScreenに検索条件を渡す
+            val listUIState by listViewModel.listUIState.collectAsState()
+            val embeddingUiState by listViewModel.embeddingUiState.collectAsState()
             MarkerListScreen(
                 navController = navController,
                 markerName = listViewModel.listState.value.markerName ?: "",
@@ -105,6 +106,11 @@ fun AppNavHost(
                 },
                 searchSimilarMarkers = { listViewModel.searchSimilarMarkers() },
                 changeShowListIntro = { listViewModel.changeShowListIntro() },
+                checkListUIState = { filteredMarkerList ->
+                    listViewModel.checkListUIState(filteredMarkerList)
+                },
+                listUIState = listUIState,
+                embeddingUiState = embeddingUiState,
             )
         }
         composable("detail_search") {
