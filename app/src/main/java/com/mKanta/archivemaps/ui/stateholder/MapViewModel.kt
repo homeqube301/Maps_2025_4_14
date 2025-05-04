@@ -44,10 +44,8 @@ class MapViewModel
         private val _uiState = MutableStateFlow(MapsUiState())
         private var locationCallback: LocationCallback? = null
 
-        // StateFlowで追従状態を管理
         private val _isFollowing = MutableStateFlow(false)
 
-        // 永続マーカーのリスト
         private val _permanentMarkers = mutableStateListOf<NamedMarker>()
         val uiState: StateFlow<MapsUiState> = _uiState
         val permanentMarkers: List<NamedMarker>
@@ -56,11 +54,11 @@ class MapViewModel
         init {
             loadMarkers()
 
-//            viewModelScope.launch {
-//                preferencesRepository.showMapIntroFlow.collect { savedValue ->
-//                    _uiState.update { it.copy(showMapIntro = savedValue) }
-//                }
-//            }
+            viewModelScope.launch {
+                preferencesRepository.showMapIntroFlow.collect { savedValue ->
+                    _uiState.update { it.copy(showMapIntro = savedValue) }
+                }
+            }
         }
 
         fun changeShowMapIntro() {
