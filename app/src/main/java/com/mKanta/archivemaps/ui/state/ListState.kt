@@ -1,5 +1,7 @@
 package com.mKanta.archivemaps.ui.state
 
+import com.mKanta.archivemaps.domain.model.NamedMarker
+
 data class ListState(
     val markerName: String? = null,
     val startDate: String? = null,
@@ -12,3 +14,15 @@ data class ListState(
     val showListIntro: Boolean = true,
     val showDetailIntro: Boolean = true,
 )
+
+sealed interface MarkerListUiState {
+    data object Loading : MarkerListUiState
+
+    data class Success(
+        val filteredMarkerList: List<NamedMarker>,
+    ) : MarkerListUiState
+
+    data class Error(
+        val message: String? = null,
+    ) : MarkerListUiState
+}
