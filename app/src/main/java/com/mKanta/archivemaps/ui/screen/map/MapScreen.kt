@@ -47,6 +47,7 @@ import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -204,8 +205,7 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
@@ -295,6 +295,11 @@ fun MapScreen(
                                     R.raw.map_style,
                                 ),
                         ),
+                    uiSettings =
+                        MapUiSettings(
+                            myLocationButtonEnabled = false,
+                            zoomControlsEnabled = false,
+                        ),
                     onMapClick = { latLng ->
                         changeTempMarkerPosition(latLng)
                         changeIsPanelOpen()
@@ -377,7 +382,8 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            ).align(Alignment.TopStart)
+                            )
+                            .align(Alignment.TopStart)
                             .padding(start = 3.dp, top = 5.dp),
                 ) {
                     Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
@@ -423,7 +429,8 @@ fun MapScreen(
                                         )
                                     }
                                 },
-                            ).align(Alignment.TopEnd)
+                            )
+                            .align(Alignment.TopEnd)
                             .padding(end = 3.dp, top = 5.dp),
                 ) {
                     Icon(

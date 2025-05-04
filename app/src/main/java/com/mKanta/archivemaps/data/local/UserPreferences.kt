@@ -15,15 +15,15 @@ class UserPreferences(
 
     val showListIntroFlow: Flow<Boolean> =
         context.dataStore.data
-            .map { it[PreferenceKeys.SHOW_LIST_INTRO] ?: true }
+            .map { it[PreferenceKeys.SHOW_LIST_INTRO] != false }
 
     val showMapIntroFlow: Flow<Boolean> =
         context.dataStore.data
-            .map { it[PreferenceKeys.SHOW_MAP_INTRO] ?: true }
+            .map { it[PreferenceKeys.SHOW_MAP_INTRO] != false }
 
     val showDetailIntroFlow: Flow<Boolean> =
         context.dataStore.data
-            .map { it[PreferenceKeys.SHOW_DETAIL_INTRO] ?: true }
+            .map { it[PreferenceKeys.SHOW_DETAIL_INTRO] != false }
 
     suspend fun saveShowListIntro(value: Boolean) {
         context.dataStore.edit { prefs ->

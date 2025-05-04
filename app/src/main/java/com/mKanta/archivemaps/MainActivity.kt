@@ -79,7 +79,7 @@ fun PermissionDeniedScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            "位置情報の権限がないとアプリを使用できません。",
+            "位置情報権限が無い状態ではアプリを使用できません。",
             style = MaterialTheme.typography.bodyLarge,
         )
         Spacer(modifier = Modifier.height(16.dp))
