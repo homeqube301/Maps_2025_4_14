@@ -47,10 +47,8 @@ class ListViewModel
 
             if (filteredMarkerList.isNotEmpty()) {
                 _listUIState.value = MarkerListUiState.Success(filteredMarkerList)
-            } else {
-                _listUIState.value = MarkerListUiState.Error("不明なエラー")
+            }
         }
-    }
 
         fun changeShowDetailIntro() {
             val newValue = !_listState.value.showDetailIntro
