@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,13 +17,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -210,67 +207,12 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("") },
-                    colors =
-                        TopAppBarDefaults.topAppBarColors(
-                            containerColor = Color.Blue.copy(alpha = 0.2f),
-                        ),
-                    actions = {
-                        // 簡易検索ボタン
-                        IconButton(
-                            onClick = {
-                                changeIsSearchOpen()
-                            },
-                            modifier =
-                                Modifier
-                                    .introShowCaseTarget(
-                                        index = 2,
-                                        style =
-                                            ShowcaseStyle.Default.copy(
-                                                backgroundColor = Color(0xFF1C0A00),
-                                                backgroundAlpha = 0.95f,
-                                                targetCircleColor = Color.White,
-                                            ),
-                                        content = {
-                                            Column {
-                                                Text(
-                                                    text = "簡易検索ボタン",
-                                                    color = Color.White,
-                                                    fontSize = 24.sp,
-                                                    fontWeight = FontWeight.Bold,
-                                                )
-                                                Text(
-                                                    text = "タップすると設置したマーカーを簡単な条件で検索できます",
-                                                    color = Color.White,
-                                                    fontSize = 16.sp,
-                                                )
-                                                Spacer(modifier = Modifier.height(10.dp))
-                                                Icon(
-                                                    Icons.Default.Menu,
-                                                    contentDescription = null,
-                                                    modifier =
-                                                        Modifier
-                                                            .size(80.dp)
-                                                            .align(Alignment.End),
-                                                    tint = Color.Transparent,
-                                                )
-                                            }
-                                        },
-                                    ),
-                        ) {
-                            Icon(Icons.Default.Search, contentDescription = "検索")
-                        }
-                    },
-                )
-            },
-        ) { innerPadding ->
+        Scaffold { innerPadding ->
             Box(
                 modifier =
                     Modifier
@@ -354,15 +296,15 @@ fun MapScreen(
                     modifier =
                         Modifier
                             .align(Alignment.TopEnd)
-                            .padding(top = 15.dp, end = 5.dp),
-                    verticalArrangement = Arrangement.spacedBy(15.dp),
+                            .padding(top = 50.dp, end = 5.dp),
+                    verticalArrangement = Arrangement.spacedBy(25.dp),
                 ) {
                     FloatingActionButton(
-                        onClick = { navController.navigate("marker_list") },
+                        onClick = { changeIsSearchOpen() },
                         modifier =
                             Modifier
                                 .introShowCaseTarget(
-                                    index = 1,
+                                    index = 2,
                                     style =
                                         ShowcaseStyle.Default.copy(
                                             backgroundColor = Color(0xFF1C0A00),
@@ -372,13 +314,13 @@ fun MapScreen(
                                     content = {
                                         Column {
                                             Text(
-                                                text = "マーカ一覧ボタン",
+                                                text = "簡易検索ボタン",
                                                 color = Color.White,
                                                 fontSize = 24.sp,
                                                 fontWeight = FontWeight.Bold,
                                             )
                                             Text(
-                                                text = "タップすると設置したマーカーを一覧で表示されます",
+                                                text = "タップすると設置したマーカーを簡単な条件で検索できます",
                                                 color = Color.White,
                                                 fontSize = 16.sp,
                                             )
@@ -396,7 +338,7 @@ fun MapScreen(
                                     },
                                 ),
                     ) {
-                        Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
+                        Icon(Icons.Default.Search, contentDescription = "検索")
                     }
 
                     FloatingActionButton(
@@ -454,6 +396,48 @@ fun MapScreen(
                                 },
                         )
                     }
+
+                    FloatingActionButton(
+                        onClick = { navController.navigate("marker_list") },
+                        modifier =
+                            Modifier
+                                .introShowCaseTarget(
+                                    index = 1,
+                                    style =
+                                        ShowcaseStyle.Default.copy(
+                                            backgroundColor = Color(0xFF1C0A00),
+                                            backgroundAlpha = 0.95f,
+                                            targetCircleColor = Color.White,
+                                        ),
+                                    content = {
+                                        Column {
+                                            Text(
+                                                text = "マーカ一覧ボタン",
+                                                color = Color.White,
+                                                fontSize = 24.sp,
+                                                fontWeight = FontWeight.Bold,
+                                            )
+                                            Text(
+                                                text = "タップすると設置したマーカーを一覧で表示されます",
+                                                color = Color.White,
+                                                fontSize = 16.sp,
+                                            )
+                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Icon(
+                                                Icons.Default.Menu,
+                                                contentDescription = null,
+                                                modifier =
+                                                    Modifier
+                                                        .size(80.dp)
+                                                        .align(Alignment.End),
+                                                tint = Color.Transparent,
+                                            )
+                                        }
+                                    },
+                                ),
+                    ) {
+                        Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
+                    }
                 }
 
                 // 検索パネル
@@ -461,7 +445,7 @@ fun MapScreen(
                     ModalBottomSheet(
                         onDismissRequest = { changeIsSearchOpen() },
                         sheetState = searchSheetState,
-                        modifier = Modifier.fillMaxHeight(0.9f),
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         SearchMaker(
                             titleResults = uiState.titleResults,
