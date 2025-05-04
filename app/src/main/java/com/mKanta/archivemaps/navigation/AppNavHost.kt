@@ -90,6 +90,7 @@ fun AppNavHost(
         }
         composable("marker_list?") {
             val listUIState by listViewModel.listUIState.collectAsState()
+            val embeddingUiState by listViewModel.embeddingUiState.collectAsState()
             MarkerListScreen(
                 navController = navController,
                 markerName = listViewModel.listState.value.markerName ?: "",
@@ -109,6 +110,7 @@ fun AppNavHost(
                     listViewModel.checkListUIState(filteredMarkerList)
                 },
                 listUIState = listUIState,
+                embeddingUiState = embeddingUiState,
             )
         }
         composable("detail_search") {

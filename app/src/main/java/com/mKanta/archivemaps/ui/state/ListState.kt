@@ -26,3 +26,15 @@ sealed interface MarkerListUiState {
         val message: String? = null,
     ) : MarkerListUiState
 }
+
+sealed interface EmbeddingUiState {
+    data object Loading : EmbeddingUiState
+
+    data class Success(
+        val similarIds: List<String>,
+    ) : EmbeddingUiState
+
+    data class Error(
+        val message: String? = null,
+    ) : EmbeddingUiState
+}

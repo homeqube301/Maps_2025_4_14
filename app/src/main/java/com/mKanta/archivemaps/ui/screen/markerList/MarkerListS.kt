@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.mKanta.archivemaps.domain.model.NamedMarker
+import com.mKanta.archivemaps.ui.state.EmbeddingUiState
 import com.mKanta.archivemaps.ui.state.MarkerListUiState
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -34,6 +35,7 @@ fun MarkerListScreen(
     showListIntro: Boolean = true,
     changeShowListIntro: () -> Unit = {},
     listUIState: MarkerListUiState,
+    embeddingUiState: EmbeddingUiState,
     checkListUIState: (List<NamedMarker>) -> Unit = {},
 ) {
     LaunchedEffect(embeddingMemo) {
@@ -113,25 +115,45 @@ fun MarkerListScreen(
 
     checkListUIState(filteredMarkerList)
 
-    when (listUIState) {
-        is MarkerListUiState.Loading -> {
+    when {
+        listUIState is MarkerListUiState.Loading -> {
             CircularProgressIndicator(modifier = Modifier.fillMaxSize())
         }
 
-        is MarkerListUiState.Error -> {
+        embeddingUiState is EmbeddingUiState.Loading && embeddingMemo.isNotEmpty() -> {
+            CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+        }
+
+        listUIState is MarkerListUiState.Error -> {
             Text(
-                text = listUIState.message ?: "エラーが発生しました",
+                text = listUIState.message ?: "リストの読み込み中にエラーが発生しました",
                 color = Color.Red,
                 modifier = Modifier.padding(16.dp),
             )
         }
 
-        is MarkerListUiState.Success -> {
+        embeddingUiState is EmbeddingUiState.Error -> {
+            Text(
+                text = embeddingUiState.message ?: "ベクトル検索中にエラーが発生しました",
+                color = Color.Red,
+                modifier = Modifier.padding(16.dp),
+            )
+        }
+
+        listUIState is MarkerListUiState.Success -> {
             MarkerListContent(
-                navController,
-                showListIntro,
-                changeShowListIntro,
+                navController = navController,
+                showListIntro = showListIntro,
+                changeShowListIntro = changeShowListIntro,
                 filteredMarkerList = filteredMarkerList,
+            )
+        }
+
+        else -> {
+            Text(
+                text = "不明な状態です",
+                color = Color.Gray,
+                modifier = Modifier.padding(16.dp),
             )
         }
     }
