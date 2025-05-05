@@ -1,8 +1,10 @@
 package com.mKanta.archivemaps.ui.screen.markerList
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,9 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +36,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.canopas.lib.showcase.IntroShowcase
 import com.canopas.lib.showcase.component.ShowcaseStyle
+import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
 
@@ -56,73 +58,92 @@ fun MarkerListContent(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("マーカー一覧") },
+                    title = { Text("マーカーリスト") },
                     navigationIcon = {
                         IconButton(onClick = { navController.navigate("map/{latitude}/{longitude}") }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
                         }
                     },
-                )
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { navController.navigate("detail_search") },
-                    modifier =
-                        Modifier
-                            .introShowCaseTarget(
-                                index = 0,
-                                style =
-                                    ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF1C0A00),
-                                        backgroundAlpha = 0.94f,
-                                        targetCircleColor = Color.White,
+                    actions = {
+                        IconButton(
+                            onClick = { navController.navigate("detail_search") },
+                            modifier =
+                                Modifier
+                                    .introShowCaseTarget(
+                                        index = 0,
+                                        style =
+                                            ShowcaseStyle.Default.copy(
+                                                backgroundColor = Color(0xFF000000),
+                                                backgroundAlpha = 0.94f,
+                                                targetCircleColor = Color.White,
+                                            ),
+                                        content = {
+                                            Column {
+                                                Text(
+                                                    text = "詳細検索ボタン",
+                                                    color = Color.White,
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                )
+                                                Text(
+                                                    text = "タップすると設置したマーカーを細かい条件で検索できます",
+                                                    color = Color.White,
+                                                    fontSize = 16.sp,
+                                                )
+                                                Spacer(modifier = Modifier.height(10.dp))
+                                                Icon(
+                                                    Icons.Default.Menu,
+                                                    contentDescription = null,
+                                                    modifier =
+                                                        Modifier
+                                                            .size(80.dp)
+                                                            .align(Alignment.End),
+                                                    tint = Color.Transparent,
+                                                )
+                                            }
+                                        },
                                     ),
-                                content = {
-                                    Column {
-                                        Text(
-                                            text = "詳細検索ボタン",
-                                            color = Color.White,
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Text(
-                                            text = "タップすると設置したマーカーを細かい条件で検索できます",
-                                            color = Color.White,
-                                            fontSize = 16.sp,
-                                        )
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        Icon(
-                                            Icons.Default.Menu,
-                                            contentDescription = null,
-                                            modifier =
-                                                Modifier
-                                                    .size(80.dp)
-                                                    .align(Alignment.End),
-                                            tint = Color.Transparent,
-                                        )
-                                    }
-                                },
-                            ),
-                    content = {
-                        Icon(Icons.Filled.Search, contentDescription = "詳細検索")
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.manage_search_24px),
+                                modifier = Modifier.size(32.dp),
+                                contentDescription = "詳細検索",
+                            )
+                        }
                     },
                 )
             },
         ) { padding ->
-            LazyColumn(
+
+            Box(
                 modifier =
                     Modifier
-                        .padding(padding)
-                        .padding(16.dp),
+                        .fillMaxSize(),
             ) {
-                items(filteredMarkerList) { marker ->
-                    MarkerItem(
-                        marker = marker,
-                        onClick = {
-                            navController.navigate("map/${marker.position.latitude}/${marker.position.longitude}")
-                        },
+                if (filteredMarkerList.isEmpty()) {
+                    Text(
+                        text = "表示できるマーカーがありません",
+                        fontSize = 18.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.align(Alignment.Center),
                     )
-                    HorizontalDivider()
+                } else {
+                    LazyColumn(
+                        modifier =
+                            Modifier
+                                .padding(padding)
+                                .padding(16.dp),
+                    ) {
+                        items(filteredMarkerList) { marker ->
+                            MarkerItem(
+                                marker = marker,
+                                onClick = {
+                                    navController.navigate("map/${marker.position.latitude}/${marker.position.longitude}")
+                                },
+                            )
+                            HorizontalDivider()
+                        }
+                    }
                 }
             }
         }

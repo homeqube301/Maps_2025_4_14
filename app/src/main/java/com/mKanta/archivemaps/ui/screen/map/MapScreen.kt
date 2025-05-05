@@ -164,7 +164,7 @@ fun MapScreen(
                             index = 3,
                             style =
                                 ShowcaseStyle.Default.copy(
-                                    backgroundColor = Color(0xFF1C0A00),
+                                    backgroundColor = Color(0xFF000000),
                                     backgroundAlpha = 0.98f,
                                     targetCircleColor = Color(0xFF343434),
                                 ),
@@ -207,8 +207,7 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
@@ -308,7 +307,7 @@ fun MapScreen(
                                     index = 2,
                                     style =
                                         ShowcaseStyle.Default.copy(
-                                            backgroundColor = Color(0xFF1C0A00),
+                                            backgroundColor = Color(0xFF000000),
                                             backgroundAlpha = 0.95f,
                                             targetCircleColor = Color.White,
                                         ),
@@ -358,7 +357,7 @@ fun MapScreen(
                                     index = 0,
                                     style =
                                         ShowcaseStyle.Default.copy(
-                                            backgroundColor = Color(0xFF1C0A00),
+                                            backgroundColor = Color(0xFF000000),
                                             backgroundAlpha = 0.95f,
                                             targetCircleColor = Color.White,
                                         ),
@@ -413,7 +412,7 @@ fun MapScreen(
                                     index = 1,
                                     style =
                                         ShowcaseStyle.Default.copy(
-                                            backgroundColor = Color(0xFF1C0A00),
+                                            backgroundColor = Color(0xFF000000),
                                             backgroundAlpha = 0.95f,
                                             targetCircleColor = Color.White,
                                         ),

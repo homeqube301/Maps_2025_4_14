@@ -135,7 +135,7 @@ fun DetailSearchScreen(
                                 index = 0,
                                 style =
                                     ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF1C0A00),
+                                        backgroundColor = Color(0xFF000000),
                                         backgroundAlpha = 0.95f,
                                         targetCircleColor = Color(0xFF343434),
                                     ),
@@ -164,7 +164,8 @@ fun DetailSearchScreen(
                                         )
                                     }
                                 },
-                            ).fillMaxWidth(),
+                            )
+                            .fillMaxWidth(),
                 )
 
                 OutlinedButton(
@@ -177,7 +178,7 @@ fun DetailSearchScreen(
                                 index = 1,
                                 style =
                                     ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF1C0A00),
+                                        backgroundColor = Color(0xFF000000),
                                         backgroundAlpha = 0.95f,
                                         targetCircleColor = Color(0xFF343434),
                                     ),
@@ -206,7 +207,8 @@ fun DetailSearchScreen(
                                         )
                                     }
                                 },
-                            ).fillMaxWidth(),
+                            )
+                            .fillMaxWidth(),
                 ) {
                     Text(
                         text =
@@ -229,7 +231,7 @@ fun DetailSearchScreen(
                                 index = 2,
                                 style =
                                     ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF1C0A00),
+                                        backgroundColor = Color(0xFF000000),
                                         backgroundAlpha = 0.95f,
                                         targetCircleColor = Color(0xFF343434),
                                     ),
@@ -284,7 +286,7 @@ fun DetailSearchScreen(
                                 index = 3,
                                 style =
                                     ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF1C0A00),
+                                        backgroundColor = Color(0xFF000000),
                                         backgroundAlpha = 0.95f,
                                         targetCircleColor = Color(0xFF343434),
                                     ),
@@ -330,7 +332,7 @@ fun DetailSearchScreen(
                                 index = 4,
                                 style =
                                     ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF1C0A00),
+                                        backgroundColor = Color(0xFF000000),
                                         backgroundAlpha = 0.95f,
                                         targetCircleColor = Color(0xFF343434),
                                     ),
