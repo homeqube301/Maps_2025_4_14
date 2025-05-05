@@ -47,11 +47,7 @@ class ListViewModel
         }
 
         fun checkListUIState(filteredMarkerList: List<NamedMarker>) {
-//            _listUIState.value = MarkerListUiState.Loading
-//
-//            if (filteredMarkerList.isNotEmpty()) {
             _listUIState.value = MarkerListUiState.Success(filteredMarkerList)
-//            }
         }
 
         fun changeShowDetailIntro() {
@@ -99,23 +95,6 @@ class ListViewModel
         fun changeEndDate(change: String) {
             _listState.value = _listState.value.copy(endDate = change)
         }
-
-//        fun searchSimilarMarkers() {
-//            viewModelScope.launch {
-//                val query = listState.value.embeddingMemo
-//                if (query.isNullOrBlank()) return@launch
-//
-//                val matchedIds = memoRepository.getSimilarMarkerIds(query)
-//                if (matchedIds == null) {
-//                    _listUIState.value = MarkerListUiState.Error("検索結果が取得できませんでした。")
-//                    return@launch
-//                }
-//
-//                _listState.update {
-//                    it.copy(similarMarkerIds = matchedIds)
-//                }
-//            }
-//        }
 
         fun searchSimilarMarkers() {
             viewModelScope.launch {

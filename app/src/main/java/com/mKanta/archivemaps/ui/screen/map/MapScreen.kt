@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -113,7 +113,6 @@ fun MapScreen(
     val setSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val searchSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    rememberCoroutineScope()
 
     LaunchedEffect(latitude, longitude) {
         if (latitude != 0.0 && longitude != 0.0) {
@@ -207,8 +206,7 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
@@ -292,17 +290,18 @@ fun MapScreen(
                     )
                 }
 
-                Column(
+                Row(
                     modifier =
                         Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(top = 50.dp, end = 5.dp),
-                    verticalArrangement = Arrangement.spacedBy(25.dp),
+                            .align(Alignment.BottomCenter)
+                            .padding(top = 50.dp, end = 5.dp, bottom = 60.dp),
+                    horizontalArrangement = Arrangement.spacedBy(30.dp),
                 ) {
                     FloatingActionButton(
                         onClick = { changeIsSearchOpen() },
                         modifier =
                             Modifier
+                                .size(70.dp)
                                 .introShowCaseTarget(
                                     index = 2,
                                     style =
@@ -338,7 +337,11 @@ fun MapScreen(
                                     },
                                 ),
                     ) {
-                        Icon(Icons.Default.Search, contentDescription = "検索")
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "検索",
+                            modifier = Modifier.size(30.dp),
+                        )
                     }
 
                     FloatingActionButton(
@@ -348,6 +351,7 @@ fun MapScreen(
                         },
                         modifier =
                             Modifier
+                                .size(70.dp)
                                 .introShowCaseTarget(
                                     index = 0,
                                     style =
@@ -385,6 +389,7 @@ fun MapScreen(
                     ) {
                         Icon(
                             painterResource(id = R.drawable.location_searching_24px),
+                            modifier = Modifier.size(30.dp),
                             contentDescription = "追従",
                             tint =
                                 if (uiState.isFollowing) {
@@ -401,6 +406,7 @@ fun MapScreen(
                         onClick = { navController.navigate("marker_list") },
                         modifier =
                             Modifier
+                                .size(70.dp)
                                 .introShowCaseTarget(
                                     index = 1,
                                     style =
@@ -436,7 +442,11 @@ fun MapScreen(
                                     },
                                 ),
                     ) {
-                        Icon(Icons.Default.Menu, contentDescription = "マーカ一覧")
+                        Icon(
+                            Icons.Default.Menu,
+                            contentDescription = "マーカ一覧",
+                            modifier = Modifier.size(30.dp),
+                        )
                     }
                 }
 
