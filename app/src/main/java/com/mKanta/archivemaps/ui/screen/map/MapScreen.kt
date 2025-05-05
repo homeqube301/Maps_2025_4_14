@@ -29,6 +29,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -206,7 +207,8 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
@@ -450,12 +452,15 @@ fun MapScreen(
                     }
                 }
 
-                // 検索パネル
                 if (uiState.isSearchOpen) {
                     ModalBottomSheet(
                         onDismissRequest = { changeIsSearchOpen() },
                         sheetState = searchSheetState,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(LocalConfiguration.current.screenHeightDp.dp / 2)
+                                .align(Alignment.BottomCenter),
                     ) {
                         SearchMaker(
                             titleResults = uiState.titleResults,
