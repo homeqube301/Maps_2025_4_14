@@ -303,7 +303,7 @@ fun MapScreen(
                         onClick = { changeIsSearchOpen() },
                         modifier =
                             Modifier
-                                .size(70.dp)
+                                .size(72.dp)
                                 .introShowCaseTarget(
                                     index = 2,
                                     style =
@@ -342,7 +342,7 @@ fun MapScreen(
                         Icon(
                             Icons.Default.Search,
                             contentDescription = "検索",
-                            modifier = Modifier.size(30.dp),
+                            modifier = Modifier.size(32.dp),
                         )
                     }
 
@@ -353,7 +353,7 @@ fun MapScreen(
                         },
                         modifier =
                             Modifier
-                                .size(70.dp)
+                                .size(72.dp)
                                 .introShowCaseTarget(
                                     index = 0,
                                     style =
@@ -391,7 +391,7 @@ fun MapScreen(
                     ) {
                         Icon(
                             painterResource(id = R.drawable.location_searching_24px),
-                            modifier = Modifier.size(30.dp),
+                            modifier = Modifier.size(32.dp),
                             contentDescription = "追従",
                             tint =
                                 if (uiState.isFollowing) {
@@ -408,7 +408,7 @@ fun MapScreen(
                         onClick = { navController.navigate("marker_list") },
                         modifier =
                             Modifier
-                                .size(70.dp)
+                                .size(72.dp)
                                 .introShowCaseTarget(
                                     index = 1,
                                     style =
@@ -447,7 +447,7 @@ fun MapScreen(
                         Icon(
                             Icons.Default.Menu,
                             contentDescription = "マーカ一覧",
-                            modifier = Modifier.size(30.dp),
+                            modifier = Modifier.size(32.dp),
                         )
                     }
                 }

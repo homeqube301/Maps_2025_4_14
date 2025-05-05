@@ -109,7 +109,12 @@ fun MarkerListContent(
                 )
             },
         ) { padding ->
-            LazyColumn(modifier = Modifier.padding(padding)) {
+            LazyColumn(
+                modifier =
+                    Modifier
+                        .padding(padding)
+                        .padding(16.dp),
+            ) {
                 items(filteredMarkerList) { marker ->
                     MarkerItem(
                         marker = marker,
@@ -133,11 +138,14 @@ fun MarkerItem(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
                 .clickable { onClick() },
     ) {
-        Text(text = "ID: ${marker.id}", style = MaterialTheme.typography.bodySmall)
-        Text(text = marker.title, style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = marker.title,
+            style = MaterialTheme.typography.titleLarge,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+        )
         if (!marker.memo.isNullOrBlank()) {
             Text(
                 text = marker.memo,
@@ -148,9 +156,11 @@ fun MarkerItem(
         }
         Text(
             text = "作成日時: ${marker.createdAt}",
+            color = Color.Gray,
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(top = 4.dp),
         )
+        Text(text = "")
     }
 }
 
