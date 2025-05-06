@@ -21,4 +21,5 @@ data class MapsUiState(
     val visibleMarkers: List<NamedMarker> = emptyList(),
     val editname: String? = null,
     val showMapIntro: Boolean = true,
+    val showConfirmDialog: Boolean = false,
 )

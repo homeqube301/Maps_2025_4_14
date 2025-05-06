@@ -37,6 +37,7 @@ fun AppNavHost(
                 longitude = longitude,
                 uiState = uiState,
                 listState = listState,
+                changeShowConfirmDialog = { mapViewModel.changeShowConfirmDialog() },
                 changeIsFollowing = { mapViewModel.changeIsFollowing() },
                 changeIsEditPanelOpen = { mapViewModel.changeIsEditPanelOpen() },
                 changeIsPanelOpen = { mapViewModel.changeIsPanelOpen() },

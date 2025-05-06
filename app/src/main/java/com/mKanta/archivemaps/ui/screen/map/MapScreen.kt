@@ -107,6 +107,7 @@ fun MapScreen(
     removeMarker: (String) -> Unit,
     updateMarkerMemoEmbedding: (NamedMarker, String) -> Unit,
     changeShowMapIntro: () -> Unit,
+    changeShowConfirmDialog: () -> Unit,
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -207,8 +208,7 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
@@ -505,6 +505,8 @@ fun MapScreen(
                         sheetState = setSheetState,
                     ) {
                         SetMarkerPanel(
+                            showConfirmDialog = uiState.showConfirmDialog,
+                            changeShowConfirmDialog = { changeShowConfirmDialog() },
                             cameraPositionState = cameraPositionState,
                             focusManager = focusManager,
                             tempMarkerPosition = uiState.tempMarkerPosition,
@@ -675,5 +677,6 @@ fun MapScreenPreview() {
         removeMarker = {},
         updateMarkerMemoEmbedding = { _, _ -> },
         changeShowMapIntro = {},
+        changeShowConfirmDialog = {},
     )
 }

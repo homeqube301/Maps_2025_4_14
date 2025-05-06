@@ -61,6 +61,10 @@ class MapViewModel
 //            }
         }
 
+        fun changeShowConfirmDialog() {
+            _uiState.update { it.copy(showConfirmDialog = !it.showConfirmDialog) }
+        }
+
         fun changeShowMapIntro() {
             val newValue = !_uiState.value.showMapIntro
             _uiState.update { it.copy(showMapIntro = newValue) }

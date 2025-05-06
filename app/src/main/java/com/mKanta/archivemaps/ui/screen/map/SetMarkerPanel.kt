@@ -1,5 +1,6 @@
 package com.mKanta.archivemaps.ui.screen.map
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -46,7 +48,13 @@ fun SetMarkerPanel(
     changeTempMarkerName: (String) -> Unit,
     addVisibleMarker: (NamedMarker) -> Unit,
     addMarker: (NamedMarker) -> Unit,
+    showConfirmDialog: Boolean,
+    changeShowConfirmDialog: () -> Unit,
 ) {
+    BackHandler(enabled = true) {
+        changeShowConfirmDialog()
+    }
+
     Column(
         modifier =
             Modifier
@@ -125,11 +133,40 @@ fun SetMarkerPanel(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
-            resetTempMarkers()
-            onClose()
+            changeShowConfirmDialog()
         }) {
             Text("閉じる")
         }
+    }
+
+    if (showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                changeShowConfirmDialog()
+            },
+            title = { Text("設定を中断しますか？") },
+            text = { Text("入力した内容は破棄されます。") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        changeShowConfirmDialog()
+                        resetTempMarkers()
+                        onClose()
+                    },
+                ) {
+                    Text("はい")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        changeShowConfirmDialog()
+                    },
+                ) {
+                    Text("いいえ")
+                }
+            },
+        )
     }
 }
 
@@ -153,5 +190,7 @@ fun PreviewSetMarkerPanel() {
         changeTempMarkerName = {},
         addVisibleMarker = {},
         addMarker = {},
+        showConfirmDialog = false,
+        changeShowConfirmDialog = {},
     )
 }
