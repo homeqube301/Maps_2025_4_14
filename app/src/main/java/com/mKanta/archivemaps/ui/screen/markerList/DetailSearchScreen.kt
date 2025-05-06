@@ -207,8 +207,7 @@ fun DetailSearchScreen(
                                         )
                                     }
                                 },
-                            )
-                            .fillMaxWidth(),
+                            ).fillMaxWidth(),
                 ) {
                     Text(
                         text =

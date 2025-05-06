@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.VideoView
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -63,6 +65,8 @@ fun EditPanel(
     context: Context,
     selectedAddress: StateFlow<String>,
     memoEmbedding: (NamedMarker, String) -> Unit,
+    showConfirmDialog: Boolean,
+    changeShowConfirmDialog: () -> Unit,
 ) {
     val address by selectedAddress.collectAsState()
     val mediaPickerLauncher =
@@ -95,6 +99,9 @@ fun EditPanel(
         }
 
     val scrollState = rememberScrollState()
+    BackHandler(enabled = true) {
+        changeShowConfirmDialog()
+    }
 
     Column(
         modifier =
@@ -288,7 +295,8 @@ fun EditPanel(
                             if (!it.isFocused) {
                                 memoEmbedding(selectedMarker, memoText)
                             }
-                        }.fillMaxWidth()
+                        }
+                        .fillMaxWidth()
                         .height(150.dp),
                 placeholder = { Text("ここにメモを書いてください") },
                 singleLine = false,
@@ -304,11 +312,34 @@ fun EditPanel(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
-                onPanelClose()
+                changeShowConfirmDialog()
             }) {
                 Text("戻る")
             }
         }
+    }
+
+    if (showConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { changeShowConfirmDialog() },
+            title = { Text("編集を終了しますか？") },
+            text = { Text("変更内容が保存されていない可能性があります。") },
+            confirmButton = {
+                Button(onClick = {
+                    changeShowConfirmDialog()
+                    onPanelClose()
+                }) {
+                    Text("はい")
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    changeShowConfirmDialog()
+                }) {
+                    Text("いいえ")
+                }
+            },
+        )
     }
 }
 
@@ -338,5 +369,7 @@ fun EditPanelPreview() {
         selectedAddress = dummyAddress,
         mapsSaveMarker = {},
         memoEmbedding = { _, _ -> },
+        showConfirmDialog = false,
+        changeShowConfirmDialog = {},
     )
 }

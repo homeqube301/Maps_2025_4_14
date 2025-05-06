@@ -208,7 +208,8 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
@@ -280,6 +281,8 @@ fun MapScreen(
 
                 if (uiState.isEditPanelOpen || uiState.isPanelOpen || uiState.isSearchOpen) {
                     DismissOverlay(
+                        changeShowConfirmDialog = { changeShowConfirmDialog() },
+                        showConfirmDialog = uiState.showConfirmDialog,
                         onClosePanel = {
                             when {
                                 uiState.isPanelOpen -> changeIsPanelOpen()
@@ -555,6 +558,8 @@ fun MapScreen(
                                 changeSelectedMarker(null)
                             },
                             memoEmbedding = updateMarkerMemoEmbedding,
+                            showConfirmDialog = uiState.showConfirmDialog,
+                            changeShowConfirmDialog = { changeShowConfirmDialog() },
                         )
                     }
                 }

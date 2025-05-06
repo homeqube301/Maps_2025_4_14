@@ -33,17 +33,17 @@ class ListViewModel
         val embeddingUiState: StateFlow<EmbeddingUiState> = _embeddingUiState.asStateFlow()
 
         init {
-//            viewModelScope.launch {
-//                preferencesRepository.showListIntroFlow.collect { savedValue ->
-//                    _listState.update { it.copy(showListIntro = savedValue) }
-//                }
-//            }
-//
-//            viewModelScope.launch {
-//                preferencesRepository.showDetailIntroFlow.collect { savedValue ->
-//                    _listState.update { it.copy(showDetailIntro = savedValue) }
-//                }
-//            }
+            viewModelScope.launch {
+                preferencesRepository.showListIntroFlow.collect { savedValue ->
+                    _listState.update { it.copy(showListIntro = savedValue) }
+                }
+            }
+
+            viewModelScope.launch {
+                preferencesRepository.showDetailIntroFlow.collect { savedValue ->
+                    _listState.update { it.copy(showDetailIntro = savedValue) }
+                }
+            }
         }
 
         fun checkListUIState(filteredMarkerList: List<NamedMarker>) {

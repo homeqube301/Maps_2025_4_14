@@ -54,11 +54,11 @@ class MapViewModel
         init {
             loadMarkers()
 
-//            viewModelScope.launch {
-//                preferencesRepository.showMapIntroFlow.collect { savedValue ->
-//                    _uiState.update { it.copy(showMapIntro = savedValue) }
-//                }
-//            }
+            viewModelScope.launch {
+                preferencesRepository.showMapIntroFlow.collect { savedValue ->
+                    _uiState.update { it.copy(showMapIntro = savedValue) }
+                }
+            }
         }
 
         fun changeShowConfirmDialog() {
