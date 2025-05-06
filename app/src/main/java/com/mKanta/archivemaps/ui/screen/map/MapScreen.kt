@@ -207,7 +207,8 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
@@ -223,7 +224,7 @@ fun MapScreen(
                     updateSearchList(
                         uiState.titleQuery,
                         uiState.memoQuery,
-                        uiState.visibleMarkers,
+                        permanentMarkers,
                     )
                 }
 
