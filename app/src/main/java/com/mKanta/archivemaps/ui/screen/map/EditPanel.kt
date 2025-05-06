@@ -279,7 +279,6 @@ fun EditPanel(
                 onValueChange = { newText ->
                     memoText = newText
 
-                    // uiState.selectedMarker
                     selectedMarker.let { marker ->
                         val index =
                             permanentMarkers.indexOfFirst { it.id == marker.id }

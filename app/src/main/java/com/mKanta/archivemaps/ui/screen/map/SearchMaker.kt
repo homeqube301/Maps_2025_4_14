@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -65,9 +64,34 @@ fun SearchMaker(
         ) {
             Text(
                 text = "簡易検索",
-                fontSize = 15.sp,
+                fontSize = 16.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
+            ) {
+                OutlinedTextField(
+                    value = if (isSearchingByTitle) titleQuery.orEmpty() else memoQuery.orEmpty(),
+                    onValueChange = {
+                        if (isSearchingByTitle) onTitleQueryChanged(it) else onMemoQueryChanged(it)
+                    },
+                    label = {
+                        Text(if (isSearchingByTitle) "マーカー名で検索" else "メモ内容で検索")
+                    },
+                    modifier = Modifier.weight(1f),
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                FloatingActionButton(onClick = { isSearchingByTitle = !isSearchingByTitle }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.cached_24px),
+                        contentDescription = "切り替え",
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -88,7 +112,6 @@ fun SearchMaker(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .heightIn(max = 400.dp)
                             .padding(horizontal = 8.dp),
                     colors =
                         CardDefaults.cardColors(
@@ -113,7 +136,8 @@ fun SearchMaker(
                                             } else {
                                                 onMemoTapped(marker)
                                             }
-                                        }.padding(16.dp),
+                                        }
+                                        .padding(16.dp),
                             ) {
                                 Text(
                                     text = if (isSearchingByTitle) marker.title else "${marker.title}（メモ一致）",
@@ -124,32 +148,6 @@ fun SearchMaker(
                         }
                     }
                 }
-            }
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier =
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
-        ) {
-            OutlinedTextField(
-                value = if (isSearchingByTitle) titleQuery.orEmpty() else memoQuery.orEmpty(),
-                onValueChange = {
-                    if (isSearchingByTitle) onTitleQueryChanged(it) else onMemoQueryChanged(it)
-                },
-                label = {
-                    Text(if (isSearchingByTitle) "マーカー名で検索" else "メモ内容で検索")
-                },
-                modifier = Modifier.weight(1f),
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            FloatingActionButton(onClick = { isSearchingByTitle = !isSearchingByTitle }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.cached_24px),
-                    contentDescription = "切り替え",
-                )
             }
         }
     }
