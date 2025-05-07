@@ -115,7 +115,7 @@ fun SearchMaker(
                             .padding(horizontal = 8.dp),
                     colors =
                         CardDefaults.cardColors(
-                            containerColor = Color(0xFFE0F7FA), // 水色
+                            containerColor = Color(0xFFE0F7FA),
                         ),
                     shape = RoundedCornerShape(8.dp),
                     elevation = CardDefaults.cardElevation(4.dp),

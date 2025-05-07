@@ -1,5 +1,6 @@
 package com.mKanta.archivemaps.ui.screen.markerList
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,12 +20,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -107,10 +110,21 @@ fun DetailSearchScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("詳細検索") },
+                    title = {
+                        Text(
+                            text = "詳細検索",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(Color(0xFF2A2A2A)),
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "戻る",
+                                tint = Color.White,
+                            )
                         }
                     },
                 )
@@ -119,16 +133,28 @@ fun DetailSearchScreen(
             Column(
                 modifier =
                     Modifier
+                        .background(Color(0xFF353636))
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(16.dp),
+                        .padding(32.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp),
             ) {
-                TextField(
+                OutlinedTextField(
                     value = listState.markerName ?: "",
                     onValueChange = {
                         changeMarkerName(it)
                     },
-                    label = { Text("マーカー名") },
+                    label = {
+                        Text(
+                            text = "マーカー名検索",
+                            color = Color.Gray,
+                        )
+                    },
+                    colors =
+                        OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                        ),
                     modifier =
                         Modifier
                             .introShowCaseTarget(
@@ -164,120 +190,142 @@ fun DetailSearchScreen(
                                         )
                                     }
                                 },
-                            )
-                            .fillMaxWidth(),
+                            ).fillMaxWidth(),
                 )
 
-                OutlinedButton(
-                    onClick = {
-                        chengeStartDatePicker()
-                    },
-                    modifier =
-                        Modifier
-                            .introShowCaseTarget(
-                                index = 1,
-                                style =
-                                    ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF000000),
-                                        backgroundAlpha = 0.95f,
-                                        targetCircleColor = Color(0xFF343434),
-                                    ),
-                                content = {
-                                    Column {
-                                        Text(
-                                            text = "開始日以降で検索",
-                                            color = Color.White,
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Text(
-                                            text = "マーカーが作成されたのが選択日時以降である場合リストに表示します",
-                                            color = Color.White,
-                                            fontSize = 16.sp,
-                                        )
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        Icon(
-                                            Icons.Default.Menu,
-                                            contentDescription = null,
-                                            modifier =
-                                                Modifier
-                                                    .size(80.dp)
-                                                    .align(Alignment.End),
-                                            tint = Color.Transparent,
-                                        )
-                                    }
-                                },
-                            ).fillMaxWidth(),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text =
-                            if (listState.startDate.isNullOrEmpty()) {
-                                "検索開始日を選択"
-                            } else {
-                                listState.startDate
-                            },
-                    )
-                }
+                    OutlinedButton(
+                        onClick = {
+                            chengeStartDatePicker()
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .introShowCaseTarget(
+                                    index = 1,
+                                    style =
+                                        ShowcaseStyle.Default.copy(
+                                            backgroundColor = Color(0xFF000000),
+                                            backgroundAlpha = 0.95f,
+                                            targetCircleColor = Color(0xFF343434),
+                                        ),
+                                    content = {
+                                        Column {
+                                            Text(
+                                                text = "開始日以降で検索",
+                                                color = Color.White,
+                                                fontSize = 24.sp,
+                                                fontWeight = FontWeight.Bold,
+                                            )
+                                            Text(
+                                                text = "マーカーが作成されたのが選択日時以降である場合リストに表示します",
+                                                color = Color.White,
+                                                fontSize = 16.sp,
+                                            )
+                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Icon(
+                                                Icons.Default.Menu,
+                                                contentDescription = null,
+                                                modifier =
+                                                    Modifier
+                                                        .size(80.dp)
+                                                        .align(Alignment.End),
+                                                tint = Color.Transparent,
+                                            )
+                                        }
+                                    },
+                                ),
+                    ) {
+                        Text(
+                            text =
+                                if (listState.startDate.isNullOrEmpty()) {
+                                    "検索開始日"
+                                } else {
+                                    listState.startDate
+                                },
+                            color = Color.White,
+                        )
+                    }
 
-                OutlinedButton(
-                    onClick = {
-                        chengeEndDatePicker()
-                    },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .introShowCaseTarget(
-                                index = 2,
-                                style =
-                                    ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF000000),
-                                        backgroundAlpha = 0.95f,
-                                        targetCircleColor = Color(0xFF343434),
-                                    ),
-                                content = {
-                                    Column {
-                                        Text(
-                                            text = "終了日以前で検索",
-                                            color = Color.White,
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Text(
-                                            text = "マーカーが作成されたのが選択日時以前である場合リストに表示します",
-                                            color = Color.White,
-                                            fontSize = 16.sp,
-                                        )
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        Icon(
-                                            Icons.Default.Menu,
-                                            contentDescription = null,
-                                            modifier =
-                                                Modifier
-                                                    .size(80.dp)
-                                                    .align(Alignment.End),
-                                            tint = Color.Transparent,
-                                        )
-                                    }
+                    Text("〜", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+
+                    OutlinedButton(
+                        onClick = {
+                            chengeEndDatePicker()
+                        },
+                        shape = MaterialTheme.shapes.medium,
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .introShowCaseTarget(
+                                    index = 2,
+                                    style =
+                                        ShowcaseStyle.Default.copy(
+                                            backgroundColor = Color(0xFF000000),
+                                            backgroundAlpha = 0.95f,
+                                            targetCircleColor = Color(0xFF343434),
+                                        ),
+                                    content = {
+                                        Column {
+                                            Text(
+                                                text = "終了日以前で検索",
+                                                color = Color.White,
+                                                fontSize = 24.sp,
+                                                fontWeight = FontWeight.Bold,
+                                            )
+                                            Text(
+                                                text = "マーカーが作成されたのが選択日時以前である場合リストに表示します",
+                                                color = Color.White,
+                                                fontSize = 16.sp,
+                                            )
+                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Icon(
+                                                Icons.Default.Menu,
+                                                contentDescription = null,
+                                                modifier =
+                                                    Modifier
+                                                        .size(80.dp)
+                                                        .align(Alignment.End),
+                                                tint = Color.Transparent,
+                                            )
+                                        }
+                                    },
+                                ),
+                    ) {
+                        Text(
+                            text =
+                                if (listState.endDate.isNullOrEmpty()) {
+                                    "検索終了日"
+                                } else {
+                                    listState.endDate
                                 },
-                            ),
-                ) {
-                    Text(
-                        text =
-                            if (listState.endDate.isNullOrEmpty()) {
-                                "検索終了日を選択"
-                            } else {
-                                listState.endDate
-                            },
-                    )
+                            color = Color.White,
+                        )
+                    }
                 }
 
                 // 意味検索フィールド
-                TextField(
+                OutlinedTextField(
                     value = listState.embeddingMemo ?: "",
                     onValueChange = {
                         changeEmbeddingMemo(it)
                     },
-                    label = { Text("AIメモ検索(意味検索)") },
+                    label = {
+                        Text(
+                            "AIメモ検索(意味検索)",
+                            color = Color.Gray,
+                        )
+                    },
+                    colors =
+                        OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                        ),
                     modifier =
                         Modifier
                             .fillMaxWidth()
@@ -317,12 +365,22 @@ fun DetailSearchScreen(
                             ),
                 )
 
-                TextField(
+                OutlinedTextField(
                     value = listState.memo ?: "",
                     onValueChange = {
                         changeMemo(it)
                     },
-                    label = { Text("メモ(完全一致)") },
+                    label = {
+                        Text(
+                            "メモ(完全一致)",
+                            color = Color.Gray,
+                        )
+                    },
+                    colors =
+                        OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                        ),
                     modifier =
                         Modifier
                             .fillMaxWidth()
@@ -369,8 +427,17 @@ fun DetailSearchScreen(
                         navController.navigate("marker_list?")
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    colors =
+                        androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF08A49D),
+                        ),
                 ) {
-                    Text("検索する")
+                    Text(
+                        "検索する",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
         }
@@ -452,11 +519,11 @@ fun DetailSearchScreenPreview() {
         changeMemo = {},
         listState =
             ListState(
-                markerName = "テストマーカー",
-                startDate = "2025-01-01",
-                endDate = "2025-12-31",
-                memo = "これはテスト用メモです",
-                embeddingMemo = "意味的検索用テキスト",
+//                markerName = "テストマーカー",
+//                startDate = "2025-01-01",
+//                endDate = "2025-12-31",
+//                memo = "これはテスト用メモです",
+//                embeddingMemo = "意味的検索用テキスト",
                 openStartDatePicker = false,
                 openEndDatePicker = false,
                 similarMarkerIds = listOf("id1", "id2", "id3"),
