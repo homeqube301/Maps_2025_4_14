@@ -210,7 +210,8 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
@@ -299,172 +300,178 @@ fun MapScreen(
                     )
                 }
 
-                Row(
-                    modifier =
-                        Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(top = 50.dp, end = 5.dp, bottom = 60.dp),
-                    horizontalArrangement = Arrangement.spacedBy(30.dp),
-                ) {
-                    FloatingActionButton(
-                        onClick = { changeIsSearchOpen() },
-                        contentColor = Color.White,
-                        containerColor = Color(0xFF0889B8),
-                        modifier =
-                            Modifier
-                                .size(72.dp)
-                                .introShowCaseTarget(
-                                    index = 2,
-                                    style =
-                                        ShowcaseStyle.Default.copy(
-                                            backgroundColor = Color(0xFF000000),
-                                            backgroundAlpha = 0.95f,
-                                            targetCircleColor = Color.White,
+                when (googleMapState) {
+                    MapState.Success(true) -> {
+                        Row(
+                            modifier =
+                                Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(top = 50.dp, end = 5.dp, bottom = 60.dp),
+                            horizontalArrangement = Arrangement.spacedBy(30.dp),
+                        ) {
+                            FloatingActionButton(
+                                onClick = { changeIsSearchOpen() },
+                                contentColor = Color.White,
+                                containerColor = Color(0xFF0889B8),
+                                modifier =
+                                    Modifier
+                                        .size(72.dp)
+                                        .introShowCaseTarget(
+                                            index = 2,
+                                            style =
+                                                ShowcaseStyle.Default.copy(
+                                                    backgroundColor = Color(0xFF000000),
+                                                    backgroundAlpha = 0.95f,
+                                                    targetCircleColor = Color.White,
+                                                ),
+                                            content = {
+                                                Column {
+                                                    Text(
+                                                        text = "簡易検索ボタン",
+                                                        color = Color.White,
+                                                        fontSize = 24.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                    )
+                                                    Text(
+                                                        text = "タップすると設置したマーカーを簡単な条件で検索できます",
+                                                        color = Color.White,
+                                                        fontSize = 16.sp,
+                                                    )
+                                                    Spacer(modifier = Modifier.height(10.dp))
+                                                    Icon(
+                                                        Icons.Default.Menu,
+                                                        contentDescription = null,
+                                                        modifier =
+                                                            Modifier
+                                                                .size(80.dp)
+                                                                .align(Alignment.End),
+                                                        tint = Color.Transparent,
+                                                    )
+                                                }
+                                            },
                                         ),
-                                    content = {
-                                        Column {
-                                            Text(
-                                                text = "簡易検索ボタン",
-                                                color = Color.White,
-                                                fontSize = 24.sp,
-                                                fontWeight = FontWeight.Bold,
-                                            )
-                                            Text(
-                                                text = "タップすると設置したマーカーを簡単な条件で検索できます",
-                                                color = Color.White,
-                                                fontSize = 16.sp,
-                                            )
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Icon(
-                                                Icons.Default.Menu,
-                                                contentDescription = null,
-                                                modifier =
-                                                    Modifier
-                                                        .size(80.dp)
-                                                        .align(Alignment.End),
-                                                tint = Color.Transparent,
-                                            )
-                                        }
-                                    },
-                                ),
-                    ) {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = "検索",
-                            modifier = Modifier.size(32.dp),
-                        )
-                    }
+                            ) {
+                                Icon(
+                                    Icons.Default.Search,
+                                    contentDescription = "検索",
+                                    modifier = Modifier.size(32.dp),
+                                )
+                            }
 
-                    FloatingActionButton(
-                        onClick = {
-                            toggleFollowing()
-                            changeIsFollowing()
-                        },
-                        containerColor =
-                            if (uiState.isFollowing) {
-                                Color(0xFF0889B8)
-                            } else {
-                                Color.White
-                            },
-                        modifier =
-                            Modifier
-                                .size(72.dp)
-                                .introShowCaseTarget(
-                                    index = 0,
-                                    style =
-                                        ShowcaseStyle.Default.copy(
-                                            backgroundColor = Color(0xFF000000),
-                                            backgroundAlpha = 0.95f,
-                                            targetCircleColor = Color.White,
-                                        ),
-                                    content = {
-                                        Column {
-                                            Text(
-                                                text = "追従ボタン",
-                                                color = Color.White,
-                                                fontSize = 24.sp,
-                                                fontWeight = FontWeight.Bold,
-                                            )
-                                            Text(
-                                                text = "タップすると一定時間ごとに現在地にカメラが戻ります",
-                                                color = Color.White,
-                                                fontSize = 16.sp,
-                                            )
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Icon(
-                                                Icons.Default.Menu,
-                                                contentDescription = null,
-                                                modifier =
-                                                    Modifier
-                                                        .size(80.dp)
-                                                        .align(Alignment.End),
-                                                tint = Color.Transparent,
-                                            )
-                                        }
-                                    },
-                                ),
-                    ) {
-                        Icon(
-                            painterResource(id = R.drawable.location_searching_24px),
-                            modifier = Modifier.size(32.dp),
-                            contentDescription = "追従",
-                            tint =
-                                if (uiState.isFollowing) {
-                                    Color.White
-                                } else {
-                                    Color(0xFF0889B8)
+                            FloatingActionButton(
+                                onClick = {
+                                    toggleFollowing()
+                                    changeIsFollowing()
                                 },
-                        )
+                                containerColor =
+                                    if (uiState.isFollowing) {
+                                        Color(0xFF0889B8)
+                                    } else {
+                                        Color.White
+                                    },
+                                modifier =
+                                    Modifier
+                                        .size(72.dp)
+                                        .introShowCaseTarget(
+                                            index = 0,
+                                            style =
+                                                ShowcaseStyle.Default.copy(
+                                                    backgroundColor = Color(0xFF000000),
+                                                    backgroundAlpha = 0.95f,
+                                                    targetCircleColor = Color.White,
+                                                ),
+                                            content = {
+                                                Column {
+                                                    Text(
+                                                        text = "追従ボタン",
+                                                        color = Color.White,
+                                                        fontSize = 24.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                    )
+                                                    Text(
+                                                        text = "タップすると一定時間ごとに現在地にカメラが戻ります",
+                                                        color = Color.White,
+                                                        fontSize = 16.sp,
+                                                    )
+                                                    Spacer(modifier = Modifier.height(10.dp))
+                                                    Icon(
+                                                        Icons.Default.Menu,
+                                                        contentDescription = null,
+                                                        modifier =
+                                                            Modifier
+                                                                .size(80.dp)
+                                                                .align(Alignment.End),
+                                                        tint = Color.Transparent,
+                                                    )
+                                                }
+                                            },
+                                        ),
+                            ) {
+                                Icon(
+                                    painterResource(id = R.drawable.location_searching_24px),
+                                    modifier = Modifier.size(32.dp),
+                                    contentDescription = "追従",
+                                    tint =
+                                        if (uiState.isFollowing) {
+                                            Color.White
+                                        } else {
+                                            Color(0xFF0889B8)
+                                        },
+                                )
+                            }
+
+                            FloatingActionButton(
+                                onClick = { navController.navigate("marker_list") },
+                                contentColor = Color.White,
+                                containerColor = Color(0xFF0889B8),
+                                modifier =
+                                    Modifier
+                                        .size(72.dp)
+                                        .introShowCaseTarget(
+                                            index = 1,
+                                            style =
+                                                ShowcaseStyle.Default.copy(
+                                                    backgroundColor = Color(0xFF000000),
+                                                    backgroundAlpha = 0.95f,
+                                                    targetCircleColor = Color.White,
+                                                ),
+                                            content = {
+                                                Column {
+                                                    Text(
+                                                        text = "マーカ一覧ボタン",
+                                                        color = Color.White,
+                                                        fontSize = 24.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                    )
+                                                    Text(
+                                                        text = "タップすると設置したマーカーを一覧で表示されます",
+                                                        color = Color.White,
+                                                        fontSize = 16.sp,
+                                                    )
+                                                    Spacer(modifier = Modifier.height(10.dp))
+                                                    Icon(
+                                                        Icons.Default.Menu,
+                                                        contentDescription = null,
+                                                        modifier =
+                                                            Modifier
+                                                                .size(80.dp)
+                                                                .align(Alignment.End),
+                                                        tint = Color.Transparent,
+                                                    )
+                                                }
+                                            },
+                                        ),
+                            ) {
+                                Icon(
+                                    Icons.Default.Menu,
+                                    contentDescription = "マーカ一覧",
+                                    modifier = Modifier.size(32.dp),
+                                )
+                            }
+                        }
                     }
 
-                    FloatingActionButton(
-                        onClick = { navController.navigate("marker_list") },
-                        contentColor = Color.White,
-                        containerColor = Color(0xFF0889B8),
-                        modifier =
-                            Modifier
-                                .size(72.dp)
-                                .introShowCaseTarget(
-                                    index = 1,
-                                    style =
-                                        ShowcaseStyle.Default.copy(
-                                            backgroundColor = Color(0xFF000000),
-                                            backgroundAlpha = 0.95f,
-                                            targetCircleColor = Color.White,
-                                        ),
-                                    content = {
-                                        Column {
-                                            Text(
-                                                text = "マーカ一覧ボタン",
-                                                color = Color.White,
-                                                fontSize = 24.sp,
-                                                fontWeight = FontWeight.Bold,
-                                            )
-                                            Text(
-                                                text = "タップすると設置したマーカーを一覧で表示されます",
-                                                color = Color.White,
-                                                fontSize = 16.sp,
-                                            )
-                                            Spacer(modifier = Modifier.height(10.dp))
-                                            Icon(
-                                                Icons.Default.Menu,
-                                                contentDescription = null,
-                                                modifier =
-                                                    Modifier
-                                                        .size(80.dp)
-                                                        .align(Alignment.End),
-                                                tint = Color.Transparent,
-                                            )
-                                        }
-                                    },
-                                ),
-                    ) {
-                        Icon(
-                            Icons.Default.Menu,
-                            contentDescription = "マーカ一覧",
-                            modifier = Modifier.size(32.dp),
-                        )
-                    }
+                    else -> {}
                 }
 
                 if (uiState.isSearchOpen) {
@@ -574,30 +581,38 @@ fun MapScreen(
                         )
                     }
                 }
+            }
 
-                when (googleMapState) {
-                    MapState.Success(true) -> {}
-                    MapState.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
+            when (googleMapState) {
+                MapState.Success(true) -> {}
+                MapState.Loading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            CircularProgressIndicator()
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(48.dp),
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(text = "地図を読み込み...", fontSize = 16.sp)
                         }
                     }
+                }
 
-                    else -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = "エラーが発生しました",
-                                color = Color.Red,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
+                else -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "エラーが発生しました",
+                            color = Color.Red,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
                     }
                 }
             }
@@ -721,6 +736,6 @@ fun MapScreenPreview() {
         changeShowMapIntro = {},
         changeShowConfirmDialog = {},
         checkGoogleMapState = {},
-        googleMapState = MapState.Success(true),
+        googleMapState = MapState.Loading,
     )
 }
