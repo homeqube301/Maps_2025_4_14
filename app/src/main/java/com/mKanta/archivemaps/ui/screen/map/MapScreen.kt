@@ -354,8 +354,12 @@ fun MapScreen(
                             toggleFollowing()
                             changeIsFollowing()
                         },
-                        contentColor = Color.White,
-                        containerColor = Color(0xFF0889B8),
+                        containerColor =
+                            if (uiState.isFollowing) {
+                                Color(0xFF0889B8)
+                            } else {
+                                Color.White
+                            },
                         modifier =
                             Modifier
                                 .size(72.dp)
@@ -402,7 +406,7 @@ fun MapScreen(
                                 if (uiState.isFollowing) {
                                     Color.White
                                 } else {
-                                    Color.White
+                                    Color(0xFF0889B8)
                                 },
                         )
                     }
