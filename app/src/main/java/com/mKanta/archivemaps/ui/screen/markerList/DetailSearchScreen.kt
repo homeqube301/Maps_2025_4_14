@@ -1,5 +1,6 @@
 package com.mKanta.archivemaps.ui.screen.markerList
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -190,7 +191,8 @@ fun DetailSearchScreen(
                                         )
                                     }
                                 },
-                            ).fillMaxWidth(),
+                            )
+                            .fillMaxWidth(),
                 )
 
                 Row(
@@ -199,6 +201,7 @@ fun DetailSearchScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     OutlinedButton(
+                        border = BorderStroke(3.dp, Color(0xFF0889B8)),
                         onClick = {
                             chengeStartDatePicker()
                         },
@@ -252,12 +255,18 @@ fun DetailSearchScreen(
                         )
                     }
 
-                    Text("〜", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "〜",
+                        color = Color(0xFF0889B8),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
 
                     OutlinedButton(
                         onClick = {
                             chengeEndDatePicker()
                         },
+                        border = BorderStroke(3.dp, Color(0xFF0889B8)),
                         shape = MaterialTheme.shapes.medium,
                         modifier =
                             Modifier
@@ -429,7 +438,8 @@ fun DetailSearchScreen(
                     modifier = Modifier.fillMaxWidth(),
                     colors =
                         androidx.compose.material3.ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF08A49D),
+//                            containerColor = Color(0xFF08A49D),
+                            containerColor = Color(0xFF0889B8),
                         ),
                 ) {
                     Text(
@@ -519,11 +529,11 @@ fun DetailSearchScreenPreview() {
         changeMemo = {},
         listState =
             ListState(
-//                markerName = "テストマーカー",
+                markerName = "テストマーカー",
 //                startDate = "2025-01-01",
 //                endDate = "2025-12-31",
-//                memo = "これはテスト用メモです",
-//                embeddingMemo = "意味的検索用テキスト",
+                memo = "これはテスト用メモです",
+                embeddingMemo = "意味的検索用テキスト",
                 openStartDatePicker = false,
                 openEndDatePicker = false,
                 similarMarkerIds = listOf("id1", "id2", "id3"),

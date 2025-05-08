@@ -18,7 +18,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -207,7 +206,8 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
@@ -302,6 +302,8 @@ fun MapScreen(
                 ) {
                     FloatingActionButton(
                         onClick = { changeIsSearchOpen() },
+                        contentColor = Color.White,
+                        containerColor = Color(0xFF0889B8),
                         modifier =
                             Modifier
                                 .size(72.dp)
@@ -352,6 +354,8 @@ fun MapScreen(
                             toggleFollowing()
                             changeIsFollowing()
                         },
+                        contentColor = Color.White,
+                        containerColor = Color(0xFF0889B8),
                         modifier =
                             Modifier
                                 .size(72.dp)
@@ -396,17 +400,17 @@ fun MapScreen(
                             contentDescription = "追従",
                             tint =
                                 if (uiState.isFollowing) {
-                                    MaterialTheme.colorScheme.primary
+                                    Color.White
                                 } else {
-                                    MaterialTheme.colorScheme.onSurface.copy(
-                                        alpha = 0.9f,
-                                    )
+                                    Color.White
                                 },
                         )
                     }
 
                     FloatingActionButton(
                         onClick = { navController.navigate("marker_list") },
+                        contentColor = Color.White,
+                        containerColor = Color(0xFF0889B8),
                         modifier =
                             Modifier
                                 .size(72.dp)
