@@ -22,10 +22,12 @@ import com.mKanta.archivemaps.data.repository.MemoRepository
 import com.mKanta.archivemaps.data.repository.UserPreferencesRepository
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.network.NominatimResponse
+import com.mKanta.archivemaps.ui.state.MapState
 import com.mKanta.archivemaps.ui.state.MapsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -46,6 +48,9 @@ class MapViewModel
 
         private val _isFollowing = MutableStateFlow(false)
 
+        private val _googleMapState = MutableStateFlow<MapState>(MapState.Loading)
+        val googleMapState: StateFlow<MapState> = _googleMapState.asStateFlow()
+
         private val _permanentMarkers = mutableStateListOf<NamedMarker>()
         val uiState: StateFlow<MapsUiState> = _uiState
         val permanentMarkers: List<NamedMarker>
@@ -60,6 +65,14 @@ class MapViewModel
                 }
             }
         }
+
+        fun checkGoogleMapState(ready: Boolean) {
+            if (ready) {
+                _googleMapState.value = MapState.Success(true)
+            } else {
+                _googleMapState.value = MapState.Loading
+        }
+    }
 
         fun changeShowConfirmDialog() {
             _uiState.update { it.copy(showConfirmDialog = !it.showConfirmDialog) }
@@ -261,8 +274,8 @@ class MapViewModel
                 LocationRequest
                     .Builder(
                         Priority.PRIORITY_HIGH_ACCURACY,
-                        3000L, // 3秒間隔
-                    ).setMinUpdateIntervalMillis(2000L) // 最短2秒間隔
+                        3000L,
+                    ).setMinUpdateIntervalMillis(2000L)
                     .build()
 
             locationCallback =

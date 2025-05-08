@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -53,6 +54,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.ui.state.ListState
+import com.mKanta.archivemaps.ui.state.MapState
 import com.mKanta.archivemaps.ui.state.MapsUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -106,6 +108,8 @@ fun MapScreen(
     updateMarkerMemoEmbedding: (NamedMarker, String) -> Unit,
     changeShowMapIntro: () -> Unit,
     changeShowConfirmDialog: () -> Unit,
+    checkGoogleMapState: (Boolean) -> Unit,
+    googleMapState: MapState,
 ) {
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -206,8 +210,7 @@ fun MapScreen(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
@@ -249,6 +252,9 @@ fun MapScreen(
                     onMapClick = { latLng ->
                         changeTempMarkerPosition(latLng)
                         changeIsPanelOpen()
+                    },
+                    onMapLoaded = {
+                        checkGoogleMapState(true)
                     },
                 ) {
                     for (marker in uiState.visibleMarkers) {
@@ -568,6 +574,32 @@ fun MapScreen(
                         )
                     }
                 }
+
+                when (googleMapState) {
+                    MapState.Success(true) -> {}
+                    MapState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    else -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "エラーが発生しました",
+                                color = Color.Red,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -688,5 +720,7 @@ fun MapScreenPreview() {
         updateMarkerMemoEmbedding = { _, _ -> },
         changeShowMapIntro = {},
         changeShowConfirmDialog = {},
+        checkGoogleMapState = {},
+        googleMapState = MapState.Success(true),
     )
 }

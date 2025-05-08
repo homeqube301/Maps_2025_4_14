@@ -31,6 +31,7 @@ fun AppNavHost(
                 backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull() ?: 0.0
             val uiState by mapViewModel.uiState.collectAsState()
             val listState by listViewModel.listState.collectAsState()
+            val googleMapState by mapViewModel.googleMapState.collectAsState()
             MapScreen(
                 navController = navController,
                 latitude = latitude,
@@ -87,6 +88,8 @@ fun AppNavHost(
                 },
                 selectedAddress = mapViewModel.selectedAddress,
                 permanentMarkers = mapViewModel.permanentMarkers,
+                checkGoogleMapState = { mapViewModel.checkGoogleMapState(it) },
+                googleMapState = googleMapState,
             )
         }
         composable("marker_list?") {

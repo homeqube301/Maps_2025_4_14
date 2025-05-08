@@ -23,3 +23,15 @@ data class MapsUiState(
     val showMapIntro: Boolean = true,
     val showConfirmDialog: Boolean = false,
 )
+
+sealed interface MapState {
+    data object Loading : MapState
+
+    data class Success(
+        val mapReady: Boolean,
+    ) : MapState
+
+    data class Error(
+        val message: String? = null,
+    ) : MapState
+}
