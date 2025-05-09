@@ -28,5 +28,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Maps20250414"
+rootProject.name = "Archivemaps"
 include(":app")

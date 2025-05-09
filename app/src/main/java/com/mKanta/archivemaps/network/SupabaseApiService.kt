@@ -1,6 +1,7 @@
 package com.mKanta.archivemaps.network
 
 import com.mKanta.archivemaps.BuildConfig
+import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
@@ -12,17 +13,20 @@ import retrofit2.http.Headers
 import retrofit2.http.POST
 
 data class SimilarMemoRequest(
-    val query_embedding: List<Float>,
+    @Json(name = "query_embedding")
+    val queryEmbedding: List<Float>,
 )
 
 data class SimilarMemoResponse(
-    val marker_id: String,
+    @Json(name = "marker_id")
+    val markerId: String,
     val memo: String,
     val similarity: Float,
 )
 
 data class MemoEmbeddingInsertRequest(
-    val marker_id: String,
+    @Json(name = "marker_id")
+    val markerId: String,
     val memo: String,
     val embedding: List<Float>,
 )

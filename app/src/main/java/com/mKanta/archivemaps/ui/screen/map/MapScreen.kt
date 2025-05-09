@@ -736,6 +736,6 @@ fun MapScreenPreview() {
         changeShowMapIntro = {},
         changeShowConfirmDialog = {},
         checkGoogleMapState = {},
-        googleMapState = MapState.Loading,
+        googleMapState = MapState.Success(true),
     )
 }

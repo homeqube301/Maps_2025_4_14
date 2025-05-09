@@ -33,7 +33,7 @@ object NetworkModule {
                         .newBuilder()
                         .header(
                             "User-Agent",
-                            "Maps20250414/1.0 (your.email@example.com)",
+                            "Archivemaps/1.0",
                         ).build()
                 chain.proceed(request)
             }.build()

@@ -23,7 +23,7 @@ class MemoRepository
 
             val request =
                 MemoEmbeddingInsertRequest(
-                    marker_id = markerId,
+                    markerId = markerId,
                     memo = memoText,
                     embedding = embedding,
                 )
@@ -42,7 +42,7 @@ class MemoRepository
         suspend fun getSimilarMarkerIds(memoText: String): List<String>? {
             val embedding = fetchEmbedding(openAiApi, memoText) ?: return null
             val similarMemos = getSimilarMemos(embedding) ?: return null
-            return similarMemos.map { it.marker_id }
+            return similarMemos.map { it.markerId }
         }
 
         private suspend fun getSimilarMemos(embedding: List<Float>): List<SimilarMemoResponse>? =

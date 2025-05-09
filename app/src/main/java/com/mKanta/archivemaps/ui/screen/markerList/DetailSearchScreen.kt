@@ -47,6 +47,7 @@ import com.canopas.lib.showcase.component.ShowcaseStyle
 import com.mKanta.archivemaps.ui.state.ListState
 import java.time.Instant
 import java.time.ZoneId
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,12 +70,13 @@ fun DetailSearchScreen(
             },
             onDateSelected = { year, month, dayOfMonth ->
                 changeStartDate(
-                    "$year-${String.format("%02d", month + 1)}-${
-                        String.format(
-                            "%02d",
-                            dayOfMonth,
-                        )
-                    }",
+                    String.format(
+                        Locale.US,
+                        "%04d-%02d-%02d",
+                        year,
+                        month + 1,
+                        dayOfMonth,
+                    ),
                 )
                 chengeStartDatePicker()
             },
@@ -89,12 +91,13 @@ fun DetailSearchScreen(
             },
             onDateSelected = { year, month, dayOfMonth ->
                 changeEndDate(
-                    "$year-${String.format("%02d", month + 1)}-${
-                        String.format(
-                            "%02d",
-                            dayOfMonth,
-                        )
-                    }",
+                    String.format(
+                        Locale.US,
+                        "%04d-%02d-%02d",
+                        year,
+                        month + 1,
+                        dayOfMonth,
+                    ),
                 )
                 chengeEndDatePicker()
             },
@@ -191,8 +194,7 @@ fun DetailSearchScreen(
                                         )
                                     }
                                 },
-                            )
-                            .fillMaxWidth(),
+                            ).fillMaxWidth(),
                 )
 
                 Row(

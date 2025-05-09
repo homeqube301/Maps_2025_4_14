@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import com.mKanta.archivemaps.navigation.AppNavHost
-import com.mKanta.archivemaps.ui.theme.Maps20250414Theme
+import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
 
@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            Maps20250414Theme {
+            ArchivemapsTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,

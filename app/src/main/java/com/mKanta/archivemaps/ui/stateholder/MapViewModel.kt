@@ -71,8 +71,8 @@ class MapViewModel
                 _googleMapState.value = MapState.Success(true)
             } else {
                 _googleMapState.value = MapState.Loading
+            }
         }
-    }
 
         fun changeShowConfirmDialog() {
             _uiState.update { it.copy(showConfirmDialog = !it.showConfirmDialog) }
