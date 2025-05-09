@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -246,8 +247,7 @@ fun SearchContents(
                                         )
                                     }
                                 },
-                            )
-                            .fillMaxWidth(),
+                            ).fillMaxWidth(),
                 )
 
                 Row(
@@ -517,51 +517,65 @@ fun ComposeDatePickerDialog(
 ) {
     val datePickerState = rememberDatePickerState()
 
+    val darkColorScheme =
+        darkColorScheme(
+            primary = Color.White,
+            onPrimary = Color(MaterialTheme.colorScheme.background),
+            surface = Color.Black,
+            onSurface = Color.White,
+            background = Color.Black,
+            onBackground = Color.White,
+        )
+
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
-        Surface(
-            shape = MaterialTheme.shapes.medium,
-            tonalElevation = 8.dp,
-            modifier = Modifier.fillMaxWidth(),
+        MaterialTheme(
+            colorScheme = darkColorScheme,
         ) {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(0.dp),
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                tonalElevation = 8.dp,
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                DatePicker(
-                    state = datePickerState,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth(),
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(0.dp),
                 ) {
-                    TextButton(onClick = {
-                        onDismissRequest()
-                    }) {
-                        Text("キャンセル")
-                    }
+                    DatePicker(
+                        state = datePickerState,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
 
-                    TextButton(onClick = {
-                        onDismissRequest()
-                        datePickerState.selectedDateMillis?.let { millis ->
-                            val date =
-                                Instant
-                                    .ofEpochMilli(millis)
-                                    .atZone(ZoneId.systemDefault())
-                                    .toLocalDate()
-                            onDateSelected(date.year, date.monthValue - 1, date.dayOfMonth)
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        TextButton(onClick = {
                             onDismissRequest()
+                        }) {
+                            Text("キャンセル")
                         }
-                    }) {
-                        Text("OK")
+
+                        TextButton(onClick = {
+                            onDismissRequest()
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val date =
+                                    Instant
+                                        .ofEpochMilli(millis)
+                                        .atZone(ZoneId.systemDefault())
+                                        .toLocalDate()
+                                onDateSelected(date.year, date.monthValue - 1, date.dayOfMonth)
+                                onDismissRequest()
+                            }
+                        }) {
+                            Text("OK")
+                        }
                     }
                 }
             }
