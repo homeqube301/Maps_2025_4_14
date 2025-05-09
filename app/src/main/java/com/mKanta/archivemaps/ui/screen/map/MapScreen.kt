@@ -112,11 +112,7 @@ fun MapScreen(
     googleMapState: MapState,
 ) {
     val context = LocalContext.current
-    val focusManager = LocalFocusManager.current
     val cameraPositionState = rememberCameraPositionState()
-    val setSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val searchSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
     LaunchedEffect(latitude, longitude) {
         if (latitude != 0.0 && longitude != 0.0) {
@@ -202,114 +198,49 @@ fun MapScreen(
 
                 else -> {}
             }
-
-            if (uiState.isSearchOpen) {
-                ModalBottomSheet(
-                    onDismissRequest = { changeIsSearchOpen() },
-                    sheetState = searchSheetState,
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.BottomCenter),
-                ) {
-                    SearchMaker(
-                        titleResults = uiState.titleResults,
-                        memoResults = uiState.memoResults,
-                        titleQuery = uiState.titleQuery,
-                        memoQuery = uiState.memoQuery,
-                        onTitleQueryChanged = { changeTitleQuery(it) },
-                        onMemoQueryChanged = { changeMemoQuery(it) },
-                        onMarkerTapped = { marker ->
-                            changeSelectedMarker(marker)
-                            changeIsEditPanelOpen()
-                            cameraPositionState.move(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    marker.position.toLatLng(),
-                                    17f,
-                                ),
-                            )
-                            changeIsSearchOpen()
-                            changeTitleQuery("")
-                            changeMemoQuery("")
-                        },
-                        onMemoTapped = { marker ->
-                            changeSelectedMarker(marker)
-                            changeIsEditPanelOpen()
-                            cameraPositionState.move(
-                                CameraUpdateFactory.newLatLngZoom(
-                                    marker.position.toLatLng(),
-                                    17f,
-                                ),
-                            )
-                            changeIsSearchOpen()
-                            changeTitleQuery("")
-                            changeMemoQuery("")
-                        },
-                    )
-                }
-            }
-
-            if (uiState.isPanelOpen) {
-                ModalBottomSheet(
-                    onDismissRequest = { changePanelOpen(false) },
-                    sheetState = setSheetState,
-                ) {
-                    SetMarkerPanel(
-                        showConfirmDialog = uiState.showConfirmDialog,
-                        changeShowConfirmDialog = { changeShowConfirmDialog() },
-                        cameraPositionState = cameraPositionState,
-                        focusManager = focusManager,
-                        tempMarkerPosition = uiState.tempMarkerPosition,
-                        tempMarkerName = uiState.tempMarkerName,
-                        onClose = { changePanelOpen(false) },
-                        resetTempMarkers = {
-                            changeTempMarkerPosition(null)
-                            changeTempMarkerName(null)
-                            changeIsPanelOpen()
-                        },
-                        changeTempMarkerName = { changeTempMarkerName(it) },
-                        addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
-                        addMarker = { addMarker(it) },
-                    )
-                }
-            }
-
-            if (uiState.isEditPanelOpen && uiState.selectedMarker != null) {
-                ModalBottomSheet(
-                    onDismissRequest = {
-                        changeIsEditPanelOpen()
-                        changeSelectedMarker(null)
-                    },
-                    sheetState = editSheetState,
-                ) {
-                    EditPanel(
-                        selectedMarker = uiState.selectedMarker,
-                        selectedAddress = selectedAddress,
-                        permanentMarkers = permanentMarkers,
-                        mapsSaveMarker = { saveMarkers() },
-                        focusManager = focusManager,
-                        context = context,
-                        onMarkerUpdate = { updatedMarker ->
-                            updateMarker(updatedMarker)
-                            changeSelectedMarker(updatedMarker)
-                            updateVisibleMarkers(cameraPositionState, permanentMarkers)
-                        },
-                        onMarkerDelete = { marker ->
-                            removeMarker(marker.id)
-                            removeVisibleMarkers(marker)
-                            changeSelectedMarker(null)
-                            changeIsEditPanelOpen()
-                        },
-                        onPanelClose = {
-                            changeIsEditPanelOpen()
-                            changeSelectedMarker(null)
-                        },
-                        memoEmbedding = updateMarkerMemoEmbedding,
-                        showConfirmDialog = uiState.showConfirmDialog,
-                        changeShowConfirmDialog = { changeShowConfirmDialog() },
-                    )
-                }
-            }
+            MapPanel(
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
+                isSearchOpen = uiState.isSearchOpen,
+                changeIsSearchOpen = { changeIsSearchOpen() },
+                titleResults = uiState.titleResults,
+                memoResults = uiState.memoResults,
+                titleQuery = uiState.titleQuery,
+                memoQuery = uiState.memoQuery,
+                changeTitleQuery = { changeTitleQuery(it) },
+                changeMemoQuery = { changeMemoQuery(it) },
+                changeSelectedMarker = { changeSelectedMarker(it) },
+                changeIsEditPanelOpen = { changeIsEditPanelOpen() },
+                cameraPositionState = cameraPositionState,
+                tempMarkerPosition = uiState.tempMarkerPosition,
+                tempMarkerName = uiState.tempMarkerName,
+                changeTempMarkerPosition = { changeTempMarkerPosition(it) },
+                changeTempMarkerName = { changeTempMarkerName(it) },
+                changeIsPanelOpen = { changeIsPanelOpen() },
+                changePanelOpen = { changePanelOpen(it) },
+                permanentMarkers = permanentMarkers,
+                addAllVisibleMarkers = { addAllVisibleMarkers(it) },
+                addMarker = { addMarker(it) },
+                removeMarker = { removeMarker(it) },
+                updateMarker = { updateMarker(it) },
+                updateMarkerMemoEmbedding = { marker, newMemo ->
+                    updateMarkerMemoEmbedding(marker, newMemo)
+                },
+                changeShowConfirmDialog = { changeShowConfirmDialog() },
+                showConfirmDialog = uiState.showConfirmDialog,
+                context = context,
+                selectedAddress = selectedAddress,
+                isPanelOpen = uiState.isPanelOpen,
+                isEditPanelOpen = uiState.isEditPanelOpen,
+                removeVisibleMarkers = { removeVisibleMarkers(it) },
+                selectedMarker = uiState.selectedMarker,
+                updateVisibleMarkers = { camera, markers ->
+                    updateVisibleMarkers(camera, markers)
+                },
+                saveMarkers = { saveMarkers() },
+            )
         }
 
         when (googleMapState) {
@@ -344,6 +275,155 @@ fun MapScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MapPanel(
+    modifier: Modifier = Modifier,
+    isSearchOpen: Boolean,
+    changeIsSearchOpen: () -> Unit,
+    titleResults: List<NamedMarker>,
+    memoResults: List<NamedMarker>,
+    titleQuery: String?,
+    memoQuery: String?,
+    changeTitleQuery: (String) -> Unit,
+    changeMemoQuery: (String) -> Unit,
+    changeSelectedMarker: (NamedMarker?) -> Unit,
+    changeIsEditPanelOpen: () -> Unit,
+    cameraPositionState: CameraPositionState,
+    tempMarkerPosition: LatLng?,
+    tempMarkerName: String?,
+    changeTempMarkerPosition: (LatLng?) -> Unit,
+    changeTempMarkerName: (String?) -> Unit,
+    changeIsPanelOpen: () -> Unit,
+    changePanelOpen: (Boolean) -> Unit,
+    permanentMarkers: List<NamedMarker>,
+    addAllVisibleMarkers: (List<NamedMarker>) -> Unit,
+    addMarker: (NamedMarker) -> Unit,
+    removeMarker: (String) -> Unit,
+    updateMarker: (NamedMarker) -> Unit,
+    updateMarkerMemoEmbedding: (NamedMarker, String) -> Unit,
+    changeShowConfirmDialog: () -> Unit,
+    showConfirmDialog: Boolean,
+    context: Context,
+    selectedAddress: StateFlow<String>,
+    isPanelOpen: Boolean,
+    isEditPanelOpen: Boolean,
+    removeVisibleMarkers: (NamedMarker) -> Unit,
+    selectedMarker: NamedMarker?,
+    updateVisibleMarkers: (CameraPositionState, List<NamedMarker>) -> Unit,
+    saveMarkers: () -> Unit,
+) {
+    val focusManager = LocalFocusManager.current
+    val setSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val searchSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+
+    if (isSearchOpen) {
+        ModalBottomSheet(
+            onDismissRequest = { changeIsSearchOpen() },
+            sheetState = searchSheetState,
+            modifier = modifier,
+        ) {
+            SearchMaker(
+                titleResults = titleResults,
+                memoResults = memoResults,
+                titleQuery = titleQuery,
+                memoQuery = memoQuery,
+                onTitleQueryChanged = { changeTitleQuery(it) },
+                onMemoQueryChanged = { changeMemoQuery(it) },
+                onMarkerTapped = { marker ->
+                    changeSelectedMarker(marker)
+                    changeIsEditPanelOpen()
+                    cameraPositionState.move(
+                        CameraUpdateFactory.newLatLngZoom(
+                            marker.position.toLatLng(),
+                            17f,
+                        ),
+                    )
+                    changeIsSearchOpen()
+                    changeTitleQuery("")
+                    changeMemoQuery("")
+                },
+                onMemoTapped = { marker ->
+                    changeSelectedMarker(marker)
+                    changeIsEditPanelOpen()
+                    cameraPositionState.move(
+                        CameraUpdateFactory.newLatLngZoom(
+                            marker.position.toLatLng(),
+                            17f,
+                        ),
+                    )
+                    changeIsSearchOpen()
+                    changeTitleQuery("")
+                    changeMemoQuery("")
+                },
+            )
+        }
+    }
+
+    if (isPanelOpen) {
+        ModalBottomSheet(
+            onDismissRequest = { changePanelOpen(false) },
+            sheetState = setSheetState,
+        ) {
+            SetMarkerPanel(
+                showConfirmDialog = showConfirmDialog,
+                changeShowConfirmDialog = { changeShowConfirmDialog() },
+                cameraPositionState = cameraPositionState,
+                focusManager = focusManager,
+                tempMarkerPosition = tempMarkerPosition,
+                tempMarkerName = tempMarkerName,
+                onClose = { changePanelOpen(false) },
+                resetTempMarkers = {
+                    changeTempMarkerPosition(null)
+                    changeTempMarkerName(null)
+                    changeIsPanelOpen()
+                },
+                changeTempMarkerName = { changeTempMarkerName(it) },
+                addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
+                addMarker = { addMarker(it) },
+            )
+        }
+    }
+
+    if (isEditPanelOpen && selectedMarker != null) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                changeIsEditPanelOpen()
+                changeSelectedMarker(null)
+            },
+            sheetState = editSheetState,
+        ) {
+            EditPanel(
+                selectedMarker = selectedMarker,
+                selectedAddress = selectedAddress,
+                permanentMarkers = permanentMarkers,
+                mapsSaveMarker = { saveMarkers() },
+                focusManager = focusManager,
+                context = context,
+                onMarkerUpdate = { updatedMarker ->
+                    updateMarker(updatedMarker)
+                    changeSelectedMarker(updatedMarker)
+                    updateVisibleMarkers(cameraPositionState, permanentMarkers)
+                },
+                onMarkerDelete = { marker ->
+                    removeMarker(marker.id)
+                    removeVisibleMarkers(marker)
+                    changeSelectedMarker(null)
+                    changeIsEditPanelOpen()
+                },
+                onPanelClose = {
+                    changeIsEditPanelOpen()
+                    changeSelectedMarker(null)
+                },
+                memoEmbedding = updateMarkerMemoEmbedding,
+                showConfirmDialog = showConfirmDialog,
+                changeShowConfirmDialog = { changeShowConfirmDialog() },
+            )
         }
     }
 }
@@ -621,7 +701,8 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
