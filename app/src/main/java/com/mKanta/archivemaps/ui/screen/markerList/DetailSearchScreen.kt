@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,6 +46,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.canopas.lib.showcase.IntroShowcase
 import com.canopas.lib.showcase.component.ShowcaseStyle
+import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.ui.state.ListState
 import java.time.Instant
 import java.time.ZoneId
@@ -247,7 +249,8 @@ fun SearchContents(
                                         )
                                     }
                                 },
-                            ).fillMaxWidth(),
+                            )
+                            .fillMaxWidth(),
                 )
 
                 Row(
@@ -520,10 +523,10 @@ fun ComposeDatePickerDialog(
     val darkColorScheme =
         darkColorScheme(
             primary = Color.White,
-            onPrimary = Color(MaterialTheme.colorScheme.background),
-            surface = Color.Black,
+            onPrimary = colorResource(id = R.color.background_black),
+            surface = colorResource(id = R.color.background_black),
             onSurface = Color.White,
-            background = Color.Black,
+            background = colorResource(id = R.color.background_black),
             onBackground = Color.White,
         )
 
