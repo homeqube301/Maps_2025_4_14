@@ -524,7 +524,7 @@ fun ComposeDatePickerDialog(
         darkColorScheme(
             primary = Color.White,
             onPrimary = colorResource(id = R.color.background_black),
-            surface = colorResource(id = R.color.background_black),
+            surface = Color.Black,
             onSurface = Color.White,
             background = colorResource(id = R.color.background_black),
             onBackground = Color.White,
