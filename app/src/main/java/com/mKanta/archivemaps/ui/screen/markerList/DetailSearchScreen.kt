@@ -53,8 +53,8 @@ import java.util.Locale
 @Composable
 fun DetailSearchScreen(
     navController: NavHostController,
-    chengeStartDatePicker: () -> Unit = {},
-    chengeEndDatePicker: () -> Unit = {},
+    changeStartDatePicker: () -> Unit = {},
+    changeEndDatePicker: () -> Unit = {},
     changeMarkerName: (String) -> Unit = {},
     changeStartDate: (String) -> Unit = {},
     changeEndDate: (String) -> Unit = {},
@@ -63,10 +63,45 @@ fun DetailSearchScreen(
     listState: ListState,
     changeShowDetailIntro: () -> Unit = {},
 ) {
-    if (listState.openStartDatePicker) {
+    DatePicker(
+        openStartDatePicker = listState.openStartDatePicker,
+        openEndDatePicker = listState.openEndDatePicker,
+        changeStartDatePicker = changeStartDatePicker,
+        changeEndDatePicker = changeEndDatePicker,
+        changeStartDate = changeStartDate,
+        changeEndDate = changeEndDate,
+    )
+
+    SearchContents(
+        navController = navController,
+        markerName = listState.markerName,
+        startDate = listState.startDate,
+        endDate = listState.endDate,
+        embeddingMemo = listState.embeddingMemo,
+        memo = listState.memo,
+        changeMarkerName = changeMarkerName,
+        changeEmbeddingMemo = changeEmbeddingMemo,
+        changeMemo = changeMemo,
+        changeShowDetailIntro = changeShowDetailIntro,
+        showDetailIntro = listState.showDetailIntro,
+        changeStartDatePicker = changeStartDatePicker,
+        changeEndDatePicker = changeEndDatePicker,
+    )
+}
+
+@Composable
+private fun DatePicker(
+    openStartDatePicker: Boolean,
+    openEndDatePicker: Boolean,
+    changeStartDatePicker: () -> Unit,
+    changeEndDatePicker: () -> Unit,
+    changeStartDate: (String) -> Unit,
+    changeEndDate: (String) -> Unit,
+) {
+    if (openStartDatePicker) {
         ComposeDatePickerDialog(
             onDismissRequest = {
-                chengeStartDatePicker()
+                changeStartDatePicker()
             },
             onDateSelected = { year, month, dayOfMonth ->
                 changeStartDate(
@@ -78,16 +113,15 @@ fun DetailSearchScreen(
                         dayOfMonth,
                     ),
                 )
-                chengeStartDatePicker()
+                changeStartDatePicker()
             },
         )
     }
 
-    // 作成日（終了日）選択用
-    if (listState.openEndDatePicker) {
+    if (openEndDatePicker) {
         ComposeDatePickerDialog(
             onDismissRequest = {
-                chengeEndDatePicker()
+                changeEndDatePicker()
             },
             onDateSelected = { year, month, dayOfMonth ->
                 changeEndDate(
@@ -99,13 +133,31 @@ fun DetailSearchScreen(
                         dayOfMonth,
                     ),
                 )
-                chengeEndDatePicker()
+                changeEndDatePicker()
             },
         )
     }
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchContents(
+    navController: NavHostController,
+    markerName: String?,
+    startDate: String?,
+    endDate: String?,
+    embeddingMemo: String?,
+    memo: String?,
+    changeMarkerName: (String) -> Unit,
+    changeEmbeddingMemo: (String) -> Unit,
+    changeMemo: (String) -> Unit,
+    changeShowDetailIntro: () -> Unit,
+    showDetailIntro: Boolean,
+    changeStartDatePicker: () -> Unit,
+    changeEndDatePicker: () -> Unit,
+) {
     IntroShowcase(
-        showIntroShowCase = listState.showDetailIntro,
+        showIntroShowCase = showDetailIntro,
         dismissOnClickOutside = true,
         onShowCaseCompleted = {
             changeShowDetailIntro()
@@ -144,7 +196,7 @@ fun DetailSearchScreen(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
             ) {
                 OutlinedTextField(
-                    value = listState.markerName ?: "",
+                    value = markerName ?: "",
                     onValueChange = {
                         changeMarkerName(it)
                     },
@@ -194,7 +246,8 @@ fun DetailSearchScreen(
                                         )
                                     }
                                 },
-                            ).fillMaxWidth(),
+                            )
+                            .fillMaxWidth(),
                 )
 
                 Row(
@@ -205,7 +258,7 @@ fun DetailSearchScreen(
                     OutlinedButton(
                         border = BorderStroke(3.dp, Color(0xFF0889B8)),
                         onClick = {
-                            chengeStartDatePicker()
+                            changeStartDatePicker()
                         },
                         shape = MaterialTheme.shapes.medium,
                         modifier =
@@ -248,10 +301,10 @@ fun DetailSearchScreen(
                     ) {
                         Text(
                             text =
-                                if (listState.startDate.isNullOrEmpty()) {
+                                if (startDate.isNullOrEmpty()) {
                                     "検索開始日"
                                 } else {
-                                    listState.startDate
+                                    startDate
                                 },
                             color = Color.White,
                         )
@@ -266,7 +319,7 @@ fun DetailSearchScreen(
 
                     OutlinedButton(
                         onClick = {
-                            chengeEndDatePicker()
+                            changeEndDatePicker()
                         },
                         border = BorderStroke(3.dp, Color(0xFF0889B8)),
                         shape = MaterialTheme.shapes.medium,
@@ -310,10 +363,10 @@ fun DetailSearchScreen(
                     ) {
                         Text(
                             text =
-                                if (listState.endDate.isNullOrEmpty()) {
+                                if (endDate.isNullOrEmpty()) {
                                     "検索終了日"
                                 } else {
-                                    listState.endDate
+                                    endDate
                                 },
                             color = Color.White,
                         )
@@ -322,7 +375,7 @@ fun DetailSearchScreen(
 
                 // 意味検索フィールド
                 OutlinedTextField(
-                    value = listState.embeddingMemo ?: "",
+                    value = embeddingMemo ?: "",
                     onValueChange = {
                         changeEmbeddingMemo(it)
                     },
@@ -377,7 +430,7 @@ fun DetailSearchScreen(
                 )
 
                 OutlinedTextField(
-                    value = listState.memo ?: "",
+                    value = memo ?: "",
                     onValueChange = {
                         changeMemo(it)
                     },
@@ -522,8 +575,8 @@ fun DetailSearchScreenPreview() {
     val dummyNavController = rememberNavController()
     DetailSearchScreen(
         navController = dummyNavController,
-        chengeStartDatePicker = {},
-        chengeEndDatePicker = {},
+        changeStartDatePicker = {},
+        changeEndDatePicker = {},
         changeMarkerName = {},
         changeStartDate = {},
         changeEndDate = {},

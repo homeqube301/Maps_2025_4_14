@@ -122,8 +122,8 @@ fun AppNavHost(
             DetailSearchScreen(
                 navController = navController,
                 listState = listState,
-                chengeStartDatePicker = { listViewModel.chengeStartDatePicker() },
-                chengeEndDatePicker = { listViewModel.chengeEndDatePicker() },
+                changeStartDatePicker = { listViewModel.changeStartDatePicker() },
+                changeEndDatePicker = { listViewModel.changeEndDatePicker() },
                 changeMarkerName = { listViewModel.changeMarkerName(it) },
                 changeStartDate = { listViewModel.changeStartDate(it) },
                 changeEndDate = { listViewModel.changeEndDate(it) },

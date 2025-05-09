@@ -68,11 +68,11 @@ class ListViewModel
             }
         }
 
-        fun chengeStartDatePicker() {
+        fun changeStartDatePicker() {
             _listState.update { it.copy(openStartDatePicker = !it.openStartDatePicker) }
         }
 
-        fun chengeEndDatePicker() {
+        fun changeEndDatePicker() {
             _listState.update { it.copy(openEndDatePicker = !it.openEndDatePicker) }
         }
 
