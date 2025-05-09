@@ -148,258 +148,207 @@ fun MapScreen(
         )
     }
 
-    IntroShowcase(
-        showIntroShowCase = uiState.showMapIntro,
-        dismissOnClickOutside = true,
-        onShowCaseCompleted = {
-            changeShowMapIntro()
-        },
-    ) {
-        Scaffold { innerPadding ->
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .systemBarsPadding(),
-            ) {
-                LaunchedEffect(uiState.titleQuery, uiState.memoQuery) {
-                    updateSearchList(
-                        uiState.titleQuery,
-                        uiState.memoQuery,
-                        permanentMarkers,
+    Scaffold { innerPadding ->
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .systemBarsPadding(),
+        ) {
+            LaunchedEffect(uiState.titleQuery, uiState.memoQuery) {
+                updateSearchList(
+                    uiState.titleQuery,
+                    uiState.memoQuery,
+                    permanentMarkers,
+                )
+            }
+
+            MapView(
+                cameraPositionState = cameraPositionState,
+                isPermissionGranted = uiState.isPermissionGranted,
+                visibleMarkers = uiState.visibleMarkers,
+                tempMarkerPosition = uiState.tempMarkerPosition,
+                changeTempMarkerPosition = { changeTempMarkerPosition(it) },
+                changeIsPanelOpen = { changeIsPanelOpen() },
+                checkGoogleMapState = { checkGoogleMapState(it) },
+                fetchAddressForLatLng = { lat, lon -> fetchAddressForLatLng(lat, lon) },
+                context = context,
+                changeIsEditPanelOpen = { changeIsEditPanelOpen() },
+                changeSelectedMarker = { changeSelectedMarker(it) },
+            )
+
+            PanelDismissOverlay(
+                isEditPanelOpen = uiState.isEditPanelOpen,
+                isPanelOpen = uiState.isPanelOpen,
+                isSearchOpen = uiState.isSearchOpen,
+                changeShowConfirmDialog = { changeShowConfirmDialog() },
+                showConfirmDialog = uiState.showConfirmDialog,
+                changeIsEditPanelOpen = { changeIsEditPanelOpen() },
+                changeIsPanelOpen = { changeIsPanelOpen() },
+                changeIsSearchOpen = { changeIsSearchOpen() },
+                changeSelectedMarker = { changeSelectedMarker(it) },
+            )
+
+            when (googleMapState) {
+                MapState.Success(true) -> {
+                    MapFloatingButtons(
+                        modifier =
+                            Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(top = 50.dp, end = 5.dp, bottom = 60.dp),
+                        showIntroShowCase = uiState.showMapIntro,
+                        changeShowMapIntro = { changeShowMapIntro() },
+                        changeIsSearchOpen = { changeIsSearchOpen() },
+                        changeIsFollowing = { changeIsFollowing() },
+                        toggleFollowing = { toggleFollowing() },
+                        navController = navController,
+                        isFollowing = uiState.isFollowing,
                     )
                 }
 
-                GoogleMap(
+                else -> {}
+            }
+
+            if (uiState.isSearchOpen) {
+                ModalBottomSheet(
+                    onDismissRequest = { changeIsSearchOpen() },
+                    sheetState = searchSheetState,
                     modifier =
                         Modifier
-                            .fillMaxSize(),
-                    cameraPositionState = cameraPositionState,
-                    properties =
-                        MapProperties(
-                            isMyLocationEnabled = uiState.isPermissionGranted,
-                            mapStyleOptions =
-                                MapStyleOptions.loadRawResourceStyle(
-                                    context,
-                                    R.raw.map_style,
-                                ),
-                        ),
-                    uiSettings =
-                        MapUiSettings(
-                            myLocationButtonEnabled = false,
-                            zoomControlsEnabled = false,
-                        ),
-                    onMapClick = { latLng ->
-                        changeTempMarkerPosition(latLng)
-                        changeIsPanelOpen()
-                    },
-                    onMapLoaded = {
-                        checkGoogleMapState(true)
-                    },
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter),
                 ) {
-                    for (marker in uiState.visibleMarkers) {
-                        Marker(
-                            state = MarkerState(position = marker.position.toLatLng()),
-                            title = marker.title,
-                            icon = BitmapDescriptorFactory.defaultMarker(marker.colorHue),
-                            onClick = {
-                                changeSelectedMarker(marker)
-                                fetchAddressForLatLng(
-                                    marker.position.latitude,
-                                    marker.position.longitude,
-                                )
-                                changeIsEditPanelOpen()
-                                true
-                            },
-                        )
-                    }
-                    uiState.tempMarkerPosition?.let { temp ->
-                        Marker(
-                            state = MarkerState(position = temp),
-                            title = "一時マーカー",
-                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
-                            draggable = false,
-                        )
-                    }
-                }
-
-                if (uiState.isEditPanelOpen || uiState.isPanelOpen || uiState.isSearchOpen) {
-                    DismissOverlay(
-                        changeShowConfirmDialog = { changeShowConfirmDialog() },
-                        showConfirmDialog = uiState.showConfirmDialog,
-                        onClosePanel = {
-                            when {
-                                uiState.isPanelOpen -> changeIsPanelOpen()
-                                uiState.isSearchOpen -> changeIsSearchOpen()
-                                else -> changeIsEditPanelOpen()
-                            }
-
-                            changeSelectedMarker(null)
+                    SearchMaker(
+                        titleResults = uiState.titleResults,
+                        memoResults = uiState.memoResults,
+                        titleQuery = uiState.titleQuery,
+                        memoQuery = uiState.memoQuery,
+                        onTitleQueryChanged = { changeTitleQuery(it) },
+                        onMemoQueryChanged = { changeMemoQuery(it) },
+                        onMarkerTapped = { marker ->
+                            changeSelectedMarker(marker)
+                            changeIsEditPanelOpen()
+                            cameraPositionState.move(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    marker.position.toLatLng(),
+                                    17f,
+                                ),
+                            )
+                            changeIsSearchOpen()
+                            changeTitleQuery("")
+                            changeMemoQuery("")
+                        },
+                        onMemoTapped = { marker ->
+                            changeSelectedMarker(marker)
+                            changeIsEditPanelOpen()
+                            cameraPositionState.move(
+                                CameraUpdateFactory.newLatLngZoom(
+                                    marker.position.toLatLng(),
+                                    17f,
+                                ),
+                            )
+                            changeIsSearchOpen()
+                            changeTitleQuery("")
+                            changeMemoQuery("")
                         },
                     )
                 }
+            }
 
-                when (googleMapState) {
-                    MapState.Success(true) -> {
-                        MapFloatingButtons(
-                            modifier =
-                                Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(top = 50.dp, end = 5.dp, bottom = 60.dp),
-                            showIntroShowCase = uiState.showMapIntro,
-                            changeShowMapIntro = { changeShowMapIntro() },
-                            changeIsSearchOpen = { changeIsSearchOpen() },
-                            changeIsFollowing = { changeIsFollowing() },
-                            toggleFollowing = { toggleFollowing() },
-                            navController = navController,
-                            isFollowing = uiState.isFollowing,
-                        )
-                    }
-
-                    else -> {}
+            if (uiState.isPanelOpen) {
+                ModalBottomSheet(
+                    onDismissRequest = { changePanelOpen(false) },
+                    sheetState = setSheetState,
+                ) {
+                    SetMarkerPanel(
+                        showConfirmDialog = uiState.showConfirmDialog,
+                        changeShowConfirmDialog = { changeShowConfirmDialog() },
+                        cameraPositionState = cameraPositionState,
+                        focusManager = focusManager,
+                        tempMarkerPosition = uiState.tempMarkerPosition,
+                        tempMarkerName = uiState.tempMarkerName,
+                        onClose = { changePanelOpen(false) },
+                        resetTempMarkers = {
+                            changeTempMarkerPosition(null)
+                            changeTempMarkerName(null)
+                            changeIsPanelOpen()
+                        },
+                        changeTempMarkerName = { changeTempMarkerName(it) },
+                        addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
+                        addMarker = { addMarker(it) },
+                    )
                 }
+            }
 
-                if (uiState.isSearchOpen) {
-                    ModalBottomSheet(
-                        onDismissRequest = { changeIsSearchOpen() },
-                        sheetState = searchSheetState,
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .align(Alignment.BottomCenter),
-                    ) {
-                        SearchMaker(
-                            titleResults = uiState.titleResults,
-                            memoResults = uiState.memoResults,
-                            titleQuery = uiState.titleQuery,
-                            memoQuery = uiState.memoQuery,
-                            onTitleQueryChanged = { changeTitleQuery(it) },
-                            onMemoQueryChanged = { changeMemoQuery(it) },
-                            onMarkerTapped = { marker ->
-                                changeSelectedMarker(marker)
-                                changeIsEditPanelOpen()
-                                cameraPositionState.move(
-                                    CameraUpdateFactory.newLatLngZoom(
-                                        marker.position.toLatLng(),
-                                        17f,
-                                    ),
-                                )
-                                changeIsSearchOpen()
-                                changeTitleQuery("")
-                                changeMemoQuery("")
-                            },
-                            onMemoTapped = { marker ->
-                                changeSelectedMarker(marker)
-                                changeIsEditPanelOpen()
-                                cameraPositionState.move(
-                                    CameraUpdateFactory.newLatLngZoom(
-                                        marker.position.toLatLng(),
-                                        17f,
-                                    ),
-                                )
-                                changeIsSearchOpen()
-                                changeTitleQuery("")
-                                changeMemoQuery("")
-                            },
-                        )
-                    }
-                }
-
-                if (uiState.isPanelOpen) {
-                    ModalBottomSheet(
-                        onDismissRequest = { changePanelOpen(false) },
-                        sheetState = setSheetState,
-                    ) {
-                        SetMarkerPanel(
-                            showConfirmDialog = uiState.showConfirmDialog,
-                            changeShowConfirmDialog = { changeShowConfirmDialog() },
-                            cameraPositionState = cameraPositionState,
-                            focusManager = focusManager,
-                            tempMarkerPosition = uiState.tempMarkerPosition,
-                            tempMarkerName = uiState.tempMarkerName,
-                            onClose = { changePanelOpen(false) },
-                            resetTempMarkers = {
-                                changeTempMarkerPosition(null)
-                                changeTempMarkerName(null)
-                                changeIsPanelOpen()
-                            },
-                            changeTempMarkerName = { changeTempMarkerName(it) },
-                            addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
-                            addMarker = { addMarker(it) },
-                        )
-                    }
-                }
-
-                if (uiState.isEditPanelOpen && uiState.selectedMarker != null) {
-                    ModalBottomSheet(
-                        onDismissRequest = {
+            if (uiState.isEditPanelOpen && uiState.selectedMarker != null) {
+                ModalBottomSheet(
+                    onDismissRequest = {
+                        changeIsEditPanelOpen()
+                        changeSelectedMarker(null)
+                    },
+                    sheetState = editSheetState,
+                ) {
+                    EditPanel(
+                        selectedMarker = uiState.selectedMarker,
+                        selectedAddress = selectedAddress,
+                        permanentMarkers = permanentMarkers,
+                        mapsSaveMarker = { saveMarkers() },
+                        focusManager = focusManager,
+                        context = context,
+                        onMarkerUpdate = { updatedMarker ->
+                            updateMarker(updatedMarker)
+                            changeSelectedMarker(updatedMarker)
+                            updateVisibleMarkers(cameraPositionState, permanentMarkers)
+                        },
+                        onMarkerDelete = { marker ->
+                            removeMarker(marker.id)
+                            removeVisibleMarkers(marker)
+                            changeSelectedMarker(null)
+                            changeIsEditPanelOpen()
+                        },
+                        onPanelClose = {
                             changeIsEditPanelOpen()
                             changeSelectedMarker(null)
                         },
-                        sheetState = editSheetState,
+                        memoEmbedding = updateMarkerMemoEmbedding,
+                        showConfirmDialog = uiState.showConfirmDialog,
+                        changeShowConfirmDialog = { changeShowConfirmDialog() },
+                    )
+                }
+            }
+        }
+
+        when (googleMapState) {
+            MapState.Success(true) -> {}
+            MapState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        EditPanel(
-                            selectedMarker = uiState.selectedMarker,
-                            selectedAddress = selectedAddress,
-                            permanentMarkers = permanentMarkers,
-                            mapsSaveMarker = { saveMarkers() },
-                            focusManager = focusManager,
-                            context = context,
-                            onMarkerUpdate = { updatedMarker ->
-                                updateMarker(updatedMarker)
-                                changeSelectedMarker(updatedMarker)
-                                updateVisibleMarkers(cameraPositionState, permanentMarkers)
-                            },
-                            onMarkerDelete = { marker ->
-                                removeMarker(marker.id)
-                                removeVisibleMarkers(marker)
-                                changeSelectedMarker(null)
-                                changeIsEditPanelOpen()
-                            },
-                            onPanelClose = {
-                                changeIsEditPanelOpen()
-                                changeSelectedMarker(null)
-                            },
-                            memoEmbedding = updateMarkerMemoEmbedding,
-                            showConfirmDialog = uiState.showConfirmDialog,
-                            changeShowConfirmDialog = { changeShowConfirmDialog() },
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
                         )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(text = "地図を読み込み...", fontSize = 16.sp)
                     }
                 }
             }
 
-            when (googleMapState) {
-                MapState.Success(true) -> {}
-                MapState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
-                        Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(48.dp),
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(text = "地図を読み込み...", fontSize = 16.sp)
-                        }
-                    }
-                }
-
-                else -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = "エラーが発生しました",
-                            color = Color.Red,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
+            else -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "エラーが発生しました",
+                        color = Color.Red,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
         }
@@ -478,6 +427,103 @@ private suspend fun observeCameraAndFilterMarkers(
 }
 
 @Composable
+private fun MapView(
+    cameraPositionState: CameraPositionState,
+    isPermissionGranted: Boolean,
+    visibleMarkers: List<NamedMarker>,
+    tempMarkerPosition: LatLng?,
+    changeTempMarkerPosition: (LatLng) -> Unit,
+    changeIsPanelOpen: () -> Unit,
+    checkGoogleMapState: (Boolean) -> Unit,
+    fetchAddressForLatLng: (lat: Double, lon: Double) -> Unit,
+    context: Context,
+    changeIsEditPanelOpen: () -> Unit,
+    changeSelectedMarker: (NamedMarker?) -> Unit,
+) {
+    GoogleMap(
+        modifier =
+            Modifier
+                .fillMaxSize(),
+        cameraPositionState = cameraPositionState,
+        properties =
+            MapProperties(
+                isMyLocationEnabled = isPermissionGranted,
+                mapStyleOptions =
+                    MapStyleOptions.loadRawResourceStyle(
+                        context,
+                        R.raw.map_style,
+                    ),
+            ),
+        uiSettings =
+            MapUiSettings(
+                myLocationButtonEnabled = false,
+                zoomControlsEnabled = false,
+            ),
+        onMapClick = { latLng ->
+            changeTempMarkerPosition(latLng)
+            changeIsPanelOpen()
+        },
+        onMapLoaded = {
+            checkGoogleMapState(true)
+        },
+    ) {
+        for (marker in visibleMarkers) {
+            Marker(
+                state = MarkerState(position = marker.position.toLatLng()),
+                title = marker.title,
+                icon = BitmapDescriptorFactory.defaultMarker(marker.colorHue),
+                onClick = {
+                    changeSelectedMarker(marker)
+                    fetchAddressForLatLng(
+                        marker.position.latitude,
+                        marker.position.longitude,
+                    )
+                    changeIsEditPanelOpen()
+                    true
+                },
+            )
+        }
+        tempMarkerPosition?.let { temp ->
+            Marker(
+                state = MarkerState(position = temp),
+                title = "一時マーカー",
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
+                draggable = false,
+            )
+        }
+    }
+}
+
+@Composable
+private fun PanelDismissOverlay(
+    isEditPanelOpen: Boolean,
+    isPanelOpen: Boolean,
+    isSearchOpen: Boolean,
+    changeShowConfirmDialog: () -> Unit,
+    showConfirmDialog: Boolean,
+    changeIsEditPanelOpen: () -> Unit,
+    changeIsPanelOpen: () -> Unit,
+    changeIsSearchOpen: () -> Unit,
+    changeSelectedMarker: (NamedMarker?) -> Unit,
+) {
+    if (isEditPanelOpen || isPanelOpen || isSearchOpen) {
+        DismissOverlay(
+            changeShowConfirmDialog = { changeShowConfirmDialog() },
+            showConfirmDialog = showConfirmDialog,
+            onClosePanel = {
+                when {
+                    isPanelOpen -> changeIsPanelOpen()
+                    isSearchOpen -> changeIsSearchOpen()
+                    else -> changeIsEditPanelOpen()
+                }
+
+                changeSelectedMarker(null)
+            },
+        )
+    }
+}
+
+@Composable
 private fun MapFloatingButtons(
     modifier: Modifier = Modifier,
     showIntroShowCase: Boolean,
@@ -551,7 +597,8 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
