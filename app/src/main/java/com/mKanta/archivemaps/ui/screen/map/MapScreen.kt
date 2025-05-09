@@ -128,23 +128,16 @@ fun MapScreen(
     }
 
     LaunchedEffect(Unit) {
-        startLocationUpdates(
+        initializeMapLogic(
             context,
             cameraPositionState,
-        ) { changeUserLocation(it) }
-    }
-
-    LaunchedEffect(Unit) {
-        loadMarkers()
-    }
-
-    LaunchedEffect(Unit) {
-        observeCameraAndFilterMarkers(
-            cameraPositionState = cameraPositionState,
-            permanentMarkers = permanentMarkers,
-            listState = listState,
-            addAllVisibleMarkers = addAllVisibleMarkers,
-            setVisibleMarkers = setVisibleMarkers,
+            permanentMarkers,
+            listState,
+            addAllVisibleMarkers,
+            setVisibleMarkers,
+            changeUserLocation,
+            loadMarkers,
+            startLocationUpdates,
         )
     }
 
@@ -353,6 +346,37 @@ fun MapScreen(
             }
         }
     }
+}
+
+private suspend fun initializeMapLogic(
+    context: Context,
+    cameraPositionState: CameraPositionState,
+    permanentMarkers: List<NamedMarker>,
+    listState: ListState,
+    addAllVisibleMarkers: (List<NamedMarker>) -> Unit,
+    setVisibleMarkers: (List<NamedMarker>) -> Unit,
+    changeUserLocation: (LatLng) -> Unit,
+    loadMarkers: () -> Unit,
+    startLocationUpdates: (
+        context: Context,
+        cameraPositionState: CameraPositionState,
+        onLocationUpdate: (LatLng) -> Unit,
+    ) -> Unit,
+) {
+    startLocationUpdates(
+        context,
+        cameraPositionState,
+    ) { changeUserLocation(it) }
+
+    loadMarkers()
+
+    observeCameraAndFilterMarkers(
+        cameraPositionState = cameraPositionState,
+        permanentMarkers = permanentMarkers,
+        listState = listState,
+        addAllVisibleMarkers = addAllVisibleMarkers,
+        setVisibleMarkers = setVisibleMarkers,
+    )
 }
 
 private suspend fun observeCameraAndFilterMarkers(
@@ -597,8 +621,7 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
