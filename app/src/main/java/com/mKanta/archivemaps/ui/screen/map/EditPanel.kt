@@ -8,6 +8,9 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +28,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,8 +45,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -51,6 +58,7 @@ import coil.compose.AsyncImage
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
+import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -69,119 +77,124 @@ fun EditPanel(
     showConfirmDialog: Boolean,
     changeShowConfirmDialog: () -> Unit,
 ) {
-    val address by selectedAddress.collectAsState()
-    val mediaPickerLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.OpenDocument(),
-        ) { uri: Uri? ->
-            uri?.let {
-                context.contentResolver.takePersistableUriPermission(
-                    it,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION,
+    ArchivemapsTheme {
+        val address by selectedAddress.collectAsState()
+        val mediaPickerLauncher =
+            rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.OpenDocument(),
+            ) { uri: Uri? ->
+                uri?.let {
+                    context.contentResolver.takePersistableUriPermission(
+                        it,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION,
+                    )
+
+                    val mimeType = context.contentResolver.getType(it)
+
+                    selectedMarker?.let { marker ->
+                        val index =
+                            permanentMarkers.indexOfFirst { markerItem -> markerItem.id == marker.id }
+                        if (index != -1) {
+                            val updatedMarker =
+                                when {
+                                    mimeType?.startsWith("image/") == true -> marker.copy(imageUri = it.toString())
+                                    mimeType?.startsWith("video/") == true -> marker.copy(videoUri = it.toString())
+                                    else -> marker
+                                }
+
+                            onMarkerUpdate(updatedMarker)
+                        }
+                    }
+                }
+            }
+
+        val scrollState = rememberScrollState()
+        BackHandler(enabled = true) {
+            changeShowConfirmDialog()
+        }
+
+        Column(
+            modifier =
+                Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            selectedMarker?.let { marker ->
+
+                Text("マーカーを編集", color = Color.White, fontWeight = FontWeight.Bold)
+
+                MarkerInfoSection(
+                    marker = marker,
+                    address = address,
                 )
 
-                val mimeType = context.contentResolver.getType(it)
+                Spacer(modifier = Modifier.height(16.dp))
 
-                selectedMarker?.let { marker ->
-                    val index =
-                        permanentMarkers.indexOfFirst { markerItem -> markerItem.id == marker.id }
-                    if (index != -1) {
-                        val updatedMarker =
-                            when {
-                                mimeType?.startsWith("image/") == true -> marker.copy(imageUri = it.toString())
-                                mimeType?.startsWith("video/") == true -> marker.copy(videoUri = it.toString())
-                                else -> marker
-                            }
+                MarkerNameEditor(
+                    selectedMarker = selectedMarker,
+                    permanentMarkers = permanentMarkers,
+                    focusManager = focusManager,
+                    onMarkerUpdate = onMarkerUpdate,
+                    onPanelClose = onPanelClose,
+                    mapsSaveMarker = mapsSaveMarker,
+                    marker = marker,
+                )
 
-                        onMarkerUpdate(updatedMarker)
-                    }
+                Spacer(modifier = Modifier.height(24.dp))
+
+                MarkerColorSelector(
+                    selectedMarker = selectedMarker,
+                    permanentMarkers = permanentMarkers,
+                    onMarkerUpdate = onMarkerUpdate,
+                    marker = marker,
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                MediaSelector(
+                    selectedMarker = selectedMarker,
+                    permanentMarkers = permanentMarkers,
+                    onMarkerUpdate = onMarkerUpdate,
+                    marker = marker,
+                    mediaPickerLauncher = mediaPickerLauncher,
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                MemoEditor(
+                    selectedMarker = selectedMarker,
+                    permanentMarkers = permanentMarkers,
+                    onMarkerUpdate = onMarkerUpdate,
+                    memoEmbedding = memoEmbedding,
+                    marker = marker,
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = {
+                    onMarkerDelete(marker)
+                }) {
+                    Text("マーカーを削除する")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = {
+                    changeShowConfirmDialog()
+                }) {
+                    Text("戻る")
                 }
             }
         }
 
-    val scrollState = rememberScrollState()
-    BackHandler(enabled = true) {
-        changeShowConfirmDialog()
-    }
-
-    Column(
-        modifier =
-            Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-                .verticalScroll(scrollState),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        selectedMarker?.let { marker ->
-
-            Text("マーカーを編集")
-
-            MarkerInfoSection(
-                marker = marker,
-                address = address,
-            )
-
-            MarkerNameEditor(
-                selectedMarker = selectedMarker,
-                permanentMarkers = permanentMarkers,
-                focusManager = focusManager,
-                onMarkerUpdate = onMarkerUpdate,
+        if (showConfirmDialog) {
+            ConfirmDialog(
+                changeShowConfirmDialog = changeShowConfirmDialog,
                 onPanelClose = onPanelClose,
-                mapsSaveMarker = mapsSaveMarker,
-                marker = marker,
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            MarkerColorSelector(
-                selectedMarker = selectedMarker,
-                permanentMarkers = permanentMarkers,
-                onMarkerUpdate = onMarkerUpdate,
-                marker = marker,
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            MediaSelector(
-                selectedMarker = selectedMarker,
-                permanentMarkers = permanentMarkers,
-                onMarkerUpdate = onMarkerUpdate,
-                marker = marker,
-                mediaPickerLauncher = mediaPickerLauncher,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            MemoEditor(
-                selectedMarker = selectedMarker,
-                permanentMarkers = permanentMarkers,
-                onMarkerUpdate = onMarkerUpdate,
-                memoEmbedding = memoEmbedding,
-                marker = marker,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(onClick = {
-                onMarkerDelete(marker)
-            }) {
-                Text("マーカーを削除する")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                changeShowConfirmDialog()
-            }) {
-                Text("戻る")
-            }
         }
-    }
-
-    if (showConfirmDialog) {
-        ConfirmDialog(
-            changeShowConfirmDialog = changeShowConfirmDialog,
-            onPanelClose = onPanelClose,
-        )
     }
 }
 
@@ -221,13 +234,17 @@ private fun MemoEditor(
     marker: NamedMarker,
 ) {
     var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
-    Text("メモ", style = MaterialTheme.typography.bodyMedium)
+    Text("メモ", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
 
     OutlinedTextField(
+        colors =
+            OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+            ),
         value = memoText,
         onValueChange = { newText ->
             memoText = newText
-
             selectedMarker.let { marker ->
                 val index =
                     permanentMarkers.indexOfFirst { it.id == marker.id }
@@ -243,9 +260,10 @@ private fun MemoEditor(
                     if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }.fillMaxWidth()
+                }
+                .fillMaxWidth()
                 .height(150.dp),
-        placeholder = { Text("ここにメモを書いてください") },
+        placeholder = { Text("ここにメモを書いてください", color = Color.Gray) },
         singleLine = false,
         maxLines = 10,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
@@ -260,13 +278,14 @@ private fun MediaSelector(
     marker: NamedMarker,
     mediaPickerLauncher: ActivityResultLauncher<Array<String>>,
 ) {
-    Button(
+    OutlinedButton(
+        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primary),
         onClick = {
             mediaPickerLauncher.launch(arrayOf("image/*", "video/*"))
         },
         shape = RoundedCornerShape(8.dp),
     ) {
-        Text("メディアを追加")
+        Text("メディアを追加", color = Color.White)
     }
 
     marker.imageUri?.let { uri ->
@@ -301,23 +320,24 @@ private fun MediaSelector(
 
     if (selectedMarker.imageUri != null || selectedMarker.videoUri != null) {
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            // uiState.selectedMarker
-            selectedMarker.let { marker ->
-                val index =
-                    permanentMarkers.indexOfFirst { it.id == marker.id }
-                if (index != -1) {
-                    // onMediaDelete(marker)
-                    val updatedMarker =
-                        marker.copy(
-                            imageUri = null,
-                            videoUri = null,
-                        )
-                    onMarkerUpdate(updatedMarker)
+        OutlinedButton(
+            border = BorderStroke(3.dp, MaterialTheme.colorScheme.primary),
+            onClick = {
+                selectedMarker.let { marker ->
+                    val index =
+                        permanentMarkers.indexOfFirst { it.id == marker.id }
+                    if (index != -1) {
+                        val updatedMarker =
+                            marker.copy(
+                                imageUri = null,
+                                videoUri = null,
+                            )
+                        onMarkerUpdate(updatedMarker)
+                    }
                 }
-            }
-        }) {
-            Text("メディアを削除")
+            },
+        ) {
+            Text("メディアを削除", color = Color.White)
         }
     }
 }
@@ -330,39 +350,56 @@ private fun MarkerColorSelector(
     marker: NamedMarker,
 ) {
     var selectedColorHue by remember(marker) { mutableFloatStateOf(marker.colorHue) }
-    Text("マーカーの色を変更", style = MaterialTheme.typography.bodyMedium)
 
-    val colorOptions =
-        listOf(
-            BitmapDescriptorFactory.HUE_RED to "赤",
-            BitmapDescriptorFactory.HUE_BLUE to "青",
-            BitmapDescriptorFactory.HUE_GREEN to "緑",
-            BitmapDescriptorFactory.HUE_YELLOW to "黄",
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = Color.Gray,
+                    shape = RoundedCornerShape(8.dp),
+                ).padding(12.dp),
+    ) {
+        Text(
+            "マーカーの色を変更",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
         )
 
-    Row(
-        horizontalArrangement = Arrangement.SpaceAround,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        colorOptions.forEach { (hue, label) ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                RadioButton(
-                    selected = selectedColorHue == hue,
-                    onClick = {
-                        selectedColorHue = hue
+        val colorOptions =
+            listOf(
+                BitmapDescriptorFactory.HUE_RED to "赤",
+                BitmapDescriptorFactory.HUE_BLUE to "青",
+                BitmapDescriptorFactory.HUE_GREEN to "緑",
+                BitmapDescriptorFactory.HUE_YELLOW to "黄",
+            )
 
-                        selectedMarker.let { marker ->
-                            val index =
-                                permanentMarkers.indexOfFirst { it.id == marker.id }
-                            if (index != -1) {
-                                val updatedMarker =
-                                    marker.copy(colorHue = hue)
-                                onMarkerUpdate(updatedMarker)
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            colorOptions.forEach { (hue, label) ->
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    RadioButton(
+                        selected = selectedColorHue == hue,
+                        onClick = {
+                            selectedColorHue = hue
+
+                            selectedMarker.let { marker ->
+                                val index =
+                                    permanentMarkers.indexOfFirst { it.id == marker.id }
+                                if (index != -1) {
+                                    val updatedMarker =
+                                        marker.copy(colorHue = hue)
+                                    onMarkerUpdate(updatedMarker)
+                                }
                             }
-                        }
-                    },
-                )
-                Text(label)
+                        },
+                    )
+                    Text(label, color = Color.White, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
@@ -384,9 +421,14 @@ private fun MarkerNameEditor(
         modifier = Modifier.fillMaxWidth(),
     ) {
         OutlinedTextField(
+            colors =
+                OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                ),
             value = editedName,
             onValueChange = { editedName = it },
-            label = { Text("マーカー名") },
+            label = { Text("マーカー名", color = Color.Gray) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions =
                 KeyboardActions(
@@ -419,7 +461,7 @@ private fun MarkerNameEditor(
             modifier = Modifier.wrapContentWidth(),
             shape = RoundedCornerShape(8.dp),
         ) {
-            Text("更新")
+            Text("更新", fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -431,12 +473,14 @@ private fun MarkerInfoSection(
 ) {
     Text(
         text = "設置日時: ${marker.createdAt}",
+        color = Color.White,
         modifier = Modifier.padding(vertical = 8.dp),
         style = MaterialTheme.typography.bodyMedium,
     )
 
     Text(
         text = "住所: ${address.ifBlank { "住所が取得できませんでした" }}",
+        color = Color.White,
     )
 }
 
@@ -446,8 +490,8 @@ fun EditPanelPreview() {
     val dummyMarker =
         NamedMarker(
             id = "1",
-            title = "サンプル",
-            memo = "メモの例",
+            title = "",
+            // memo = "メモの例",
             colorHue = BitmapDescriptorFactory.HUE_RED,
             position = LatLngSerializable(35.0, 139.0),
             createdAt = "2025-04-21",
