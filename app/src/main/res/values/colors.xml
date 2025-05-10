@@ -11,4 +11,5 @@
     <color name="primary_blue">#FF0889B8</color>
     <color name="secondary_block">#FF353636</color>
     <color name="background_black">#FF2A2A2A</color>
+    <color name="alert_red">#FFD90000</color>
 </resources>

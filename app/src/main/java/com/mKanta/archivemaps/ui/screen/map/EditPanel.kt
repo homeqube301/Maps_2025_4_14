@@ -27,6 +27,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -48,6 +49,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,6 +58,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
@@ -175,16 +178,23 @@ fun EditPanel(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Button(onClick = {
+                OutlinedButton(onClick = {
                     onMarkerDelete(marker)
                 }) {
-                    Text("マーカーを削除する")
+                    Text(
+                        "マーカーを削除する",
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(id = R.color.alert_red),
+                    )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = {
-                    changeShowConfirmDialog()
-                }) {
-                    Text("戻る")
+                Button(
+                    colors = ButtonDefaults.buttonColors(Color.Gray),
+                    onClick = {
+                        changeShowConfirmDialog()
+                    },
+                ) {
+                    Text("戻る", fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -260,8 +270,7 @@ private fun MemoEditor(
                     if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }
-                .fillMaxWidth()
+                }.fillMaxWidth()
                 .height(150.dp),
         placeholder = { Text("ここにメモを書いてください", color = Color.Gray) },
         singleLine = false,
@@ -359,7 +368,8 @@ private fun MarkerColorSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(8.dp),
-                ).padding(12.dp),
+                )
+                .padding(12.dp),
     ) {
         Text(
             "マーカーの色を変更",
