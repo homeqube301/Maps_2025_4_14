@@ -48,6 +48,7 @@ import com.canopas.lib.showcase.IntroShowcase
 import com.canopas.lib.showcase.component.ShowcaseStyle
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.ui.state.ListState
+import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Locale
@@ -166,125 +167,254 @@ fun SearchContents(
             changeShowDetailIntro()
         },
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = "詳細検索",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(Color(0xFF2A2A2A)),
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "戻る",
-                                tint = Color.White,
+        ArchivemapsTheme {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = "詳細検索",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background),
+                        navigationIcon = {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "戻る",
+                                    tint = Color.White,
+                                )
+                            }
+                        },
+                    )
+                },
+            ) { paddingValues ->
+                Column(
+                    modifier =
+                        Modifier
+                            .background(MaterialTheme.colorScheme.secondary)
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .padding(32.dp),
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                ) {
+                    OutlinedTextField(
+                        value = markerName ?: "",
+                        onValueChange = {
+                            changeMarkerName(it)
+                        },
+                        label = {
+                            Text(
+                                text = "マーカー名検索",
+                                color = Color.Gray,
+                            )
+                        },
+                        colors =
+                            OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                            ),
+                        modifier =
+                            Modifier
+                                .introShowCaseTarget(
+                                    index = 0,
+                                    style =
+                                        ShowcaseStyle.Default.copy(
+                                            backgroundColor = Color.Black,
+                                            backgroundAlpha = 0.95f,
+                                            targetCircleColor = Color(0xFF343434),
+                                        ),
+                                    content = {
+                                        Column {
+                                            Text(
+                                                text = "名前で検索",
+                                                color = Color.White,
+                                                fontSize = 24.sp,
+                                                fontWeight = FontWeight.Bold,
+                                            )
+                                            Text(
+                                                text = "マーカーに付けられた名前で検索します(完全一致のみ)",
+                                                color = Color.White,
+                                                fontSize = 16.sp,
+                                            )
+                                            Spacer(modifier = Modifier.height(10.dp))
+                                            Icon(
+                                                Icons.Default.Menu,
+                                                contentDescription = null,
+                                                modifier =
+                                                    Modifier
+                                                        .size(80.dp)
+                                                        .align(Alignment.End),
+                                                tint = Color.Transparent,
+                                            )
+                                        }
+                                    },
+                                ).fillMaxWidth(),
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        OutlinedButton(
+                            border = BorderStroke(3.dp, MaterialTheme.colorScheme.primary),
+                            onClick = {
+                                changeStartDatePicker()
+                            },
+                            shape = MaterialTheme.shapes.medium,
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .introShowCaseTarget(
+                                        index = 1,
+                                        style =
+                                            ShowcaseStyle.Default.copy(
+                                                backgroundColor = Color.Black,
+                                                backgroundAlpha = 0.95f,
+                                                targetCircleColor = Color(0xFF343434),
+                                            ),
+                                        content = {
+                                            Column {
+                                                Text(
+                                                    text = "開始日以降で検索",
+                                                    color = Color.White,
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                )
+                                                Text(
+                                                    text = "マーカーが作成されたのが選択日時以降である場合リストに表示します",
+                                                    color = Color.White,
+                                                    fontSize = 16.sp,
+                                                )
+                                                Spacer(modifier = Modifier.height(10.dp))
+                                                Icon(
+                                                    Icons.Default.Menu,
+                                                    contentDescription = null,
+                                                    modifier =
+                                                        Modifier
+                                                            .size(80.dp)
+                                                            .align(Alignment.End),
+                                                    tint = Color.Transparent,
+                                                )
+                                            }
+                                        },
+                                    ),
+                        ) {
+                            Text(
+                                text =
+                                    if (startDate.isNullOrEmpty()) {
+                                        "検索開始日"
+                                    } else {
+                                        startDate
+                                    },
+                                color = Color.White,
                             )
                         }
-                    },
-                )
-            },
-        ) { paddingValues ->
-            Column(
-                modifier =
-                    Modifier
-                        .background(Color(0xFF353636))
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(32.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-            ) {
-                OutlinedTextField(
-                    value = markerName ?: "",
-                    onValueChange = {
-                        changeMarkerName(it)
-                    },
-                    label = {
+
                         Text(
-                            text = "マーカー名検索",
-                            color = Color.Gray,
+                            "〜",
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
                         )
-                    },
-                    colors =
-                        OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                        ),
-                    modifier =
-                        Modifier
-                            .introShowCaseTarget(
-                                index = 0,
-                                style =
-                                    ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF000000),
-                                        backgroundAlpha = 0.95f,
-                                        targetCircleColor = Color(0xFF343434),
+
+                        OutlinedButton(
+                            onClick = {
+                                changeEndDatePicker()
+                            },
+                            border = BorderStroke(3.dp, MaterialTheme.colorScheme.primary),
+                            shape = MaterialTheme.shapes.medium,
+                            modifier =
+                                Modifier
+                                    .weight(1f)
+                                    .introShowCaseTarget(
+                                        index = 2,
+                                        style =
+                                            ShowcaseStyle.Default.copy(
+                                                backgroundColor = Color.Black,
+                                                backgroundAlpha = 0.95f,
+                                                targetCircleColor = Color(0xFF343434),
+                                            ),
+                                        content = {
+                                            Column {
+                                                Text(
+                                                    text = "終了日以前で検索",
+                                                    color = Color.White,
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                )
+                                                Text(
+                                                    text = "マーカーが作成されたのが選択日時以前である場合リストに表示します",
+                                                    color = Color.White,
+                                                    fontSize = 16.sp,
+                                                )
+                                                Spacer(modifier = Modifier.height(10.dp))
+                                                Icon(
+                                                    Icons.Default.Menu,
+                                                    contentDescription = null,
+                                                    modifier =
+                                                        Modifier
+                                                            .size(80.dp)
+                                                            .align(Alignment.End),
+                                                    tint = Color.Transparent,
+                                                )
+                                            }
+                                        },
                                     ),
-                                content = {
-                                    Column {
-                                        Text(
-                                            text = "名前で検索",
-                                            color = Color.White,
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Text(
-                                            text = "マーカーに付けられた名前で検索します(完全一致のみ)",
-                                            color = Color.White,
-                                            fontSize = 16.sp,
-                                        )
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        Icon(
-                                            Icons.Default.Menu,
-                                            contentDescription = null,
-                                            modifier =
-                                                Modifier
-                                                    .size(80.dp)
-                                                    .align(Alignment.End),
-                                            tint = Color.Transparent,
-                                        )
-                                    }
-                                },
+                        ) {
+                            Text(
+                                text =
+                                    if (endDate.isNullOrEmpty()) {
+                                        "検索終了日"
+                                    } else {
+                                        endDate
+                                    },
+                                color = Color.White,
                             )
-                            .fillMaxWidth(),
-                )
+                        }
+                    }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    OutlinedButton(
-                        border = BorderStroke(3.dp, Color(0xFF0889B8)),
-                        onClick = {
-                            changeStartDatePicker()
+                    // 意味検索フィールド
+                    OutlinedTextField(
+                        value = embeddingMemo ?: "",
+                        onValueChange = {
+                            changeEmbeddingMemo(it)
                         },
-                        shape = MaterialTheme.shapes.medium,
+                        label = {
+                            Text(
+                                "AIメモ検索(意味検索)",
+                                color = Color.Gray,
+                            )
+                        },
+                        colors =
+                            OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                            ),
                         modifier =
                             Modifier
-                                .weight(1f)
+                                .fillMaxWidth()
                                 .introShowCaseTarget(
-                                    index = 1,
+                                    index = 3,
                                     style =
                                         ShowcaseStyle.Default.copy(
-                                            backgroundColor = Color(0xFF000000),
+                                            backgroundColor = Color.Black,
                                             backgroundAlpha = 0.95f,
                                             targetCircleColor = Color(0xFF343434),
                                         ),
                                     content = {
                                         Column {
                                             Text(
-                                                text = "開始日以降で検索",
+                                                text = "マーカーのメモ内容をAIで検索",
                                                 color = Color.White,
                                                 fontSize = 24.sp,
                                                 fontWeight = FontWeight.Bold,
                                             )
                                             Text(
-                                                text = "マーカーが作成されたのが選択日時以降である場合リストに表示します",
+                                                text = "検索ワードと記録されたメモ内容が意味的に似ているマーカーを10個表示します",
                                                 color = Color.White,
                                                 fontSize = 16.sp,
                                             )
@@ -301,52 +431,46 @@ fun SearchContents(
                                         }
                                     },
                                 ),
-                    ) {
-                        Text(
-                            text =
-                                if (startDate.isNullOrEmpty()) {
-                                    "検索開始日"
-                                } else {
-                                    startDate
-                                },
-                            color = Color.White,
-                        )
-                    }
-
-                    Text(
-                        "〜",
-                        color = Color(0xFF0889B8),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
                     )
 
-                    OutlinedButton(
-                        onClick = {
-                            changeEndDatePicker()
+                    OutlinedTextField(
+                        value = memo ?: "",
+                        onValueChange = {
+                            changeMemo(it)
                         },
-                        border = BorderStroke(3.dp, Color(0xFF0889B8)),
-                        shape = MaterialTheme.shapes.medium,
+                        label = {
+                            Text(
+                                "メモ(完全一致)",
+                                color = Color.Gray,
+                            )
+                        },
+                        colors =
+                            OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                            ),
                         modifier =
                             Modifier
-                                .weight(1f)
+                                .fillMaxWidth()
+                                .height(150.dp)
                                 .introShowCaseTarget(
-                                    index = 2,
+                                    index = 4,
                                     style =
                                         ShowcaseStyle.Default.copy(
-                                            backgroundColor = Color(0xFF000000),
+                                            backgroundColor = Color.Black,
                                             backgroundAlpha = 0.95f,
                                             targetCircleColor = Color(0xFF343434),
                                         ),
                                     content = {
                                         Column {
                                             Text(
-                                                text = "終了日以前で検索",
+                                                text = "マーカーをメモ内容で検索",
                                                 color = Color.White,
                                                 fontSize = 24.sp,
                                                 fontWeight = FontWeight.Bold,
                                             )
                                             Text(
-                                                text = "マーカーが作成されたのが選択日時以前である場合リストに表示します",
+                                                text = "検索ワードとマーカーに記録されたメモ内容が完全一致したマーカーを表示します",
                                                 color = Color.White,
                                                 fontSize = 16.sp,
                                             )
@@ -363,149 +487,26 @@ fun SearchContents(
                                         }
                                     },
                                 ),
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            navController.navigate("marker_list?")
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors =
+                            androidx.compose.material3.ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                            ),
                     ) {
                         Text(
-                            text =
-                                if (endDate.isNullOrEmpty()) {
-                                    "検索終了日"
-                                } else {
-                                    endDate
-                                },
+                            "検索する",
                             color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
                         )
                     }
-                }
-
-                // 意味検索フィールド
-                OutlinedTextField(
-                    value = embeddingMemo ?: "",
-                    onValueChange = {
-                        changeEmbeddingMemo(it)
-                    },
-                    label = {
-                        Text(
-                            "AIメモ検索(意味検索)",
-                            color = Color.Gray,
-                        )
-                    },
-                    colors =
-                        OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                        ),
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .introShowCaseTarget(
-                                index = 3,
-                                style =
-                                    ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF000000),
-                                        backgroundAlpha = 0.95f,
-                                        targetCircleColor = Color(0xFF343434),
-                                    ),
-                                content = {
-                                    Column {
-                                        Text(
-                                            text = "マーカーのメモ内容をAIで検索",
-                                            color = Color.White,
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Text(
-                                            text = "検索ワードと記録されたメモ内容が意味的に似ているマーカーを10個表示します",
-                                            color = Color.White,
-                                            fontSize = 16.sp,
-                                        )
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        Icon(
-                                            Icons.Default.Menu,
-                                            contentDescription = null,
-                                            modifier =
-                                                Modifier
-                                                    .size(80.dp)
-                                                    .align(Alignment.End),
-                                            tint = Color.Transparent,
-                                        )
-                                    }
-                                },
-                            ),
-                )
-
-                OutlinedTextField(
-                    value = memo ?: "",
-                    onValueChange = {
-                        changeMemo(it)
-                    },
-                    label = {
-                        Text(
-                            "メモ(完全一致)",
-                            color = Color.Gray,
-                        )
-                    },
-                    colors =
-                        OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                        ),
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(150.dp)
-                            .introShowCaseTarget(
-                                index = 4,
-                                style =
-                                    ShowcaseStyle.Default.copy(
-                                        backgroundColor = Color(0xFF000000),
-                                        backgroundAlpha = 0.95f,
-                                        targetCircleColor = Color(0xFF343434),
-                                    ),
-                                content = {
-                                    Column {
-                                        Text(
-                                            text = "マーカーをメモ内容で検索",
-                                            color = Color.White,
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold,
-                                        )
-                                        Text(
-                                            text = "検索ワードとマーカーに記録されたメモ内容が完全一致したマーカーを表示します",
-                                            color = Color.White,
-                                            fontSize = 16.sp,
-                                        )
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        Icon(
-                                            Icons.Default.Menu,
-                                            contentDescription = null,
-                                            modifier =
-                                                Modifier
-                                                    .size(80.dp)
-                                                    .align(Alignment.End),
-                                            tint = Color.Transparent,
-                                        )
-                                    }
-                                },
-                            ),
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    onClick = {
-                        navController.navigate("marker_list?")
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors =
-                        androidx.compose.material3.ButtonDefaults.buttonColors(
-//                            containerColor = Color(0xFF08A49D),
-                            containerColor = Color(0xFF0889B8),
-                        ),
-                ) {
-                    Text(
-                        "検索する",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
                 }
             }
         }
