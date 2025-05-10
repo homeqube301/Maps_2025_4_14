@@ -270,7 +270,8 @@ private fun MemoEditor(
                     if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }.fillMaxWidth()
+                }
+                .fillMaxWidth()
                 .height(150.dp),
         placeholder = { Text("ここにメモを書いてください", color = Color.Gray) },
         singleLine = false,
@@ -287,66 +288,79 @@ private fun MediaSelector(
     marker: NamedMarker,
     mediaPickerLauncher: ActivityResultLauncher<Array<String>>,
 ) {
-    OutlinedButton(
-        border = BorderStroke(3.dp, MaterialTheme.colorScheme.primary),
-        onClick = {
-            mediaPickerLauncher.launch(arrayOf("image/*", "video/*"))
-        },
-        shape = RoundedCornerShape(8.dp),
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = Color.Gray,
+                    shape = RoundedCornerShape(4.dp),
+                )
+                .padding(12.dp),
     ) {
-        Text("メディアを追加", color = Color.White)
-    }
-
-    marker.imageUri?.let { uri ->
-        Spacer(modifier = Modifier.height(16.dp))
-        AsyncImage(
-            model = uri,
-            contentDescription = "マーカー画像",
-            modifier =
-                Modifier
-                    .size(200.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-        )
-    }
-
-    selectedMarker.videoUri?.let { videoUri ->
-        AndroidView(
-            factory = {
-                VideoView(it).apply {
-                    setVideoURI(videoUri.toUri())
-                    setOnPreparedListener { mediaPlayer ->
-                        mediaPlayer.isLooping = true
-                        start()
-                    }
-                }
-            },
-            modifier =
-                Modifier
-                    .size(200.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-        )
-    }
-
-    if (selectedMarker.imageUri != null || selectedMarker.videoUri != null) {
-        Spacer(modifier = Modifier.height(16.dp))
         OutlinedButton(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
             border = BorderStroke(3.dp, MaterialTheme.colorScheme.primary),
             onClick = {
-                selectedMarker.let { marker ->
-                    val index =
-                        permanentMarkers.indexOfFirst { it.id == marker.id }
-                    if (index != -1) {
-                        val updatedMarker =
-                            marker.copy(
-                                imageUri = null,
-                                videoUri = null,
-                            )
-                        onMarkerUpdate(updatedMarker)
-                    }
-                }
+                mediaPickerLauncher.launch(arrayOf("image/*", "video/*"))
             },
+            shape = RoundedCornerShape(8.dp),
         ) {
-            Text("メディアを削除", color = Color.White)
+            Text("メディアを追加", color = Color.White)
+        }
+
+        marker.imageUri?.let { uri ->
+            Spacer(modifier = Modifier.height(16.dp))
+            AsyncImage(
+                model = uri,
+                contentDescription = "マーカー画像",
+                modifier =
+                    Modifier
+                        .size(200.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+            )
+        }
+
+        selectedMarker.videoUri?.let { videoUri ->
+            AndroidView(
+                factory = {
+                    VideoView(it).apply {
+                        setVideoURI(videoUri.toUri())
+                        setOnPreparedListener { mediaPlayer ->
+                            mediaPlayer.isLooping = true
+                            start()
+                        }
+                    }
+                },
+                modifier =
+                    Modifier
+                        .size(200.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+            )
+        }
+
+        if (selectedMarker.imageUri != null || selectedMarker.videoUri != null) {
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedButton(
+                border = BorderStroke(3.dp, MaterialTheme.colorScheme.primary),
+                onClick = {
+                    selectedMarker.let { marker ->
+                        val index =
+                            permanentMarkers.indexOfFirst { it.id == marker.id }
+                        if (index != -1) {
+                            val updatedMarker =
+                                marker.copy(
+                                    imageUri = null,
+                                    videoUri = null,
+                                )
+                            onMarkerUpdate(updatedMarker)
+                        }
+                    }
+                },
+            ) {
+                Text("メディアを削除", color = Color.White)
+            }
         }
     }
 }
@@ -360,6 +374,13 @@ private fun MarkerColorSelector(
 ) {
     var selectedColorHue by remember(marker) { mutableFloatStateOf(marker.colorHue) }
 
+    Text(
+        "マーカーの色を変更",
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.Gray,
+        fontWeight = FontWeight.Bold,
+    )
+
     Column(
         modifier =
             Modifier
@@ -367,17 +388,9 @@ private fun MarkerColorSelector(
                 .border(
                     width = 1.dp,
                     color = Color.Gray,
-                    shape = RoundedCornerShape(8.dp),
-                )
-                .padding(12.dp),
+                    shape = RoundedCornerShape(4.dp),
+                ).padding(12.dp),
     ) {
-        Text(
-            "マーカーの色を変更",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-        )
-
         val colorOptions =
             listOf(
                 BitmapDescriptorFactory.HUE_RED to "赤",
