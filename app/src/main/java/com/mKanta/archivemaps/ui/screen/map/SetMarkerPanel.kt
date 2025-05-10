@@ -63,74 +63,34 @@ fun SetMarkerPanel(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("マーカー名を入力してください")
-        OutlinedTextField(
-            value = tempMarkerName ?: "",
-            onValueChange = {
-                changeTempMarkerName(it)
-            },
-            label = { Text("マーカー名") },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions =
-                KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus()
-                    },
-                ),
+        SetMarkerName(
+            tempMarkerName = tempMarkerName,
+            changeTempMarkerName = changeTempMarkerName,
+            focusManager = focusManager,
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         var selectedHue by remember { mutableFloatStateOf(BitmapDescriptorFactory.HUE_RED) }
 
-        Text("マーカーの色を選んでください")
-        Row(
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            val colorOptions =
-                listOf(
-                    BitmapDescriptorFactory.HUE_RED to "赤",
-                    BitmapDescriptorFactory.HUE_BLUE to "青",
-                    BitmapDescriptorFactory.HUE_GREEN to "緑",
-                    BitmapDescriptorFactory.HUE_YELLOW to "黄",
-                )
-            colorOptions.forEach { (hue, label) ->
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    RadioButton(
-                        selected = selectedHue == hue,
-                        onClick = { selectedHue = hue },
-                    )
-                    Text(label)
-                }
-            }
-        }
+        SetMarkerColor(
+            selectedHue = selectedHue,
+            onHueSelected = { selectedHue = it },
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            focusManager.clearFocus() // ← 変換中なら確定
 
-            tempMarkerPosition?.let { pos ->
-                val newMarker =
-                    NamedMarker(
-                        position = LatLngSerializable.from(pos),
-                        title = tempMarkerName ?: "",
-                        createdAt =
-                            LocalDateTime.now().format(
-                                DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"),
-                            ),
-                        colorHue = selectedHue,
-                    )
-                addMarker(newMarker)
-                val bounds =
-                    cameraPositionState.projection?.visibleRegion?.latLngBounds
-                if (bounds != null && bounds.contains(pos)) {
-                    addVisibleMarker(newMarker)
-                }
-            }
-            resetTempMarkers()
-        }) {
-            Text("マーカーを設置する")
-        }
+        SetMarker(
+            cameraPositionState = cameraPositionState,
+            focusManager = focusManager,
+            tempMarkerName = tempMarkerName,
+            tempMarkerPosition = tempMarkerPosition,
+            resetTempMarkers = resetTempMarkers,
+            addVisibleMarker = addVisibleMarker,
+            addMarker = addMarker,
+            selectedHue = selectedHue,
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
             changeShowConfirmDialog()
@@ -146,6 +106,96 @@ fun SetMarkerPanel(
             resetTempMarkers = resetTempMarkers,
         )
     }
+}
+
+@Composable
+private fun SetMarker(
+    cameraPositionState: CameraPositionState,
+    focusManager: FocusManager,
+    tempMarkerName: String?,
+    tempMarkerPosition: LatLng?,
+    resetTempMarkers: () -> Unit,
+    addVisibleMarker: (NamedMarker) -> Unit,
+    addMarker: (NamedMarker) -> Unit,
+    selectedHue: Float,
+) {
+    Button(onClick = {
+        focusManager.clearFocus() // ← 変換中なら確定
+
+        tempMarkerPosition?.let { pos ->
+            val newMarker =
+                NamedMarker(
+                    position = LatLngSerializable.from(pos),
+                    title = tempMarkerName ?: "",
+                    createdAt =
+                        LocalDateTime.now().format(
+                            DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"),
+                        ),
+                    colorHue = selectedHue,
+                )
+            addMarker(newMarker)
+            val bounds =
+                cameraPositionState.projection?.visibleRegion?.latLngBounds
+            if (bounds != null && bounds.contains(pos)) {
+                addVisibleMarker(newMarker)
+            }
+        }
+        resetTempMarkers()
+    }) {
+        Text("マーカーを設置する")
+    }
+}
+
+@Composable
+private fun SetMarkerColor(
+    selectedHue: Float,
+    onHueSelected: (Float) -> Unit,
+) {
+    Text("マーカーの色を選んでください")
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        val colorOptions =
+            listOf(
+                BitmapDescriptorFactory.HUE_RED to "赤",
+                BitmapDescriptorFactory.HUE_BLUE to "青",
+                BitmapDescriptorFactory.HUE_GREEN to "緑",
+                BitmapDescriptorFactory.HUE_YELLOW to "黄",
+            )
+        colorOptions.forEach { (hue, label) ->
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                RadioButton(
+                    selected = selectedHue == hue,
+                    onClick = { onHueSelected(hue) },
+                )
+                Text(label)
+            }
+        }
+    }
+}
+
+@Composable
+private fun SetMarkerName(
+    tempMarkerName: String?,
+    changeTempMarkerName: (String) -> Unit,
+    focusManager: FocusManager,
+) {
+    Text("マーカー名を入力してください")
+    OutlinedTextField(
+        value = tempMarkerName ?: "",
+        onValueChange = {
+            changeTempMarkerName(it)
+        },
+        label = { Text("マーカー名") },
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions =
+            KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                },
+            ),
+    )
 }
 
 @Composable
