@@ -140,34 +140,47 @@ fun SetMarkerPanel(
     }
 
     if (showConfirmDialog) {
-        AlertDialog(
-            onDismissRequest = {
-                changeShowConfirmDialog()
-            },
-            title = { Text("設定を中断しますか？") },
-            text = { Text("入力した内容は破棄されます。") },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        changeShowConfirmDialog()
-                        resetTempMarkers()
-                        onClose()
-                    },
-                ) {
-                    Text("はい")
-                }
-            },
-            dismissButton = {
-                Button(
-                    onClick = {
-                        changeShowConfirmDialog()
-                    },
-                ) {
-                    Text("いいえ")
-                }
-            },
+        ConfirmDialog(
+            changeShowConfirmDialog = changeShowConfirmDialog,
+            onClose = onClose,
+            resetTempMarkers = resetTempMarkers,
         )
     }
+}
+
+@Composable
+private fun ConfirmDialog(
+    changeShowConfirmDialog: () -> Unit,
+    onClose: () -> Unit,
+    resetTempMarkers: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = {
+            changeShowConfirmDialog()
+        },
+        title = { Text("設定を中断しますか？") },
+        text = { Text("入力した内容は破棄されます。") },
+        confirmButton = {
+            Button(
+                onClick = {
+                    changeShowConfirmDialog()
+                    resetTempMarkers()
+                    onClose()
+                },
+            ) {
+                Text("はい")
+            }
+        },
+        dismissButton = {
+            Button(
+                onClick = {
+                    changeShowConfirmDialog()
+                },
+            ) {
+                Text("いいえ")
+            }
+        },
+    )
 }
 
 @Preview(showBackground = true)
