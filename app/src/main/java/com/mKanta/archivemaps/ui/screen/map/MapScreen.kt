@@ -1,6 +1,7 @@
 package com.mKanta.archivemaps.ui.screen.map
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -19,6 +22,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -259,7 +263,7 @@ fun MapScreen(
                                 modifier = Modifier.size(48.dp),
                             )
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text(text = "地図を読み込み...", fontSize = 16.sp)
+                            Text(text = "地図を読み込み中...", fontSize = 16.sp)
                         }
                     }
                 }
@@ -555,8 +559,7 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
@@ -765,113 +768,157 @@ private fun MapPanel(
     updateVisibleMarkers: (CameraPositionState, List<NamedMarker>) -> Unit,
     saveMarkers: () -> Unit,
 ) {
-    val focusManager = LocalFocusManager.current
-    val setSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val searchSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    ArchivemapsTheme {
+        val focusManager = LocalFocusManager.current
+        val setSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val searchSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
-    if (isSearchOpen) {
-        ModalBottomSheet(
-            onDismissRequest = { changeIsSearchOpen() },
-            sheetState = searchSheetState,
-            modifier = modifier,
-        ) {
-            SearchMaker(
-                titleResults = titleResults,
-                memoResults = memoResults,
-                titleQuery = titleQuery,
-                memoQuery = memoQuery,
-                onTitleQueryChanged = { changeTitleQuery(it) },
-                onMemoQueryChanged = { changeMemoQuery(it) },
-                onMarkerTapped = { marker ->
-                    changeSelectedMarker(marker)
-                    changeIsEditPanelOpen()
-                    cameraPositionState.move(
-                        CameraUpdateFactory.newLatLngZoom(
-                            marker.position.toLatLng(),
-                            17f,
-                        ),
+        if (isSearchOpen) {
+            ModalBottomSheet(
+                onDismissRequest = { changeIsSearchOpen() },
+                sheetState = searchSheetState,
+                modifier = modifier,
+                containerColor = MaterialTheme.colorScheme.background,
+                dragHandle = {
+                    Box(
+                        modifier =
+                            Modifier
+                                .padding(top = 8.dp, bottom = 16.dp)
+                                .height(4.dp)
+                                .width(36.dp)
+                                .background(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(2.dp),
+                                ),
                     )
-                    changeIsSearchOpen()
-                    changeTitleQuery("")
-                    changeMemoQuery("")
                 },
-                onMemoTapped = { marker ->
-                    changeSelectedMarker(marker)
-                    changeIsEditPanelOpen()
-                    cameraPositionState.move(
-                        CameraUpdateFactory.newLatLngZoom(
-                            marker.position.toLatLng(),
-                            17f,
-                        ),
+            ) {
+                SearchMaker(
+                    titleResults = titleResults,
+                    memoResults = memoResults,
+                    titleQuery = titleQuery,
+                    memoQuery = memoQuery,
+                    onTitleQueryChanged = { changeTitleQuery(it) },
+                    onMemoQueryChanged = { changeMemoQuery(it) },
+                    onMarkerTapped = { marker ->
+                        changeSelectedMarker(marker)
+                        changeIsEditPanelOpen()
+                        cameraPositionState.move(
+                            CameraUpdateFactory.newLatLngZoom(
+                                marker.position.toLatLng(),
+                                17f,
+                            ),
+                        )
+                        changeIsSearchOpen()
+                        changeTitleQuery("")
+                        changeMemoQuery("")
+                    },
+                    onMemoTapped = { marker ->
+                        changeSelectedMarker(marker)
+                        changeIsEditPanelOpen()
+                        cameraPositionState.move(
+                            CameraUpdateFactory.newLatLngZoom(
+                                marker.position.toLatLng(),
+                                17f,
+                            ),
+                        )
+                        changeIsSearchOpen()
+                        changeTitleQuery("")
+                        changeMemoQuery("")
+                    },
+                )
+            }
+        }
+
+        if (isPanelOpen) {
+            ModalBottomSheet(
+                onDismissRequest = { changePanelOpen(false) },
+                sheetState = setSheetState,
+                containerColor = MaterialTheme.colorScheme.background,
+                dragHandle = {
+                    Box(
+                        modifier =
+                            Modifier
+                                .padding(top = 8.dp, bottom = 16.dp)
+                                .height(4.dp)
+                                .width(36.dp)
+                                .background(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(2.dp),
+                                ),
                     )
-                    changeIsSearchOpen()
-                    changeTitleQuery("")
-                    changeMemoQuery("")
                 },
-            )
+            ) {
+                SetMarkerPanel(
+                    showConfirmDialog = showConfirmDialog,
+                    changeShowConfirmDialog = { changeShowConfirmDialog() },
+                    cameraPositionState = cameraPositionState,
+                    focusManager = focusManager,
+                    tempMarkerPosition = tempMarkerPosition,
+                    tempMarkerName = tempMarkerName,
+                    onClose = { changePanelOpen(false) },
+                    resetTempMarkers = {
+                        changeTempMarkerPosition(null)
+                        changeTempMarkerName(null)
+                        changeIsPanelOpen()
+                    },
+                    changeTempMarkerName = { changeTempMarkerName(it) },
+                    addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
+                    addMarker = { addMarker(it) },
+                )
+            }
         }
-    }
 
-    if (isPanelOpen) {
-        ModalBottomSheet(
-            onDismissRequest = { changePanelOpen(false) },
-            sheetState = setSheetState,
-        ) {
-            SetMarkerPanel(
-                showConfirmDialog = showConfirmDialog,
-                changeShowConfirmDialog = { changeShowConfirmDialog() },
-                cameraPositionState = cameraPositionState,
-                focusManager = focusManager,
-                tempMarkerPosition = tempMarkerPosition,
-                tempMarkerName = tempMarkerName,
-                onClose = { changePanelOpen(false) },
-                resetTempMarkers = {
-                    changeTempMarkerPosition(null)
-                    changeTempMarkerName(null)
-                    changeIsPanelOpen()
-                },
-                changeTempMarkerName = { changeTempMarkerName(it) },
-                addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
-                addMarker = { addMarker(it) },
-            )
-        }
-    }
-
-    if (isEditPanelOpen && selectedMarker != null) {
-        ModalBottomSheet(
-            onDismissRequest = {
-                changeIsEditPanelOpen()
-                changeSelectedMarker(null)
-            },
-            sheetState = editSheetState,
-        ) {
-            EditPanel(
-                selectedMarker = selectedMarker,
-                selectedAddress = selectedAddress,
-                permanentMarkers = permanentMarkers,
-                mapsSaveMarker = { saveMarkers() },
-                focusManager = focusManager,
-                context = context,
-                onMarkerUpdate = { updatedMarker ->
-                    updateMarker(updatedMarker)
-                    changeSelectedMarker(updatedMarker)
-                    updateVisibleMarkers(cameraPositionState, permanentMarkers)
-                },
-                onMarkerDelete = { marker ->
-                    removeMarker(marker.id)
-                    removeVisibleMarkers(marker)
-                    changeSelectedMarker(null)
-                    changeIsEditPanelOpen()
-                },
-                onPanelClose = {
+        if (isEditPanelOpen && selectedMarker != null) {
+            ModalBottomSheet(
+                onDismissRequest = {
                     changeIsEditPanelOpen()
                     changeSelectedMarker(null)
                 },
-                memoEmbedding = updateMarkerMemoEmbedding,
-                showConfirmDialog = showConfirmDialog,
-                changeShowConfirmDialog = { changeShowConfirmDialog() },
-            )
+                sheetState = editSheetState,
+                containerColor = MaterialTheme.colorScheme.background,
+                dragHandle = {
+                    Box(
+                        modifier =
+                            Modifier
+                                .padding(top = 8.dp, bottom = 16.dp)
+                                .height(4.dp)
+                                .width(36.dp)
+                                .background(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(2.dp),
+                                ),
+                    )
+                },
+            ) {
+                EditPanel(
+                    selectedMarker = selectedMarker,
+                    selectedAddress = selectedAddress,
+                    permanentMarkers = permanentMarkers,
+                    mapsSaveMarker = { saveMarkers() },
+                    focusManager = focusManager,
+                    context = context,
+                    onMarkerUpdate = { updatedMarker ->
+                        updateMarker(updatedMarker)
+                        changeSelectedMarker(updatedMarker)
+                        updateVisibleMarkers(cameraPositionState, permanentMarkers)
+                    },
+                    onMarkerDelete = { marker ->
+                        removeMarker(marker.id)
+                        removeVisibleMarkers(marker)
+                        changeSelectedMarker(null)
+                        changeIsEditPanelOpen()
+                    },
+                    onPanelClose = {
+                        changeIsEditPanelOpen()
+                        changeSelectedMarker(null)
+                    },
+                    memoEmbedding = updateMarkerMemoEmbedding,
+                    showConfirmDialog = showConfirmDialog,
+                    changeShowConfirmDialog = { changeShowConfirmDialog() },
+                )
+            }
         }
     }
 }
