@@ -180,7 +180,7 @@ fun EditPanel(
                     marker = marker,
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -200,7 +200,7 @@ fun EditPanel(
                             color = colorResource(id = R.color.alert_red),
                         )
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Button(
                         colors = ButtonDefaults.buttonColors(Color.Gray),
                         modifier =
@@ -292,7 +292,8 @@ private fun MemoEditor(
                     if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }.fillMaxWidth()
+                }
+                .fillMaxWidth()
                 .height(150.dp),
         placeholder = { Text("ここにメモを書いてください", color = Color.Gray) },
         singleLine = false,
@@ -323,7 +324,8 @@ private fun MediaSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                ).padding(12.dp),
+                )
+                .padding(12.dp),
     ) {
         OutlinedButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -418,8 +420,7 @@ private fun MarkerColorSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                )
-                .padding(12.dp),
+                ).padding(12.dp),
     ) {
         val colorOptions =
             listOf(

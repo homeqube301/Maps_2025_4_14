@@ -2,6 +2,7 @@ package com.mKanta.archivemaps.ui.screen.map
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,12 +10,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +28,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -83,7 +88,7 @@ fun SetMarkerPanel(
                 onHueSelected = { selectedHue = it },
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             SetMarker(
                 cameraPositionState = cameraPositionState,
@@ -94,14 +99,8 @@ fun SetMarkerPanel(
                 addVisibleMarker = addVisibleMarker,
                 addMarker = addMarker,
                 selectedHue = selectedHue,
+                changeShowConfirmDialog = changeShowConfirmDialog,
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = {
-                changeShowConfirmDialog()
-            }) {
-                Text("閉じる")
-            }
         }
 
         if (showConfirmDialog) {
@@ -124,31 +123,48 @@ private fun SetMarker(
     addVisibleMarker: (NamedMarker) -> Unit,
     addMarker: (NamedMarker) -> Unit,
     selectedHue: Float,
+    changeShowConfirmDialog: () -> Unit,
 ) {
-    Button(onClick = {
-        focusManager.clearFocus() // ← 変換中なら確定
-
-        tempMarkerPosition?.let { pos ->
-            val newMarker =
-                NamedMarker(
-                    position = LatLngSerializable.from(pos),
-                    title = tempMarkerName ?: "",
-                    createdAt =
-                        LocalDateTime.now().format(
-                            DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"),
-                        ),
-                    colorHue = selectedHue,
-                )
-            addMarker(newMarker)
-            val bounds =
-                cameraPositionState.projection?.visibleRegion?.latLngBounds
-            if (bounds != null && bounds.contains(pos)) {
-                addVisibleMarker(newMarker)
-            }
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Button(
+            modifier = Modifier.fillMaxWidth(0.5f),
+            onClick = {
+                focusManager.clearFocus()
+                tempMarkerPosition?.let { pos ->
+                    val newMarker =
+                        NamedMarker(
+                            position = LatLngSerializable.from(pos),
+                            title = tempMarkerName ?: "",
+                            createdAt =
+                                LocalDateTime.now().format(
+                                    DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"),
+                                ),
+                            colorHue = selectedHue,
+                        )
+                    addMarker(newMarker)
+                    val bounds =
+                        cameraPositionState.projection?.visibleRegion?.latLngBounds
+                    if (bounds != null && bounds.contains(pos)) {
+                        addVisibleMarker(newMarker)
+                    }
+                }
+                resetTempMarkers()
+            },
+        ) {
+            Text("マーカーを設置する")
         }
-        resetTempMarkers()
-    }) {
-        Text("マーカーを設置する")
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            modifier = Modifier.fillMaxWidth(0.5f),
+            onClick = {
+                changeShowConfirmDialog()
+            },
+        ) {
+            Text("閉じる")
+        }
     }
 }
 
@@ -157,25 +173,37 @@ private fun SetMarkerColor(
     selectedHue: Float,
     onHueSelected: (Float) -> Unit,
 ) {
-    Text("マーカーの色を選んでください")
-    Row(
-        horizontalArrangement = Arrangement.SpaceAround,
-        modifier = Modifier.fillMaxWidth(),
+    Text("マーカーの色を選んでください", color = Color.Gray, fontWeight = FontWeight.Bold)
+
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .border(
+                    width = 1.dp,
+                    color = Color.Gray,
+                    shape = RoundedCornerShape(4.dp),
+                ).padding(12.dp),
     ) {
-        val colorOptions =
-            listOf(
-                BitmapDescriptorFactory.HUE_RED to "赤",
-                BitmapDescriptorFactory.HUE_BLUE to "青",
-                BitmapDescriptorFactory.HUE_GREEN to "緑",
-                BitmapDescriptorFactory.HUE_YELLOW to "黄",
-            )
-        colorOptions.forEach { (hue, label) ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                RadioButton(
-                    selected = selectedHue == hue,
-                    onClick = { onHueSelected(hue) },
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            val colorOptions =
+                listOf(
+                    BitmapDescriptorFactory.HUE_RED to "赤",
+                    BitmapDescriptorFactory.HUE_BLUE to "青",
+                    BitmapDescriptorFactory.HUE_GREEN to "緑",
+                    BitmapDescriptorFactory.HUE_YELLOW to "黄",
                 )
-                Text(label)
+            colorOptions.forEach { (hue, label) ->
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    RadioButton(
+                        selected = selectedHue == hue,
+                        onClick = { onHueSelected(hue) },
+                    )
+                    Text(label, color = Color.White, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
@@ -187,13 +215,19 @@ private fun SetMarkerName(
     changeTempMarkerName: (String) -> Unit,
     focusManager: FocusManager,
 ) {
-    Text("マーカー名を入力してください")
+    Text("新しいマーカーを設置", color = Color.White, fontWeight = FontWeight.Bold)
+    Spacer(modifier = Modifier.height(16.dp))
     OutlinedTextField(
+        colors =
+            OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+            ),
         value = tempMarkerName ?: "",
         onValueChange = {
             changeTempMarkerName(it)
         },
-        label = { Text("マーカー名") },
+        label = { Text("マーカー名", color = Color.Gray) },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions =
             KeyboardActions(
