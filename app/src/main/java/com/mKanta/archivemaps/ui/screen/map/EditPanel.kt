@@ -114,7 +114,6 @@ fun EditPanel(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         selectedMarker?.let { marker ->
-            var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
 
             Text("マーカーを編集")
 
@@ -154,41 +153,20 @@ fun EditPanel(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("メモ", style = MaterialTheme.typography.bodyMedium)
-
-            OutlinedTextField(
-                value = memoText,
-                onValueChange = { newText ->
-                    memoText = newText
-
-                    selectedMarker.let { marker ->
-                        val index =
-                            permanentMarkers.indexOfFirst { it.id == marker.id }
-                        if (index != -1) {
-                            val updatedMarker = marker.copy(memo = newText)
-                            onMarkerUpdate(updatedMarker)
-                        }
-                    }
-                },
-                modifier =
-                    Modifier
-                        .onFocusChanged {
-                            if (!it.isFocused) {
-                                memoEmbedding(selectedMarker, memoText)
-                            }
-                        }.fillMaxWidth()
-                        .height(150.dp),
-                placeholder = { Text("ここにメモを書いてください") },
-                singleLine = false,
-                maxLines = 10,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
+            MemoEditor(
+                selectedMarker = selectedMarker,
+                permanentMarkers = permanentMarkers,
+                onMarkerUpdate = onMarkerUpdate,
+                memoEmbedding = memoEmbedding,
+                marker = marker,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+
             Button(onClick = {
                 onMarkerDelete(marker)
             }) {
-                Text("削除する")
+                Text("マーカーを削除する")
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = {
@@ -200,31 +178,78 @@ fun EditPanel(
     }
 
     if (showConfirmDialog) {
-        AlertDialog(
-            onDismissRequest = { changeShowConfirmDialog() },
-            title = { Text("編集を終了しますか？") },
-            text = { Text("変更内容が保存されていない可能性があります。") },
-            confirmButton = {
-                Button(onClick = {
-                    changeShowConfirmDialog()
-                    onPanelClose()
-                }) {
-                    Text("はい")
-                }
-            },
-            dismissButton = {
-                Button(onClick = {
-                    changeShowConfirmDialog()
-                }) {
-                    Text("いいえ")
-                }
-            },
+        ConfirmDialog(
+            changeShowConfirmDialog = changeShowConfirmDialog,
+            onPanelClose = onPanelClose,
         )
     }
 }
 
 @Composable
-private fun MemoEditor() {
+private fun ConfirmDialog(
+    changeShowConfirmDialog: () -> Unit,
+    onPanelClose: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = { changeShowConfirmDialog() },
+        title = { Text("編集を終了しますか？") },
+        text = { Text("変更内容が保存されていない可能性があります。") },
+        confirmButton = {
+            Button(onClick = {
+                changeShowConfirmDialog()
+                onPanelClose()
+            }) {
+                Text("はい")
+            }
+        },
+        dismissButton = {
+            Button(onClick = {
+                changeShowConfirmDialog()
+            }) {
+                Text("いいえ")
+            }
+        },
+    )
+}
+
+@Composable
+private fun MemoEditor(
+    selectedMarker: NamedMarker,
+    permanentMarkers: List<NamedMarker>,
+    onMarkerUpdate: (NamedMarker) -> Unit,
+    memoEmbedding: (NamedMarker, String) -> Unit,
+    marker: NamedMarker,
+) {
+    var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
+    Text("メモ", style = MaterialTheme.typography.bodyMedium)
+
+    OutlinedTextField(
+        value = memoText,
+        onValueChange = { newText ->
+            memoText = newText
+
+            selectedMarker.let { marker ->
+                val index =
+                    permanentMarkers.indexOfFirst { it.id == marker.id }
+                if (index != -1) {
+                    val updatedMarker = marker.copy(memo = newText)
+                    onMarkerUpdate(updatedMarker)
+                }
+            }
+        },
+        modifier =
+            Modifier
+                .onFocusChanged {
+                    if (!it.isFocused) {
+                        memoEmbedding(selectedMarker, memoText)
+                    }
+                }.fillMaxWidth()
+                .height(150.dp),
+        placeholder = { Text("ここにメモを書いてください") },
+        singleLine = false,
+        maxLines = 10,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
+    )
 }
 
 @Composable
@@ -235,9 +260,12 @@ private fun MediaSelector(
     marker: NamedMarker,
     mediaPickerLauncher: ActivityResultLauncher<Array<String>>,
 ) {
-    Button(onClick = {
-        mediaPickerLauncher.launch(arrayOf("image/*", "video/*"))
-    }) {
+    Button(
+        onClick = {
+            mediaPickerLauncher.launch(arrayOf("image/*", "video/*"))
+        },
+        shape = RoundedCornerShape(8.dp),
+    ) {
         Text("メディアを追加")
     }
 
