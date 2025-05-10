@@ -13,12 +13,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,6 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
@@ -244,7 +248,12 @@ private fun MemoEditor(
     marker: NamedMarker,
 ) {
     var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
-    Text("メモ", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+    Text(
+        "メモ",
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.Gray,
+        fontWeight = FontWeight.Bold,
+    )
 
     OutlinedTextField(
         colors =
@@ -270,8 +279,7 @@ private fun MemoEditor(
                     if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }
-                .fillMaxWidth()
+                }.fillMaxWidth()
                 .height(150.dp),
         placeholder = { Text("ここにメモを書いてください", color = Color.Gray) },
         singleLine = false,
@@ -296,8 +304,7 @@ private fun MediaSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                )
-                .padding(12.dp),
+                ).padding(12.dp),
     ) {
         OutlinedButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -307,7 +314,7 @@ private fun MediaSelector(
             },
             shape = RoundedCornerShape(8.dp),
         ) {
-            Text("メディアを追加", color = Color.White)
+            Text("メディアを追加", color = Color.White, fontWeight = FontWeight.Bold)
         }
 
         marker.imageUri?.let { uri ->
@@ -389,7 +396,8 @@ private fun MarkerColorSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                ).padding(12.dp),
+                )
+                .padding(12.dp),
     ) {
         val colorOptions =
             listOf(
@@ -441,7 +449,10 @@ private fun MarkerNameEditor(
     var editedName by remember(marker) { mutableStateOf(marker.title) }
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
     ) {
         OutlinedTextField(
             colors =
@@ -459,10 +470,13 @@ private fun MarkerNameEditor(
                         focusManager.clearFocus()
                     },
                 ),
-            modifier = Modifier.weight(1f),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Button(
             onClick = {
                 focusManager.clearFocus()
@@ -481,10 +495,14 @@ private fun MarkerNameEditor(
                     onPanelClose()
                 }
             },
-            modifier = Modifier.wrapContentWidth(),
+            modifier =
+                Modifier
+                    .wrapContentWidth()
+                    .fillMaxHeight()
+                    .padding(top = 8.dp),
             shape = RoundedCornerShape(8.dp),
         ) {
-            Text("更新", fontWeight = FontWeight.Bold)
+            Text("更新", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         }
     }
 }

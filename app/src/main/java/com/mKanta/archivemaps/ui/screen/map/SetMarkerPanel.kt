@@ -1,6 +1,7 @@
 package com.mKanta.archivemaps.ui.screen.map
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -34,6 +36,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
+import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -51,60 +54,63 @@ fun SetMarkerPanel(
     showConfirmDialog: Boolean,
     changeShowConfirmDialog: () -> Unit,
 ) {
-    BackHandler(enabled = true) {
-        changeShowConfirmDialog()
-    }
-
-    Column(
-        modifier =
-            Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        SetMarkerName(
-            tempMarkerName = tempMarkerName,
-            changeTempMarkerName = changeTempMarkerName,
-            focusManager = focusManager,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        var selectedHue by remember { mutableFloatStateOf(BitmapDescriptorFactory.HUE_RED) }
-
-        SetMarkerColor(
-            selectedHue = selectedHue,
-            onHueSelected = { selectedHue = it },
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SetMarker(
-            cameraPositionState = cameraPositionState,
-            focusManager = focusManager,
-            tempMarkerName = tempMarkerName,
-            tempMarkerPosition = tempMarkerPosition,
-            resetTempMarkers = resetTempMarkers,
-            addVisibleMarker = addVisibleMarker,
-            addMarker = addMarker,
-            selectedHue = selectedHue,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
+    ArchivemapsTheme {
+        BackHandler(enabled = true) {
             changeShowConfirmDialog()
-        }) {
-            Text("閉じる")
         }
-    }
 
-    if (showConfirmDialog) {
-        ConfirmDialog(
-            changeShowConfirmDialog = changeShowConfirmDialog,
-            onClose = onClose,
-            resetTempMarkers = resetTempMarkers,
-        )
+        Column(
+            modifier =
+                Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            SetMarkerName(
+                tempMarkerName = tempMarkerName,
+                changeTempMarkerName = changeTempMarkerName,
+                focusManager = focusManager,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            var selectedHue by remember { mutableFloatStateOf(BitmapDescriptorFactory.HUE_RED) }
+
+            SetMarkerColor(
+                selectedHue = selectedHue,
+                onHueSelected = { selectedHue = it },
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            SetMarker(
+                cameraPositionState = cameraPositionState,
+                focusManager = focusManager,
+                tempMarkerName = tempMarkerName,
+                tempMarkerPosition = tempMarkerPosition,
+                resetTempMarkers = resetTempMarkers,
+                addVisibleMarker = addVisibleMarker,
+                addMarker = addMarker,
+                selectedHue = selectedHue,
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(onClick = {
+                changeShowConfirmDialog()
+            }) {
+                Text("閉じる")
+            }
+        }
+
+        if (showConfirmDialog) {
+            ConfirmDialog(
+                changeShowConfirmDialog = changeShowConfirmDialog,
+                onClose = onClose,
+                resetTempMarkers = resetTempMarkers,
+            )
+        }
     }
 }
 
