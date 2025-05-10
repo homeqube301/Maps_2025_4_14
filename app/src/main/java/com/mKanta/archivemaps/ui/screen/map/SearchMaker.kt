@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,87 +67,126 @@ fun SearchMaker(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier =
-                    Modifier
-                        .fillMaxWidth(),
-            ) {
-                OutlinedTextField(
-                    value = if (isSearchingByTitle) titleQuery.orEmpty() else memoQuery.orEmpty(),
-                    onValueChange = {
-                        if (isSearchingByTitle) onTitleQueryChanged(it) else onMemoQueryChanged(it)
-                    },
-                    label = {
-                        Text(if (isSearchingByTitle) "マーカー名で検索" else "メモ内容で検索")
-                    },
-                    modifier = Modifier.weight(1f),
-                )
-                Spacer(modifier = Modifier.width(3.dp))
-                FloatingActionButton(onClick = { isSearchingByTitle = !isSearchingByTitle }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.cached_24px),
-                        contentDescription = "切り替え",
-                    )
-                }
-            }
+            SearchMakerName(
+                isSearchingByTitle = isSearchingByTitle,
+                changeSearchingByTitle = { isSearchingByTitle = it },
+                titleQuery = titleQuery,
+                memoQuery = memoQuery,
+                onTitleQueryChanged = onTitleQueryChanged,
+                onMemoQueryChanged = onMemoQueryChanged,
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            val results = if (isSearchingByTitle) titleResults else memoResults
-            if (results.isEmpty()) {
-                Text(
-                    text = "検索結果がありません",
-                    fontSize = 16.sp,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                    color = Color.Gray,
-                    modifier =
-                        Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(40.dp),
-                )
-            } else {
-                Card(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor = Color(0xFFE0F7FA),
-                        ),
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                ) {
-                    LazyColumn(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            ShowSearchResult(
+                isSearchingByTitle = isSearchingByTitle,
+                titleResults = titleResults,
+                memoResults = memoResults,
+                onMarkerTapped = onMarkerTapped,
+                onMemoTapped = onMemoTapped,
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = 40.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ShowSearchResult(
+    modifier: Modifier = Modifier,
+    isSearchingByTitle: Boolean,
+    titleResults: List<NamedMarker>,
+    memoResults: List<NamedMarker>,
+    onMarkerTapped: (NamedMarker) -> Unit,
+    onMemoTapped: (NamedMarker) -> Unit,
+) {
+    val results = if (isSearchingByTitle) titleResults else memoResults
+    if (results.isEmpty()) {
+        Text(
+            text = "検索結果がありません",
+            fontSize = 16.sp,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+            color = Color.Gray,
+            modifier = modifier,
+        )
+    } else {
+        Card(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+            colors =
+                CardDefaults.cardColors(
+                    containerColor = Color(0xFFE0F7FA),
+                ),
+            shape = RoundedCornerShape(8.dp),
+            elevation = CardDefaults.cardElevation(4.dp),
+        ) {
+            LazyColumn(
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            ) {
+                items(results) { marker ->
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                                .clickable {
+                                    if (isSearchingByTitle) {
+                                        onMarkerTapped(marker)
+                                    } else {
+                                        onMemoTapped(marker)
+                                    }
+                                }.padding(16.dp),
                     ) {
-                        items(results) { marker ->
-                            Box(
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 4.dp)
-                                        .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-                                        .clickable {
-                                            if (isSearchingByTitle) {
-                                                onMarkerTapped(marker)
-                                            } else {
-                                                onMemoTapped(marker)
-                                            }
-                                        }
-                                        .padding(16.dp),
-                            ) {
-                                Text(
-                                    text = if (isSearchingByTitle) marker.title else "${marker.title}（メモ一致）",
-                                    fontSize = 16.sp,
-                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                                )
-                            }
-                        }
+                        Text(
+                            text = if (isSearchingByTitle) marker.title else "${marker.title}（メモ一致）",
+                            fontSize = 16.sp,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        )
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SearchMakerName(
+    isSearchingByTitle: Boolean,
+    changeSearchingByTitle: (Boolean) -> Unit,
+    titleQuery: String?,
+    memoQuery: String?,
+    onTitleQueryChanged: (String) -> Unit,
+    onMemoQueryChanged: (String) -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier =
+            Modifier
+                .fillMaxWidth(),
+    ) {
+        OutlinedTextField(
+            value = if (isSearchingByTitle) titleQuery.orEmpty() else memoQuery.orEmpty(),
+            onValueChange = {
+                if (isSearchingByTitle) onTitleQueryChanged(it) else onMemoQueryChanged(it)
+            },
+            label = {
+                Text(if (isSearchingByTitle) "マーカー名で検索" else "メモ内容で検索")
+            },
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .padding(10.dp),
+        )
+        FloatingActionButton(onClick = { changeSearchingByTitle(!isSearchingByTitle) }) {
+            Icon(
+                painter = painterResource(id = R.drawable.cached_24px),
+                contentDescription = "切り替え",
+            )
         }
     }
 }
