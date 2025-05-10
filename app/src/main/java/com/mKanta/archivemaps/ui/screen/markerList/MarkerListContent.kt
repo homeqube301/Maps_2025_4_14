@@ -61,8 +61,19 @@ fun MarkerListContent(
             Scaffold(
                 topBar = {
                     TopAppBar(
-                        title = { Text("マーカーリスト") },
-                        colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background),
+                        title = {
+                            Text(
+                                "マーカーリスト",
+                                fontWeight = FontWeight.Bold,
+                            )
+                        },
+                        colors =
+                            TopAppBarDefaults.topAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                titleContentColor = Color.White,
+                                actionIconContentColor = Color.White,
+                                navigationIconContentColor = Color.White,
+                            ),
                         navigationIcon = {
                             IconButton(onClick = { navController.navigate("map/{latitude}/{longitude}") }) {
                                 Icon(
