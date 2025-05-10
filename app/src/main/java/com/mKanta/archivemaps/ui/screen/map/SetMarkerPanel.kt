@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -154,16 +155,17 @@ private fun SetMarker(
                 resetTempMarkers()
             },
         ) {
-            Text("マーカーを設置する")
+            Text("マーカーを設置する", fontWeight = FontWeight.Bold)
         }
         Spacer(modifier = Modifier.height(8.dp))
         Button(
+            colors = ButtonDefaults.buttonColors(Color.Gray),
             modifier = Modifier.fillMaxWidth(0.5f),
             onClick = {
                 changeShowConfirmDialog()
             },
         ) {
-            Text("閉じる")
+            Text("閉じる", fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -183,7 +185,8 @@ private fun SetMarkerColor(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                ).padding(12.dp),
+                )
+                .padding(12.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceAround,
