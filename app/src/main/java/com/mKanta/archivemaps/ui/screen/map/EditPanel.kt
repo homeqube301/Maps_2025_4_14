@@ -182,23 +182,36 @@ fun EditPanel(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedButton(onClick = {
-                    onMarkerDelete(marker)
-                }) {
-                    Text(
-                        "マーカーを削除する",
-                        fontWeight = FontWeight.Bold,
-                        color = colorResource(id = R.color.alert_red),
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(
-                    colors = ButtonDefaults.buttonColors(Color.Gray),
-                    onClick = {
-                        changeShowConfirmDialog()
-                    },
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text("戻る", fontWeight = FontWeight.Bold)
+                    OutlinedButton(
+                        onClick = {
+                            onMarkerDelete(marker)
+                        },
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(0.5f),
+                    ) {
+                        Text(
+                            "マーカーを削除する",
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(id = R.color.alert_red),
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        colors = ButtonDefaults.buttonColors(Color.Gray),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(0.5f),
+                        onClick = {
+                            changeShowConfirmDialog()
+                        },
+                    ) {
+                        Text("戻る", fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
@@ -296,6 +309,12 @@ private fun MediaSelector(
     marker: NamedMarker,
     mediaPickerLauncher: ActivityResultLauncher<Array<String>>,
 ) {
+    Text(
+        "メディア",
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.Gray,
+        fontWeight = FontWeight.Bold,
+    )
     Column(
         modifier =
             Modifier
@@ -325,7 +344,8 @@ private fun MediaSelector(
                 modifier =
                     Modifier
                         .size(200.dp)
-                        .clip(RoundedCornerShape(8.dp)),
+                        .clip(RoundedCornerShape(8.dp))
+                        .align(Alignment.CenterHorizontally),
             )
         }
 
@@ -343,13 +363,15 @@ private fun MediaSelector(
                 modifier =
                     Modifier
                         .size(200.dp)
-                        .clip(RoundedCornerShape(8.dp)),
+                        .clip(RoundedCornerShape(8.dp))
+                        .align(Alignment.CenterHorizontally),
             )
         }
 
         if (selectedMarker.imageUri != null || selectedMarker.videoUri != null) {
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedButton(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
                 border = BorderStroke(3.dp, MaterialTheme.colorScheme.primary),
                 onClick = {
                     selectedMarker.let { marker ->
@@ -502,7 +524,7 @@ private fun MarkerNameEditor(
                     .padding(top = 8.dp),
             shape = RoundedCornerShape(8.dp),
         ) {
-            Text("更新", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text("更新", fontWeight = FontWeight.Bold, fontSize = 14.sp)
         }
     }
 }
