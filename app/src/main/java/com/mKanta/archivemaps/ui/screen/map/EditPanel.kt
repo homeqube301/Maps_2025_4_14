@@ -6,6 +6,7 @@ import android.net.Uri
 import android.widget.VideoView
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -113,166 +114,47 @@ fun EditPanel(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         selectedMarker?.let { marker ->
-            var editedName by remember(marker) { mutableStateOf(marker.title) }
             var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
-            var selectedColorHue by remember(marker) { mutableFloatStateOf(marker.colorHue) }
 
             Text("マーカーを編集")
 
-            Text(
-                text = "設置日時: ${marker.createdAt}",
-                modifier = Modifier.padding(vertical = 8.dp),
-                style = MaterialTheme.typography.bodyMedium,
+            MarkerInfoSection(
+                marker = marker,
+                address = address,
             )
 
-            Text(
-                text = "住所: ${address.ifBlank { "住所が取得できませんでした" }}",
+            MarkerNameEditor(
+                selectedMarker = selectedMarker,
+                permanentMarkers = permanentMarkers,
+                focusManager = focusManager,
+                onMarkerUpdate = onMarkerUpdate,
+                onPanelClose = onPanelClose,
+                mapsSaveMarker = mapsSaveMarker,
+                marker = marker,
             )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                OutlinedTextField(
-                    value = editedName,
-                    onValueChange = { editedName = it },
-                    label = { Text("マーカー名") },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions =
-                        KeyboardActions(
-                            onDone = {
-                                focusManager.clearFocus()
-                            },
-                        ),
-                    modifier = Modifier.weight(1f),
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = {
-                        focusManager.clearFocus() // ← 変換中なら確定
-
-                        selectedMarker.let { marker ->
-                            val index =
-                                permanentMarkers.indexOfFirst { it.id == marker.id }
-                            if (index != -1) {
-                                val updatedMarker =
-                                    marker.copy(
-                                        title = editedName,
-                                    )
-                                onMarkerUpdate(updatedMarker)
-                                mapsSaveMarker()
-                            }
-                            onPanelClose()
-                        }
-                    },
-                    modifier = Modifier.wrapContentWidth(),
-                ) {
-                    Text("更新")
-                }
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text("マーカーの色を変更", style = MaterialTheme.typography.bodyMedium)
 
-            val colorOptions =
-                listOf(
-                    BitmapDescriptorFactory.HUE_RED to "赤",
-                    BitmapDescriptorFactory.HUE_BLUE to "青",
-                    BitmapDescriptorFactory.HUE_GREEN to "緑",
-                    BitmapDescriptorFactory.HUE_YELLOW to "黄",
-                )
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                colorOptions.forEach { (hue, label) ->
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        RadioButton(
-                            selected = selectedColorHue == hue,
-                            onClick = {
-                                selectedColorHue = hue
-
-                                selectedMarker.let { marker ->
-                                    val index =
-                                        permanentMarkers.indexOfFirst { it.id == marker.id }
-                                    if (index != -1) {
-                                        val updatedMarker =
-                                            marker.copy(colorHue = hue)
-                                        onMarkerUpdate(updatedMarker)
-                                    }
-                                }
-                            },
-                        )
-                        Text(label)
-                    }
-                }
-            }
+            MarkerColorSelector(
+                selectedMarker = selectedMarker,
+                permanentMarkers = permanentMarkers,
+                onMarkerUpdate = onMarkerUpdate,
+                marker = marker,
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Button(onClick = {
-                mediaPickerLauncher.launch(arrayOf("image/*", "video/*"))
-            }) {
-                Text("メディアを追加")
-            }
-
-            marker.imageUri?.let { uri ->
-                Spacer(modifier = Modifier.height(16.dp))
-                AsyncImage(
-                    model = uri,
-                    contentDescription = "マーカー画像",
-                    modifier =
-                        Modifier
-                            .size(200.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                )
-            }
-
-            selectedMarker.videoUri?.let { videoUri ->
-                AndroidView(
-                    factory = {
-                        VideoView(it).apply {
-                            setVideoURI(videoUri.toUri())
-                            setOnPreparedListener { mediaPlayer ->
-                                mediaPlayer.isLooping = true
-                                start()
-                            }
-                        }
-                    },
-                    modifier =
-                        Modifier
-                            .size(200.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                )
-            }
-
-            if (selectedMarker.imageUri != null || selectedMarker.videoUri != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = {
-                    // uiState.selectedMarker
-                    selectedMarker.let { marker ->
-                        val index =
-                            permanentMarkers.indexOfFirst { it.id == marker.id }
-                        if (index != -1) {
-                            // onMediaDelete(marker)
-                            val updatedMarker =
-                                marker.copy(
-                                    imageUri = null,
-                                    videoUri = null,
-                                )
-                            onMarkerUpdate(updatedMarker)
-                        }
-                    }
-                }) {
-                    Text("メディアを削除")
-                }
-            }
+            MediaSelector(
+                selectedMarker = selectedMarker,
+                permanentMarkers = permanentMarkers,
+                onMarkerUpdate = onMarkerUpdate,
+                marker = marker,
+                mediaPickerLauncher = mediaPickerLauncher,
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("メモだよ", style = MaterialTheme.typography.bodyMedium)
+            Text("メモ", style = MaterialTheme.typography.bodyMedium)
 
             OutlinedTextField(
                 value = memoText,
@@ -294,8 +176,7 @@ fun EditPanel(
                             if (!it.isFocused) {
                                 memoEmbedding(selectedMarker, memoText)
                             }
-                        }
-                        .fillMaxWidth()
+                        }.fillMaxWidth()
                         .height(150.dp),
                 placeholder = { Text("ここにメモを書いてください") },
                 singleLine = false,
@@ -340,6 +221,195 @@ fun EditPanel(
             },
         )
     }
+}
+
+@Composable
+private fun MemoEditor() {
+}
+
+@Composable
+private fun MediaSelector(
+    selectedMarker: NamedMarker,
+    permanentMarkers: List<NamedMarker>,
+    onMarkerUpdate: (NamedMarker) -> Unit,
+    marker: NamedMarker,
+    mediaPickerLauncher: ActivityResultLauncher<Array<String>>,
+) {
+    Button(onClick = {
+        mediaPickerLauncher.launch(arrayOf("image/*", "video/*"))
+    }) {
+        Text("メディアを追加")
+    }
+
+    marker.imageUri?.let { uri ->
+        Spacer(modifier = Modifier.height(16.dp))
+        AsyncImage(
+            model = uri,
+            contentDescription = "マーカー画像",
+            modifier =
+                Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+        )
+    }
+
+    selectedMarker.videoUri?.let { videoUri ->
+        AndroidView(
+            factory = {
+                VideoView(it).apply {
+                    setVideoURI(videoUri.toUri())
+                    setOnPreparedListener { mediaPlayer ->
+                        mediaPlayer.isLooping = true
+                        start()
+                    }
+                }
+            },
+            modifier =
+                Modifier
+                    .size(200.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+        )
+    }
+
+    if (selectedMarker.imageUri != null || selectedMarker.videoUri != null) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = {
+            // uiState.selectedMarker
+            selectedMarker.let { marker ->
+                val index =
+                    permanentMarkers.indexOfFirst { it.id == marker.id }
+                if (index != -1) {
+                    // onMediaDelete(marker)
+                    val updatedMarker =
+                        marker.copy(
+                            imageUri = null,
+                            videoUri = null,
+                        )
+                    onMarkerUpdate(updatedMarker)
+                }
+            }
+        }) {
+            Text("メディアを削除")
+        }
+    }
+}
+
+@Composable
+private fun MarkerColorSelector(
+    selectedMarker: NamedMarker,
+    permanentMarkers: List<NamedMarker>,
+    onMarkerUpdate: (NamedMarker) -> Unit,
+    marker: NamedMarker,
+) {
+    var selectedColorHue by remember(marker) { mutableFloatStateOf(marker.colorHue) }
+    Text("マーカーの色を変更", style = MaterialTheme.typography.bodyMedium)
+
+    val colorOptions =
+        listOf(
+            BitmapDescriptorFactory.HUE_RED to "赤",
+            BitmapDescriptorFactory.HUE_BLUE to "青",
+            BitmapDescriptorFactory.HUE_GREEN to "緑",
+            BitmapDescriptorFactory.HUE_YELLOW to "黄",
+        )
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        colorOptions.forEach { (hue, label) ->
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                RadioButton(
+                    selected = selectedColorHue == hue,
+                    onClick = {
+                        selectedColorHue = hue
+
+                        selectedMarker.let { marker ->
+                            val index =
+                                permanentMarkers.indexOfFirst { it.id == marker.id }
+                            if (index != -1) {
+                                val updatedMarker =
+                                    marker.copy(colorHue = hue)
+                                onMarkerUpdate(updatedMarker)
+                            }
+                        }
+                    },
+                )
+                Text(label)
+            }
+        }
+    }
+}
+
+@Composable
+private fun MarkerNameEditor(
+    selectedMarker: NamedMarker,
+    permanentMarkers: List<NamedMarker>,
+    focusManager: FocusManager,
+    onMarkerUpdate: (NamedMarker) -> Unit,
+    onPanelClose: () -> Unit,
+    mapsSaveMarker: () -> Unit,
+    marker: NamedMarker,
+) {
+    var editedName by remember(marker) { mutableStateOf(marker.title) }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        OutlinedTextField(
+            value = editedName,
+            onValueChange = { editedName = it },
+            label = { Text("マーカー名") },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions =
+                KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                    },
+                ),
+            modifier = Modifier.weight(1f),
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {
+                focusManager.clearFocus()
+
+                selectedMarker.let { marker ->
+                    val index =
+                        permanentMarkers.indexOfFirst { it.id == marker.id }
+                    if (index != -1) {
+                        val updatedMarker =
+                            marker.copy(
+                                title = editedName,
+                            )
+                        onMarkerUpdate(updatedMarker)
+                        mapsSaveMarker()
+                    }
+                    onPanelClose()
+                }
+            },
+            modifier = Modifier.wrapContentWidth(),
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Text("更新")
+        }
+    }
+}
+
+@Composable
+private fun MarkerInfoSection(
+    marker: NamedMarker,
+    address: String,
+) {
+    Text(
+        text = "設置日時: ${marker.createdAt}",
+        modifier = Modifier.padding(vertical = 8.dp),
+        style = MaterialTheme.typography.bodyMedium,
+    )
+
+    Text(
+        text = "住所: ${address.ifBlank { "住所が取得できませんでした" }}",
+    )
 }
 
 @Preview(showBackground = true)
