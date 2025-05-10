@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,7 @@ import com.canopas.lib.showcase.component.ShowcaseStyle
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
+import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,93 +57,99 @@ fun MarkerListContent(
             changeShowListIntro()
         },
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("マーカーリスト") },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.navigate("map/{latitude}/{longitude}") }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "戻る")
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = { navController.navigate("detail_search") },
+        ArchivemapsTheme {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text("マーカーリスト") },
+                        colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background),
+                        navigationIcon = {
+                            IconButton(onClick = { navController.navigate("map/{latitude}/{longitude}") }) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "戻る",
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(
+                                onClick = { navController.navigate("detail_search") },
+                                modifier =
+                                    Modifier
+                                        .introShowCaseTarget(
+                                            index = 0,
+                                            style =
+                                                ShowcaseStyle.Default.copy(
+                                                    backgroundColor = Color.Black,
+                                                    backgroundAlpha = 0.94f,
+                                                    targetCircleColor = Color.White,
+                                                ),
+                                            content = {
+                                                Column {
+                                                    Text(
+                                                        text = "詳細検索ボタン",
+                                                        color = Color.White,
+                                                        fontSize = 24.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                    )
+                                                    Text(
+                                                        text = "タップすると設置したマーカーを細かい条件で検索できます",
+                                                        color = Color.White,
+                                                        fontSize = 16.sp,
+                                                    )
+                                                    Spacer(modifier = Modifier.height(10.dp))
+                                                    Icon(
+                                                        Icons.Default.Menu,
+                                                        contentDescription = null,
+                                                        modifier =
+                                                            Modifier
+                                                                .size(80.dp)
+                                                                .align(Alignment.End),
+                                                        tint = Color.Transparent,
+                                                    )
+                                                }
+                                            },
+                                        ),
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.manage_search_24px),
+                                    modifier = Modifier.size(32.dp),
+                                    contentDescription = "詳細検索",
+                                )
+                            }
+                        },
+                    )
+                },
+            ) { padding ->
+
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize(),
+                ) {
+                    if (filteredMarkerList.isEmpty()) {
+                        Text(
+                            text = "表示できるマーカーがありません",
+                            fontSize = 18.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.align(Alignment.Center),
+                        )
+                    } else {
+                        LazyColumn(
                             modifier =
                                 Modifier
-                                    .introShowCaseTarget(
-                                        index = 0,
-                                        style =
-                                            ShowcaseStyle.Default.copy(
-                                                backgroundColor = Color(0xFF000000),
-                                                backgroundAlpha = 0.94f,
-                                                targetCircleColor = Color.White,
-                                            ),
-                                        content = {
-                                            Column {
-                                                Text(
-                                                    text = "詳細検索ボタン",
-                                                    color = Color.White,
-                                                    fontSize = 24.sp,
-                                                    fontWeight = FontWeight.Bold,
-                                                )
-                                                Text(
-                                                    text = "タップすると設置したマーカーを細かい条件で検索できます",
-                                                    color = Color.White,
-                                                    fontSize = 16.sp,
-                                                )
-                                                Spacer(modifier = Modifier.height(10.dp))
-                                                Icon(
-                                                    Icons.Default.Menu,
-                                                    contentDescription = null,
-                                                    modifier =
-                                                        Modifier
-                                                            .size(80.dp)
-                                                            .align(Alignment.End),
-                                                    tint = Color.Transparent,
-                                                )
-                                            }
-                                        },
-                                    ),
+                                    .padding(padding)
+                                    .padding(16.dp),
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.manage_search_24px),
-                                modifier = Modifier.size(32.dp),
-                                contentDescription = "詳細検索",
-                            )
-                        }
-                    },
-                )
-            },
-        ) { padding ->
-
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize(),
-            ) {
-                if (filteredMarkerList.isEmpty()) {
-                    Text(
-                        text = "表示できるマーカーがありません",
-                        fontSize = 18.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                } else {
-                    LazyColumn(
-                        modifier =
-                            Modifier
-                                .padding(padding)
-                                .padding(16.dp),
-                    ) {
-                        items(filteredMarkerList) { marker ->
-                            MarkerItem(
-                                marker = marker,
-                                onClick = {
-                                    navController.navigate("map/${marker.position.latitude}/${marker.position.longitude}")
-                                },
-                            )
-                            HorizontalDivider()
+                            items(filteredMarkerList) { marker ->
+                                MarkerItem(
+                                    marker = marker,
+                                    onClick = {
+                                        navController.navigate("map/${marker.position.latitude}/${marker.position.longitude}")
+                                    },
+                                )
+                                HorizontalDivider()
+                            }
                         }
                     }
                 }

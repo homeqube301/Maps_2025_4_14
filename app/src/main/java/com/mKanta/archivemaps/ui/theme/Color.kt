@@ -12,4 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 val PrimaryBlue = Color(0xFF0889B8)
 val SecondaryBlock = Color(0xFF353636)
-val BackgroundBlack = Color(0xFF2A2A2A)
+val BackgroundBlack = Color(0xFF353636)
+val tertiaryBlack = Color(0xFF2A2A2A)

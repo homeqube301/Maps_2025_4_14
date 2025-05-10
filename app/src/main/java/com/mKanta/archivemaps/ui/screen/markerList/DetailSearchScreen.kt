@@ -178,7 +178,7 @@ fun SearchContents(
                                 fontWeight = FontWeight.Bold,
                             )
                         },
-                        colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background),
+                        colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.tertiary),
                         navigationIcon = {
                             IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(
@@ -251,7 +251,8 @@ fun SearchContents(
                                             )
                                         }
                                     },
-                                ).fillMaxWidth(),
+                                )
+                                .fillMaxWidth(),
                     )
 
                     Row(
