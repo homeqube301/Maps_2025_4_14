@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">まい活!</string>
+
     <!--//MapScreen-->
     <string name="map_loading">地図を読み込み中…</string>
     <string name="map_error">予期せぬエラーが発生しました</string>
@@ -14,11 +15,9 @@
     <string name="map_follow_tutorial_title">追従ボタン</string>
     <string name="map_follow_tutorial_description">タップすると一定時間ごとに現在地にカメラが戻ります</string>
 
-
     <string name="map_list_Button">マーカ一覧</string>
     <string name="map_list_tutorial_title">マーカ一覧ボタン</string>
     <string name="map_list_tutorial_description">タップすると設置したマーカーを一覧で表示されます</string>
-
 
     <string name="map_tutorial">マーカーチュートリアル</string>
     <string name="map_marker_tutorial_title">・まずはマーカーをセット</string>
@@ -26,8 +25,20 @@
     <string name="map_marker_tutorial_title2">・そして</string>
     <string name="map_marker_tutorial_description2">設置したマーカーをタップするとマーカーを編集できます</string>
 
-
-    <string name="map_"></string>
+    <!--//SetMarkerScreen-->
+    <string name="setMarker_set_Button">マーカーを設置する</string>
+    <string name="setMarker_cancel_Button">閉じる</string>
+    <string name="setMarker_set_Color">マーカーの色を選んでください</string>
+    <string name="color_red">赤</string>
+    <string name="color_blue">青</string>
+    <string name="color_green">緑</string>
+    <string name="color_yellow">黄</string>
+    <string name="setMarker_title">新しいマーカーを設置</string>
+    <string name="setMarker_field_label">マーカー名</string>
+    <string name="setMarker_confirm_title">設定を中断しますか</string>
+    <string name="setMarker_confirm_description">入力した内容は破棄されます</string>
+    <string name="setMarker_confirm_yes">はい</string>
+    <string name="setMarker_confirm_no">いいえ</string>
 
 
 </resources>

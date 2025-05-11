@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +41,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
@@ -103,14 +105,6 @@ fun SetMarkerPanel(
                 changeShowConfirmDialog = changeShowConfirmDialog,
             )
         }
-
-//        if (showConfirmDialog) {
-//            ConfirmDialog(
-//                changeShowConfirmDialog = changeShowConfirmDialog,
-//                onClose = onClose,
-//                resetTempMarkers = resetTempMarkers,
-//            )
-//        }
     }
 }
 
@@ -155,7 +149,7 @@ private fun SetMarker(
                 resetTempMarkers()
             },
         ) {
-            Text("マーカーを設置する", fontWeight = FontWeight.Bold)
+            Text(stringResource(id = R.string.setMarker_set_Button), fontWeight = FontWeight.Bold)
         }
         Spacer(modifier = Modifier.height(8.dp))
         Button(
@@ -165,7 +159,10 @@ private fun SetMarker(
                 changeShowConfirmDialog()
             },
         ) {
-            Text("閉じる", fontWeight = FontWeight.Bold)
+            Text(
+                stringResource(id = R.string.setMarker_cancel_Button),
+                fontWeight = FontWeight.Bold,
+            )
         }
     }
 }
@@ -175,7 +172,11 @@ private fun SetMarkerColor(
     selectedHue: Float,
     onHueSelected: (Float) -> Unit,
 ) {
-    Text("マーカーの色を選んでください", color = Color.Gray, fontWeight = FontWeight.Bold)
+    Text(
+        stringResource(id = R.string.setMarker_set_Color),
+        color = Color.Gray,
+        fontWeight = FontWeight.Bold,
+    )
 
     Column(
         modifier =
@@ -185,7 +186,8 @@ private fun SetMarkerColor(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                ).padding(12.dp),
+                )
+                .padding(12.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceAround,
@@ -193,10 +195,10 @@ private fun SetMarkerColor(
         ) {
             val colorOptions =
                 listOf(
-                    BitmapDescriptorFactory.HUE_RED to "赤",
-                    BitmapDescriptorFactory.HUE_BLUE to "青",
-                    BitmapDescriptorFactory.HUE_GREEN to "緑",
-                    BitmapDescriptorFactory.HUE_YELLOW to "黄",
+                    BitmapDescriptorFactory.HUE_RED to stringResource(id = R.string.color_red),
+                    BitmapDescriptorFactory.HUE_BLUE to stringResource(id = R.string.color_blue),
+                    BitmapDescriptorFactory.HUE_GREEN to stringResource(id = R.string.color_green),
+                    BitmapDescriptorFactory.HUE_YELLOW to stringResource(id = R.string.color_yellow),
                 )
             colorOptions.forEach { (hue, label) ->
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -217,7 +219,11 @@ private fun SetMarkerName(
     changeTempMarkerName: (String) -> Unit,
     focusManager: FocusManager,
 ) {
-    Text("新しいマーカーを設置", color = Color.White, fontWeight = FontWeight.Bold)
+    Text(
+        stringResource(id = R.string.setMarker_title),
+        color = Color.White,
+        fontWeight = FontWeight.Bold,
+    )
     Spacer(modifier = Modifier.height(24.dp))
     OutlinedTextField(
         colors =
@@ -229,7 +235,7 @@ private fun SetMarkerName(
         onValueChange = {
             changeTempMarkerName(it)
         },
-        label = { Text("マーカー名", color = Color.Gray) },
+        label = { Text(stringResource(id = R.string.setMarker_field_label), color = Color.Gray) },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         keyboardActions =
             KeyboardActions(
@@ -250,8 +256,8 @@ private fun ConfirmDialog(
         onDismissRequest = {
             changeShowConfirmDialog()
         },
-        title = { Text("設定を中断しますか？") },
-        text = { Text("入力した内容は破棄されます。") },
+        title = { Text(stringResource(id = R.string.setMarker_confirm_title)) },
+        text = { Text(stringResource(id = R.string.setMarker_confirm_description)) },
         confirmButton = {
             Button(
                 onClick = {
@@ -260,7 +266,7 @@ private fun ConfirmDialog(
                     onClose()
                 },
             ) {
-                Text("はい")
+                Text(stringResource(id = R.string.setMarker_confirm_yes))
             }
         },
         dismissButton = {
@@ -269,7 +275,7 @@ private fun ConfirmDialog(
                     changeShowConfirmDialog()
                 },
             ) {
-                Text("いいえ")
+                Text(stringResource(id = R.string.setMarker_confirm_no))
             }
         },
     )
