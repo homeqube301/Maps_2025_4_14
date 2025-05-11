@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +64,7 @@ import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -253,7 +255,10 @@ fun MapScreen(
 
                 MapState.Loading -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.background),
                     ) {
                         Column(
                             modifier = Modifier.align(Alignment.Center),
@@ -410,6 +415,7 @@ private fun MapView(
     changeIsEditPanelOpen: () -> Unit,
     changeSelectedMarker: (NamedMarker?) -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     GoogleMap(
         modifier =
             Modifier
@@ -434,7 +440,10 @@ private fun MapView(
             changeIsPanelOpen()
         },
         onMapLoaded = {
-            checkGoogleMapState(true)
+            coroutineScope.launch {
+                delay(3000L)
+                checkGoogleMapState(true)
+            }
         },
     ) {
         for (marker in visibleMarkers) {
@@ -567,7 +576,8 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
