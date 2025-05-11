@@ -224,7 +224,7 @@ fun SearchContents(
                                         ShowcaseStyle.Default.copy(
                                             backgroundColor = Color.Black,
                                             backgroundAlpha = 0.95f,
-                                            targetCircleColor = Color(0xFF343434),
+                                            targetCircleColor = Color.Gray,
                                         ),
                                     content = {
                                         Column {
@@ -275,7 +275,7 @@ fun SearchContents(
                                             ShowcaseStyle.Default.copy(
                                                 backgroundColor = Color.Black,
                                                 backgroundAlpha = 0.95f,
-                                                targetCircleColor = Color(0xFF343434),
+                                                targetCircleColor = Color.Gray,
                                             ),
                                         content = {
                                             Column {
@@ -337,7 +337,7 @@ fun SearchContents(
                                             ShowcaseStyle.Default.copy(
                                                 backgroundColor = Color.Black,
                                                 backgroundAlpha = 0.95f,
-                                                targetCircleColor = Color(0xFF343434),
+                                                targetCircleColor = Color.Gray,
                                             ),
                                         content = {
                                             Column {
@@ -404,7 +404,7 @@ fun SearchContents(
                                         ShowcaseStyle.Default.copy(
                                             backgroundColor = Color.Black,
                                             backgroundAlpha = 0.95f,
-                                            targetCircleColor = Color(0xFF343434),
+                                            targetCircleColor = Color.Gray,
                                         ),
                                     content = {
                                         Column {
@@ -460,7 +460,7 @@ fun SearchContents(
                                         ShowcaseStyle.Default.copy(
                                             backgroundColor = Color.Black,
                                             backgroundAlpha = 0.95f,
-                                            targetCircleColor = Color(0xFF343434),
+                                            targetCircleColor = Color.Gray,
                                         ),
                                     content = {
                                         Column {
