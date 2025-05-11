@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -173,7 +174,7 @@ fun SearchContents(
                     TopAppBar(
                         title = {
                             Text(
-                                text = "詳細検索",
+                                text = stringResource(id = R.string.detailSc_title),
                                 color = Color.White,
                                 fontWeight = FontWeight.Bold,
                             )
@@ -183,7 +184,7 @@ fun SearchContents(
                             IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "戻る",
+                                    contentDescription = stringResource(id = R.string.back),
                                     tint = Color.White,
                                 )
                             }
@@ -207,7 +208,7 @@ fun SearchContents(
                         },
                         label = {
                             Text(
-                                text = "マーカー名検索",
+                                text = stringResource(id = R.string.detailSc_search_name),
                                 color = Color.Gray,
                             )
                         },
@@ -229,13 +230,13 @@ fun SearchContents(
                                     content = {
                                         Column {
                                             Text(
-                                                text = "名前で検索",
+                                                text = stringResource(id = R.string.detailSc_search_name_title),
                                                 color = Color.White,
                                                 fontSize = 24.sp,
                                                 fontWeight = FontWeight.Bold,
                                             )
                                             Text(
-                                                text = "マーカーに付けられた名前で検索します(完全一致のみ)",
+                                                text = stringResource(id = R.string.detailSc_search_name_description),
                                                 color = Color.White,
                                                 fontSize = 16.sp,
                                             )
@@ -251,8 +252,7 @@ fun SearchContents(
                                             )
                                         }
                                     },
-                                )
-                                .fillMaxWidth(),
+                                ).fillMaxWidth(),
                     )
 
                     Row(
@@ -280,13 +280,13 @@ fun SearchContents(
                                         content = {
                                             Column {
                                                 Text(
-                                                    text = "開始日以降で検索",
+                                                    text = stringResource(id = R.string.detailSc_search_startDate_title),
                                                     color = Color.White,
                                                     fontSize = 24.sp,
                                                     fontWeight = FontWeight.Bold,
                                                 )
                                                 Text(
-                                                    text = "マーカーが作成されたのが選択日時以降である場合リストに表示します",
+                                                    text = stringResource(id = R.string.detailSc_search_startDate_description),
                                                     color = Color.White,
                                                     fontSize = 16.sp,
                                                 )
@@ -307,7 +307,7 @@ fun SearchContents(
                             Text(
                                 text =
                                     if (startDate.isNullOrEmpty()) {
-                                        "検索開始日"
+                                        stringResource(id = R.string.detailSc_search_startDate_Button)
                                     } else {
                                         startDate
                                     },
@@ -342,13 +342,13 @@ fun SearchContents(
                                         content = {
                                             Column {
                                                 Text(
-                                                    text = "終了日以前で検索",
+                                                    text = stringResource(id = R.string.detailSc_search_endDate_title),
                                                     color = Color.White,
                                                     fontSize = 24.sp,
                                                     fontWeight = FontWeight.Bold,
                                                 )
                                                 Text(
-                                                    text = "マーカーが作成されたのが選択日時以前である場合リストに表示します",
+                                                    text = stringResource(id = R.string.detailSc_search_endDate_description),
                                                     color = Color.White,
                                                     fontSize = 16.sp,
                                                 )
@@ -369,7 +369,7 @@ fun SearchContents(
                             Text(
                                 text =
                                     if (endDate.isNullOrEmpty()) {
-                                        "検索終了日"
+                                        stringResource(id = R.string.detailSc_search_endDate_Button)
                                     } else {
                                         endDate
                                     },
@@ -386,7 +386,7 @@ fun SearchContents(
                         },
                         label = {
                             Text(
-                                "AIメモ検索(意味検索)",
+                                stringResource(id = R.string.detailSc_search_AImemo_field),
                                 color = Color.Gray,
                             )
                         },
@@ -409,13 +409,13 @@ fun SearchContents(
                                     content = {
                                         Column {
                                             Text(
-                                                text = "マーカーのメモ内容をAIで検索",
+                                                text = stringResource(id = R.string.detailSc_search_AImemo_title),
                                                 color = Color.White,
                                                 fontSize = 24.sp,
                                                 fontWeight = FontWeight.Bold,
                                             )
                                             Text(
-                                                text = "検索ワードと記録されたメモ内容が意味的に似ているマーカーを10個表示します",
+                                                text = stringResource(id = R.string.detailSc_search_AImemo_description),
                                                 color = Color.White,
                                                 fontSize = 16.sp,
                                             )
@@ -441,7 +441,7 @@ fun SearchContents(
                         },
                         label = {
                             Text(
-                                "メモ(完全一致)",
+                                stringResource(id = R.string.detailSc_search_memo_field),
                                 color = Color.Gray,
                             )
                         },
@@ -465,13 +465,13 @@ fun SearchContents(
                                     content = {
                                         Column {
                                             Text(
-                                                text = "マーカーをメモ内容で検索",
+                                                text = stringResource(id = R.string.detailSc_search_memo_title),
                                                 color = Color.White,
                                                 fontSize = 24.sp,
                                                 fontWeight = FontWeight.Bold,
                                             )
                                             Text(
-                                                text = "検索ワードとマーカーに記録されたメモ内容が完全一致したマーカーを表示します",
+                                                text = stringResource(id = R.string.detailSc_search_memo_description),
                                                 color = Color.White,
                                                 fontSize = 16.sp,
                                             )
@@ -502,7 +502,7 @@ fun SearchContents(
                             ),
                     ) {
                         Text(
-                            "検索する",
+                            stringResource(id = R.string.detailSc_search_Button),
                             color = Color.White,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
@@ -564,7 +564,7 @@ fun ComposeDatePickerDialog(
                         TextButton(onClick = {
                             onDismissRequest()
                         }) {
-                            Text("キャンセル")
+                            Text(stringResource(id = R.string.detailSc_dialog_cancel))
                         }
 
                         TextButton(onClick = {
@@ -579,7 +579,7 @@ fun ComposeDatePickerDialog(
                                 onDismissRequest()
                             }
                         }) {
-                            Text("OK")
+                            Text(stringResource(id = R.string.detailSc_dialog_OK))
                         }
                     }
                 }

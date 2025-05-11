@@ -89,12 +89,40 @@
     <string name="listCn_title">マーカーリスト</string>
 
     <string name="listCn_detailSearch_title">詳細検索ボタン</string>
-    <string name="listCn_detailSearch_description">タップすると設置したマーカーを細かい条件で検索できます</string>
+    <string name="listCn_detailSearch_description">タップすると設置したマーカーをより細かい条件で検索できます</string>
     <string name="listCn_detailSearch_Button">詳細検索</string>
 
     <string name="listCn_no_marker">表示できるマーカーがありません</string>
 
     <string name="listCn_setTime">作成日時: </string>
+
+
+    <!--//DetailSearchScreen-->
+    <string name="detailSc_title">詳細検索</string>
+    <string name="detailSc_search_name">マーカー名で検索</string>
+    <string name="detailSc_search_name_title">名前で検索</string>
+    <string name="detailSc_search_name_description">マーカーに付けられた名前で検索します(完全一致のみ)</string>
+
+    <string name="detailSc_search_startDate_title">開始日以降で検索</string>
+    <string name="detailSc_search_startDate_description">マーカーが作成されたのが選択日時以降である場合リストに表示します</string>
+    <string name="detailSc_search_startDate_Button">検索開始日</string>
+
+    <string name="detailSc_search_endDate_title">終了日以前で検索</string>
+    <string name="detailSc_search_endDate_description">マーカーが作成されたのが選択日時以前である場合リストに表示します</string>
+    <string name="detailSc_search_endDate_Button">検索終了日</string>
+
+    <string name="detailSc_search_AImemo_title">マーカーのメモ内容をAIで検索</string>
+    <string name="detailSc_search_AImemo_description">検索ワードと記録されたメモ内容が意味的に似ているマーカーを10個表示します</string>
+    <string name="detailSc_search_AImemo_field">AIメモ検索(意味検索)</string>
+
+    <string name="detailSc_search_memo_title">マーカーをメモ内容で検索</string>
+    <string name="detailSc_search_memo_description">検索ワードとマーカーに記録されたメモ内容が完全一致したマーカーを表示します</string>
+    <string name="detailSc_search_memo_field">メモ(完全一致)</string>
+
+    <string name="detailSc_search_Button">検索する</string>
+
+    <string name="detailSc_dialog_cancel">キャンセル</string>
+    <string name="detailSc_dialog_OK">OK</string>
 
 
 </resources>
