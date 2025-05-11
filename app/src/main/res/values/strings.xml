@@ -68,4 +68,13 @@
     <string name="edit_address_noting">住所が取得できませんでした</string>
 
 
+    <!--//searchMakerScreen-->
+    <string name="searchMaker_title">簡易検索</string>
+    <string name="searchMaker_result_no">検索結果がありません</string>
+    <string name="searchMaker_match_memo">（メモ一致）</string>
+    <string name="searchMaker_search_name">マーカー名で検索</string>
+    <string name="searchMaker_search_memo">メモ内容で検索</string>
+    <string name="searchMaker_switch">切り替え</string>
+
+
 </resources>
