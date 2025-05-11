@@ -21,9 +21,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.ui.state.EmbeddingUiState
 import com.mKanta.archivemaps.ui.state.MarkerListUiState
@@ -142,7 +144,7 @@ fun MarkerListScreen(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "戻る",
+                        contentDescription = stringResource(id = R.string.listSc_back),
                         tint = Color.Black,
                     )
                 }
@@ -155,14 +157,19 @@ fun MarkerListScreen(
                         modifier = Modifier.size(48.dp),
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = "メモ内容をAI検索中...", fontSize = 16.sp)
+                    Text(
+                        text = stringResource(id = R.string.listSc_system_searching),
+                        fontSize = 16.sp,
+                    )
                 }
             }
         }
 
         listUIState is MarkerListUiState.Error -> {
             Text(
-                text = listUIState.message ?: "リストの読み込み中にエラーが発生しました",
+                text =
+                    listUIState.message
+                        ?: stringResource(id = R.string.listSc_system_list_error),
                 color = Color.Red,
                 modifier = Modifier.padding(16.dp),
             )
@@ -179,7 +186,7 @@ fun MarkerListScreen(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "戻る",
+                        contentDescription = stringResource(id = R.string.listSc_back),
                         tint = Color.Black,
                     )
                 }
@@ -189,7 +196,9 @@ fun MarkerListScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = embeddingUiState.message ?: "ベクトル検索中にエラーが発生しました",
+                        text =
+                            embeddingUiState.message
+                                ?: stringResource(id = R.string.listSc_system_vector_error),
                         fontSize = 16.sp,
                         color = Color.Red,
                     )
@@ -208,7 +217,7 @@ fun MarkerListScreen(
 
         else -> {
             Text(
-                text = "不明な状態です",
+                text = stringResource(id = R.string.listSc_system_error),
                 color = Color.Gray,
                 modifier = Modifier.padding(16.dp),
             )
