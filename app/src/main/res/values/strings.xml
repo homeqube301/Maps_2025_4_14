@@ -40,5 +40,32 @@
     <string name="setMarker_confirm_yes">はい</string>
     <string name="setMarker_confirm_no">いいえ</string>
 
+    <!--//editPanelScreen-->
+    <string name="edit_title">マーカーを編集</string>
+    <string name="edit_deleteMarker">マーカーを削除する</string>
+    <string name="edit_back">戻る</string>
+
+    <string name="edit_confirm">編集を終了しますか？</string>
+    <string name="edit_confirm_description">変更内容が保存されていない可能性があります</string>
+    <string name="edit_confirm_yes">はい</string>
+    <string name="edit_confirm_no">いいえ</string>
+
+    <string name="edit_memo_title">メモ</string>
+    <string name="edit_memo_hint">ここにメモを書いてください</string>
+
+    <string name="edit_media_title">メディア</string>
+    <string name="edit_media_Button">メディアを追加</string>
+    <string name="edit_media_description">マーカー画像</string>
+    <string name="edit_media_delete">メディアを削除</string>
+
+    <string name="edit_color_title">マーカーの色を変更</string>
+
+    <string name="edit_name_title">マーカー名</string>
+    <string name="edit_name_update">更新</string>
+
+    <string name="edit_time">設置日時:</string>
+    <string name="edit_address">住所:</string>
+    <string name="edit_address_noting">住所が取得できませんでした</string>
+
 
 </resources>

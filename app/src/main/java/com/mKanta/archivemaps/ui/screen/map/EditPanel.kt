@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
@@ -132,7 +133,11 @@ fun EditPanel(
         ) {
             selectedMarker?.let { marker ->
 
-                Text("マーカーを編集", color = Color.White, fontWeight = FontWeight.Bold)
+                Text(
+                    stringResource(id = R.string.edit_title),
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                )
 
                 MarkerInfoSection(
                     marker = marker,
@@ -195,7 +200,7 @@ fun EditPanel(
                                 .fillMaxWidth(0.5f),
                     ) {
                         Text(
-                            "マーカーを削除する",
+                            stringResource(id = R.string.edit_deleteMarker),
                             fontWeight = FontWeight.Bold,
                             color = colorResource(id = R.color.alert_red),
                         )
@@ -210,7 +215,7 @@ fun EditPanel(
                             changeShowConfirmDialog()
                         },
                     ) {
-                        Text("戻る", fontWeight = FontWeight.Bold)
+                        Text(stringResource(id = R.string.edit_back), fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -232,21 +237,21 @@ private fun ConfirmDialog(
 ) {
     AlertDialog(
         onDismissRequest = { changeShowConfirmDialog() },
-        title = { Text("編集を終了しますか？") },
-        text = { Text("変更内容が保存されていない可能性があります。") },
+        title = { Text(stringResource(id = R.string.edit_confirm)) },
+        text = { Text(stringResource(id = R.string.edit_confirm_description)) },
         confirmButton = {
             Button(onClick = {
                 changeShowConfirmDialog()
                 onPanelClose()
             }) {
-                Text("はい")
+                Text(stringResource(id = R.string.edit_confirm_yes))
             }
         },
         dismissButton = {
             Button(onClick = {
                 changeShowConfirmDialog()
             }) {
-                Text("いいえ")
+                Text(stringResource(id = R.string.edit_confirm_no))
             }
         },
     )
@@ -262,7 +267,7 @@ private fun MemoEditor(
 ) {
     var memoText by remember(marker) { mutableStateOf(marker.memo ?: "") }
     Text(
-        "メモ",
+        stringResource(id = R.string.edit_memo_title),
         style = MaterialTheme.typography.bodyMedium,
         color = Color.Gray,
         fontWeight = FontWeight.Bold,
@@ -292,10 +297,9 @@ private fun MemoEditor(
                     if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }
-                .fillMaxWidth()
+                }.fillMaxWidth()
                 .height(150.dp),
-        placeholder = { Text("ここにメモを書いてください", color = Color.Gray) },
+        placeholder = { Text(stringResource(id = R.string.edit_memo_hint), color = Color.Gray) },
         singleLine = false,
         maxLines = 10,
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
@@ -311,7 +315,7 @@ private fun MediaSelector(
     mediaPickerLauncher: ActivityResultLauncher<Array<String>>,
 ) {
     Text(
-        "メディア",
+        stringResource(id = R.string.edit_media_title),
         style = MaterialTheme.typography.bodyMedium,
         color = Color.Gray,
         fontWeight = FontWeight.Bold,
@@ -324,8 +328,7 @@ private fun MediaSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                )
-                .padding(12.dp),
+                ).padding(12.dp),
     ) {
         OutlinedButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -335,14 +338,18 @@ private fun MediaSelector(
             },
             shape = RoundedCornerShape(8.dp),
         ) {
-            Text("メディアを追加", color = Color.White, fontWeight = FontWeight.Bold)
+            Text(
+                stringResource(id = R.string.edit_media_Button),
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+            )
         }
 
         marker.imageUri?.let { uri ->
             Spacer(modifier = Modifier.height(16.dp))
             AsyncImage(
                 model = uri,
-                contentDescription = "マーカー画像",
+                contentDescription = stringResource(id = R.string.edit_media_description),
                 modifier =
                     Modifier
                         .size(200.dp)
@@ -390,7 +397,7 @@ private fun MediaSelector(
                     }
                 },
             ) {
-                Text("メディアを削除", color = Color.White)
+                Text(stringResource(id = R.string.edit_media_delete), color = Color.White)
             }
         }
     }
@@ -406,7 +413,7 @@ private fun MarkerColorSelector(
     var selectedColorHue by remember(marker) { mutableFloatStateOf(marker.colorHue) }
 
     Text(
-        "マーカーの色を変更",
+        stringResource(id = R.string.edit_color_title),
         style = MaterialTheme.typography.bodyMedium,
         color = Color.Gray,
         fontWeight = FontWeight.Bold,
@@ -420,15 +427,14 @@ private fun MarkerColorSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                )
-                .padding(12.dp),
+                ).padding(12.dp),
     ) {
         val colorOptions =
             listOf(
-                BitmapDescriptorFactory.HUE_RED to "赤",
-                BitmapDescriptorFactory.HUE_BLUE to "青",
-                BitmapDescriptorFactory.HUE_GREEN to "緑",
-                BitmapDescriptorFactory.HUE_YELLOW to "黄",
+                BitmapDescriptorFactory.HUE_RED to stringResource(id = R.string.color_red),
+                BitmapDescriptorFactory.HUE_BLUE to stringResource(id = R.string.color_blue),
+                BitmapDescriptorFactory.HUE_GREEN to stringResource(id = R.string.color_green),
+                BitmapDescriptorFactory.HUE_YELLOW to stringResource(id = R.string.color_yellow),
             )
 
         Row(
@@ -486,7 +492,7 @@ private fun MarkerNameEditor(
                 ),
             value = editedName,
             onValueChange = { editedName = it },
-            label = { Text("マーカー名", color = Color.Gray) },
+            label = { Text(stringResource(id = R.string.edit_name_title), color = Color.Gray) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions =
                 KeyboardActions(
@@ -526,7 +532,11 @@ private fun MarkerNameEditor(
                     .padding(top = 8.dp),
             shape = RoundedCornerShape(8.dp),
         ) {
-            Text("更新", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text(
+                stringResource(id = R.string.edit_name_update),
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+            )
         }
     }
 }
@@ -537,14 +547,14 @@ private fun MarkerInfoSection(
     address: String,
 ) {
     Text(
-        text = "設置日時: ${marker.createdAt}",
+        text = stringResource(id = R.string.edit_time) + marker.createdAt,
         color = Color.White,
         modifier = Modifier.padding(vertical = 8.dp),
         style = MaterialTheme.typography.bodyMedium,
     )
 
     Text(
-        text = "住所: ${address.ifBlank { "住所が取得できませんでした" }}",
+        text = stringResource(id = R.string.edit_address) + address.ifBlank { stringResource(id = R.string.edit_address_noting) },
         color = Color.White,
     )
 }
