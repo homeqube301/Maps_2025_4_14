@@ -533,9 +533,9 @@ private fun MapFloatingButtons(
                             index = 3,
                             style =
                                 ShowcaseStyle.Default.copy(
-                                    backgroundColor = Color(0xFF000000),
+                                    backgroundColor = Color.Black,
                                     backgroundAlpha = 0.98f,
-                                    targetCircleColor = Color(0xFF343434),
+                                    targetCircleColor = Color.Gray,
                                 ),
                             content = {
                                 Column {
@@ -576,8 +576,7 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
@@ -588,7 +587,7 @@ private fun MapFloatingButtons(
             FloatingActionButton(
                 onClick = { changeIsSearchOpen() },
                 contentColor = Color.White,
-                containerColor = Color(0xFF0889B8),
+                containerColor = MaterialTheme.colorScheme.primary,
                 modifier =
                     Modifier
                         .size(72.dp)
@@ -596,7 +595,7 @@ private fun MapFloatingButtons(
                             index = 2,
                             style =
                                 ShowcaseStyle.Default.copy(
-                                    backgroundColor = Color(0xFF000000),
+                                    backgroundColor = Color.Black,
                                     backgroundAlpha = 0.95f,
                                     targetCircleColor = Color.White,
                                 ),
@@ -641,7 +640,7 @@ private fun MapFloatingButtons(
                 },
                 containerColor =
                     if (isFollowing) {
-                        Color(0xFF0889B8)
+                        MaterialTheme.colorScheme.primary
                     } else {
                         Color.White
                     },
@@ -652,7 +651,7 @@ private fun MapFloatingButtons(
                             index = 0,
                             style =
                                 ShowcaseStyle.Default.copy(
-                                    backgroundColor = Color(0xFF000000),
+                                    backgroundColor = Color.Black,
                                     backgroundAlpha = 0.95f,
                                     targetCircleColor = Color.White,
                                 ),
@@ -691,7 +690,7 @@ private fun MapFloatingButtons(
                         if (isFollowing) {
                             Color.White
                         } else {
-                            Color(0xFF0889B8)
+                            MaterialTheme.colorScheme.primary
                         },
                 )
             }
@@ -699,7 +698,7 @@ private fun MapFloatingButtons(
             FloatingActionButton(
                 onClick = { navController.navigate("marker_list") },
                 contentColor = Color.White,
-                containerColor = Color(0xFF0889B8),
+                containerColor = MaterialTheme.colorScheme.primary,
                 modifier =
                     Modifier
                         .size(72.dp)
@@ -707,7 +706,7 @@ private fun MapFloatingButtons(
                             index = 1,
                             style =
                                 ShowcaseStyle.Default.copy(
-                                    backgroundColor = Color(0xFF000000),
+                                    backgroundColor = Color.Black,
                                     backgroundAlpha = 0.95f,
                                     targetCircleColor = Color.White,
                                 ),
