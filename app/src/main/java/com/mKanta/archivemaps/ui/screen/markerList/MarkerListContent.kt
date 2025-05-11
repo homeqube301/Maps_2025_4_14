@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,7 +64,7 @@ fun MarkerListContent(
                     TopAppBar(
                         title = {
                             Text(
-                                "マーカーリスト",
+                                stringResource(id = R.string.listCn_title),
                                 fontWeight = FontWeight.Bold,
                             )
                         },
@@ -78,7 +79,7 @@ fun MarkerListContent(
                             IconButton(onClick = { navController.navigate("map/{latitude}/{longitude}") }) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "戻る",
+                                    contentDescription = stringResource(id = R.string.back),
                                 )
                             }
                         },
@@ -98,13 +99,13 @@ fun MarkerListContent(
                                             content = {
                                                 Column {
                                                     Text(
-                                                        text = "詳細検索ボタン",
+                                                        text = stringResource(id = R.string.listCn_detailSearch_title),
                                                         color = Color.White,
                                                         fontSize = 24.sp,
                                                         fontWeight = FontWeight.Bold,
                                                     )
                                                     Text(
-                                                        text = "タップすると設置したマーカーを細かい条件で検索できます",
+                                                        text = stringResource(id = R.string.listCn_detailSearch_description),
                                                         color = Color.White,
                                                         fontSize = 16.sp,
                                                     )
@@ -125,7 +126,7 @@ fun MarkerListContent(
                                 Icon(
                                     painter = painterResource(id = R.drawable.manage_search_24px),
                                     modifier = Modifier.size(32.dp),
-                                    contentDescription = "詳細検索",
+                                    contentDescription = stringResource(id = R.string.listCn_detailSearch_Button),
                                 )
                             }
                         },
@@ -140,7 +141,7 @@ fun MarkerListContent(
                 ) {
                     if (filteredMarkerList.isEmpty()) {
                         Text(
-                            text = "表示できるマーカーがありません",
+                            text = stringResource(id = R.string.listCn_no_marker),
                             fontSize = 18.sp,
                             color = Color.Gray,
                             modifier = Modifier.align(Alignment.Center),
@@ -195,7 +196,7 @@ fun MarkerItem(
             )
         }
         Text(
-            text = "作成日時: ${marker.createdAt}",
+            text = stringResource(id = R.string.listCn_setTime) + marker.createdAt,
             color = Color.Gray,
             style = MaterialTheme.typography.labelSmall,
             modifier = Modifier.padding(top = 4.dp),
