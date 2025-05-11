@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -148,8 +147,7 @@ fun MapScreen(
                 modifier =
                     Modifier
                         .fillMaxSize()
-                        .padding(innerPadding)
-                        .systemBarsPadding(),
+                        .padding(innerPadding),
             ) {
                 LaunchedEffect(uiState.titleQuery, uiState.memoQuery) {
                     updateSearchList(
@@ -250,7 +248,9 @@ fun MapScreen(
             }
 
             when (googleMapState) {
-                MapState.Success(true) -> {}
+                MapState.Success(true) -> {
+                }
+
                 MapState.Loading -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -559,7 +559,8 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
