@@ -273,12 +273,20 @@ fun MapScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text(
-                            text = "エラーが発生しました",
-                            color = Color.Red,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
+                        Column {
+                            Text(
+                                text = "予期せぬエラーが発生しました",
+                                color = Color.Red,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "アプリを再起動してください",
+                                fontSize = 16.sp,
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                            )
+                        }
                     }
                 }
             }
@@ -559,8 +567,7 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
