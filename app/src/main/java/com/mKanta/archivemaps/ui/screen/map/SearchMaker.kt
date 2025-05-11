@@ -1,5 +1,6 @@
 package com.mKanta.archivemaps.ui.screen.map
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,7 +18,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,12 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
+import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 
 @Composable
 fun SearchMaker(
@@ -46,49 +51,54 @@ fun SearchMaker(
     onTitleQueryChanged: (String) -> Unit,
     onMemoQueryChanged: (String) -> Unit,
 ) {
-    var isSearchingByTitle by remember { mutableStateOf(true) }
+    ArchivemapsTheme {
+        var isSearchingByTitle by remember { mutableStateOf(true) }
 
-    Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-    ) {
-        Column(
+        Box(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopStart)
-                    .padding(bottom = 72.dp),
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(16.dp),
         ) {
-            Text(
-                text = "簡易検索",
-                fontSize = 16.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-
-            SearchMakerName(
-                isSearchingByTitle = isSearchingByTitle,
-                changeSearchingByTitle = { isSearchingByTitle = it },
-                titleQuery = titleQuery,
-                memoQuery = memoQuery,
-                onTitleQueryChanged = onTitleQueryChanged,
-                onMemoQueryChanged = onMemoQueryChanged,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ShowSearchResult(
-                isSearchingByTitle = isSearchingByTitle,
-                titleResults = titleResults,
-                memoResults = memoResults,
-                onMarkerTapped = onMarkerTapped,
-                onMemoTapped = onMemoTapped,
+            Column(
                 modifier =
                     Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(bottom = 40.dp),
-            )
+                        .fillMaxWidth()
+                        .align(Alignment.TopStart)
+                        .padding(bottom = 72.dp),
+            ) {
+                Text(
+                    text = "簡易検索",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                )
+
+                SearchMakerName(
+                    isSearchingByTitle = isSearchingByTitle,
+                    changeSearchingByTitle = { isSearchingByTitle = it },
+                    titleQuery = titleQuery,
+                    memoQuery = memoQuery,
+                    onTitleQueryChanged = onTitleQueryChanged,
+                    onMemoQueryChanged = onMemoQueryChanged,
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ShowSearchResult(
+                    isSearchingByTitle = isSearchingByTitle,
+                    titleResults = titleResults,
+                    memoResults = memoResults,
+                    onMarkerTapped = onMarkerTapped,
+                    onMemoTapped = onMemoTapped,
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(bottom = 40.dp),
+                )
+            }
         }
     }
 }
@@ -107,7 +117,7 @@ private fun ShowSearchResult(
         Text(
             text = "検索結果がありません",
             fontSize = 16.sp,
-            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+            fontWeight = FontWeight.Bold,
             color = Color.Gray,
             modifier = modifier,
         )
@@ -119,7 +129,7 @@ private fun ShowSearchResult(
                     .padding(horizontal = 8.dp),
             colors =
                 CardDefaults.cardColors(
-                    containerColor = Color(0xFFE0F7FA),
+                    containerColor = MaterialTheme.colorScheme.tertiary,
                 ),
             shape = RoundedCornerShape(8.dp),
             elevation = CardDefaults.cardElevation(4.dp),
@@ -140,12 +150,14 @@ private fun ShowSearchResult(
                                     } else {
                                         onMemoTapped(marker)
                                     }
-                                }.padding(16.dp),
+                                }
+                                .padding(16.dp),
                     ) {
                         Text(
                             text = if (isSearchingByTitle) marker.title else "${marker.title}（メモ一致）",
+                            color = Color.White,
                             fontSize = 16.sp,
-                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                 }
@@ -170,22 +182,34 @@ private fun SearchMakerName(
                 .fillMaxWidth(),
     ) {
         OutlinedTextField(
+            colors =
+                OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                ),
             value = if (isSearchingByTitle) titleQuery.orEmpty() else memoQuery.orEmpty(),
             onValueChange = {
                 if (isSearchingByTitle) onTitleQueryChanged(it) else onMemoQueryChanged(it)
             },
             label = {
-                Text(if (isSearchingByTitle) "マーカー名で検索" else "メモ内容で検索")
+                Text(
+                    if (isSearchingByTitle) "マーカー名で検索" else "メモ内容で検索",
+                    color = Color.Gray,
+                )
             },
             modifier =
                 Modifier
                     .weight(1f)
                     .padding(10.dp),
         )
-        FloatingActionButton(onClick = { changeSearchingByTitle(!isSearchingByTitle) }) {
+        FloatingActionButton(
+            containerColor = MaterialTheme.colorScheme.primary,
+            onClick = { changeSearchingByTitle(!isSearchingByTitle) },
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.cached_24px),
                 contentDescription = "切り替え",
+                tint = Color.White,
             )
         }
     }
