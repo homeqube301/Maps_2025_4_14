@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -268,7 +269,7 @@ fun MapScreen(
                                 modifier = Modifier.size(48.dp),
                             )
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text(text = "地図を読み込み中...", fontSize = 16.sp)
+                            Text(text = stringResource(R.string.map_loading), fontSize = 16.sp)
                         }
                     }
                 }
@@ -280,14 +281,14 @@ fun MapScreen(
                     ) {
                         Column {
                             Text(
-                                text = "予期せぬエラーが発生しました",
+                                text = stringResource(R.string.map_error),
                                 color = Color.Red,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "アプリを再起動してください",
+                                text = stringResource(R.string.map_error_description),
                                 fontSize = 16.sp,
                                 modifier = Modifier.align(Alignment.CenterHorizontally),
                             )
@@ -465,7 +466,7 @@ private fun MapView(
         tempMarkerPosition?.let { temp ->
             Marker(
                 state = MarkerState(position = temp),
-                title = "一時マーカー",
+                title = stringResource(R.string.map_temp_marker),
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
                 draggable = false,
             )
@@ -525,7 +526,7 @@ private fun MapFloatingButtons(
                 Modifier.fillMaxSize(),
         ) {
             Text(
-                text = "マーカーチュートリアル",
+                text = stringResource(R.string.map_tutorial),
                 color = Color.Transparent,
                 modifier =
                     Modifier
@@ -540,26 +541,26 @@ private fun MapFloatingButtons(
                             content = {
                                 Column {
                                     Text(
-                                        text = "・まずはマーカーをセット！",
+                                        text = stringResource(R.string.map_marker_tutorial_title),
                                         color = Color.White,
                                         fontSize = 24.sp,
                                         fontWeight = FontWeight.Bold,
                                     )
                                     Text(
-                                        text = "マップ上をタップすると新しくマーカーを設置できます",
+                                        text = stringResource(R.string.map_marker_tutorial_description),
                                         color = Color.White,
                                         fontSize = 16.sp,
                                     )
                                     Spacer(modifier = Modifier.height(15.dp))
 
                                     Text(
-                                        text = "・そして",
+                                        text = stringResource(R.string.map_marker_tutorial_title2),
                                         color = Color.White,
                                         fontSize = 24.sp,
                                         fontWeight = FontWeight.Bold,
                                     )
                                     Text(
-                                        text = "設置したマーカーをタップするとマーカーを編集できます",
+                                        text = stringResource(R.string.map_marker_tutorial_description2),
                                         color = Color.White,
                                         fontSize = 16.sp,
                                     )
@@ -576,7 +577,8 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
@@ -602,13 +604,13 @@ private fun MapFloatingButtons(
                             content = {
                                 Column {
                                     Text(
-                                        text = "簡易検索ボタン",
+                                        text = stringResource(R.string.map_search_tutorial_title),
                                         color = Color.White,
                                         fontSize = 24.sp,
                                         fontWeight = FontWeight.Bold,
                                     )
                                     Text(
-                                        text = "タップすると設置したマーカーを簡単な条件で検索できます",
+                                        text = stringResource(R.string.map_search_tutorial_description),
                                         color = Color.White,
                                         fontSize = 16.sp,
                                     )
@@ -628,7 +630,7 @@ private fun MapFloatingButtons(
             ) {
                 Icon(
                     Icons.Default.Search,
-                    contentDescription = "検索",
+                    contentDescription = stringResource(R.string.map_search_Button),
                     modifier = Modifier.size(32.dp),
                 )
             }
@@ -658,13 +660,13 @@ private fun MapFloatingButtons(
                             content = {
                                 Column {
                                     Text(
-                                        text = "追従ボタン",
+                                        text = stringResource(R.string.map_follow_tutorial_title),
                                         color = Color.White,
                                         fontSize = 24.sp,
                                         fontWeight = FontWeight.Bold,
                                     )
                                     Text(
-                                        text = "タップすると一定時間ごとに現在地にカメラが戻ります",
+                                        text = stringResource(R.string.map_follow_tutorial_description),
                                         color = Color.White,
                                         fontSize = 16.sp,
                                     )
@@ -685,7 +687,7 @@ private fun MapFloatingButtons(
                 Icon(
                     painterResource(id = R.drawable.location_searching_24px),
                     modifier = Modifier.size(32.dp),
-                    contentDescription = "追従",
+                    contentDescription = stringResource(R.string.map_follow_Button),
                     tint =
                         if (isFollowing) {
                             Color.White
@@ -713,13 +715,13 @@ private fun MapFloatingButtons(
                             content = {
                                 Column {
                                     Text(
-                                        text = "マーカ一覧ボタン",
+                                        text = stringResource(R.string.map_list_tutorial_title),
                                         color = Color.White,
                                         fontSize = 24.sp,
                                         fontWeight = FontWeight.Bold,
                                     )
                                     Text(
-                                        text = "タップすると設置したマーカーを一覧で表示されます",
+                                        text = stringResource(R.string.map_list_tutorial_description),
                                         color = Color.White,
                                         fontSize = 16.sp,
                                     )
@@ -739,7 +741,7 @@ private fun MapFloatingButtons(
             ) {
                 Icon(
                     Icons.Default.Menu,
-                    contentDescription = "マーカ一覧",
+                    contentDescription = stringResource(R.string.map_list_Button),
                     modifier = Modifier.size(32.dp),
                 )
             }
