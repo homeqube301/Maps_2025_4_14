@@ -216,12 +216,12 @@ fun EditPanel(
             }
         }
 
-        if (showConfirmDialog) {
-            ConfirmDialog(
-                changeShowConfirmDialog = changeShowConfirmDialog,
-                onPanelClose = onPanelClose,
-            )
-        }
+//        if (showConfirmDialog) {
+//            ConfirmDialog(
+//                changeShowConfirmDialog = changeShowConfirmDialog,
+//                onPanelClose = onPanelClose,
+//            )
+//        }
     }
 }
 
@@ -420,7 +420,8 @@ private fun MarkerColorSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                ).padding(12.dp),
+                )
+                .padding(12.dp),
     ) {
         val colorOptions =
             listOf(

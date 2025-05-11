@@ -104,13 +104,13 @@ fun SetMarkerPanel(
             )
         }
 
-        if (showConfirmDialog) {
-            ConfirmDialog(
-                changeShowConfirmDialog = changeShowConfirmDialog,
-                onClose = onClose,
-                resetTempMarkers = resetTempMarkers,
-            )
-        }
+//        if (showConfirmDialog) {
+//            ConfirmDialog(
+//                changeShowConfirmDialog = changeShowConfirmDialog,
+//                onClose = onClose,
+//                resetTempMarkers = resetTempMarkers,
+//            )
+//        }
     }
 }
 
@@ -185,8 +185,7 @@ private fun SetMarkerColor(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                )
-                .padding(12.dp),
+                ).padding(12.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceAround,
@@ -219,7 +218,7 @@ private fun SetMarkerName(
     focusManager: FocusManager,
 ) {
     Text("新しいマーカーを設置", color = Color.White, fontWeight = FontWeight.Bold)
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(24.dp))
     OutlinedTextField(
         colors =
             OutlinedTextFieldDefaults.colors(
