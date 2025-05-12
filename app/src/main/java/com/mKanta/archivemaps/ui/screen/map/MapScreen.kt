@@ -58,7 +58,6 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.NamedMarker
-import com.mKanta.archivemaps.ui.state.ListState
 import com.mKanta.archivemaps.ui.state.MapState
 import com.mKanta.archivemaps.ui.state.MapsUiState
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
@@ -77,7 +76,6 @@ fun MapScreen(
     longitude: Double,
     navController: NavHostController,
     uiState: MapsUiState,
-    listState: ListState,
     changeIsFollowing: () -> Unit,
     changeIsEditPanelOpen: () -> Unit,
     changeIsPanelOpen: () -> Unit,
@@ -117,6 +115,10 @@ fun MapScreen(
     changeShowConfirmDialog: () -> Unit,
     checkGoogleMapState: (Boolean) -> Unit,
     googleMapState: MapState,
+    startDate: String? = null,
+    endDate: String? = null,
+    markerName: String? = null,
+    memo: String? = null,
 ) {
     ArchivemapsTheme {
         val context = LocalContext.current
@@ -133,15 +135,20 @@ fun MapScreen(
 
         LaunchedEffect(Unit) {
             initializeMapLogic(
-                context,
-                cameraPositionState,
-                permanentMarkers,
-                listState,
-                addAllVisibleMarkers,
-                setVisibleMarkers,
-                changeUserLocation,
-                loadMarkers,
-                startLocationUpdates,
+                context = context,
+                cameraPositionState = cameraPositionState,
+                startDate = startDate.toString(),
+                endDate = endDate.toString(),
+                markerName = markerName.toString(),
+                memo = memo.toString(),
+                permanentMarkers = permanentMarkers,
+                addAllVisibleMarkers = { addAllVisibleMarkers(it) },
+                setVisibleMarkers = { setVisibleMarkers(it) },
+                changeUserLocation = { changeUserLocation(it) },
+                loadMarkers = { loadMarkers() },
+                startLocationUpdates = { context, camera, onLocationUpdate ->
+                    startLocationUpdates(context, camera, onLocationUpdate)
+                },
             )
         }
 
@@ -303,8 +310,11 @@ fun MapScreen(
 private suspend fun initializeMapLogic(
     context: Context,
     cameraPositionState: CameraPositionState,
+    startDate: String = "",
+    endDate: String = "",
+    markerName: String = "",
+    memo: String = "",
     permanentMarkers: List<NamedMarker>,
-    listState: ListState,
     addAllVisibleMarkers: (List<NamedMarker>) -> Unit,
     setVisibleMarkers: (List<NamedMarker>) -> Unit,
     changeUserLocation: (LatLng) -> Unit,
@@ -325,16 +335,22 @@ private suspend fun initializeMapLogic(
     observeCameraAndFilterMarkers(
         cameraPositionState = cameraPositionState,
         permanentMarkers = permanentMarkers,
-        listState = listState,
         addAllVisibleMarkers = addAllVisibleMarkers,
         setVisibleMarkers = setVisibleMarkers,
+        startDate = startDate,
+        endDate = endDate,
+        markerName = markerName,
+        memo = memo,
     )
 }
 
 private suspend fun observeCameraAndFilterMarkers(
     cameraPositionState: CameraPositionState,
     permanentMarkers: List<NamedMarker>,
-    listState: ListState,
+    startDate: String? = null,
+    endDate: String? = null,
+    markerName: String? = null,
+    memo: String? = null,
     addAllVisibleMarkers: (List<NamedMarker>) -> Unit,
     setVisibleMarkers: (List<NamedMarker>) -> Unit,
 ) {
@@ -353,7 +369,7 @@ private suspend fun observeCameraAndFilterMarkers(
                 val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
 
                 val startDateTime =
-                    listState.startDate?.let {
+                    startDate?.let {
                         try {
                             LocalDate.parse(it, formatter)
                         } catch (_: Exception) {
@@ -361,7 +377,7 @@ private suspend fun observeCameraAndFilterMarkers(
                         }
                     }
                 val endDateTime =
-                    listState.endDate?.let {
+                    endDate?.let {
                         try {
                             LocalDate.parse(it, formatter)
                         } catch (_: Exception) {
@@ -387,12 +403,12 @@ private suspend fun observeCameraAndFilterMarkers(
                             } == true
 
                         val matchesName =
-                            listState.markerName.isNullOrEmpty() ||
-                                marker.title.contains(listState.markerName, ignoreCase = true)
+                            markerName.isNullOrEmpty() ||
+                                marker.title.contains(markerName, ignoreCase = true)
 
                         val matchesMemo =
-                            listState.memo.isNullOrEmpty() ||
-                                marker.memo?.contains(listState.memo, ignoreCase = true) == true
+                            memo.isNullOrEmpty() ||
+                                marker.memo?.contains(memo, ignoreCase = true) == true
 
                         marker.position.toLatLng() in bounds && matchesDate && matchesName && matchesMemo
                     }
@@ -577,8 +593,7 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Center),
+                        ).align(Alignment.Center),
             )
         }
 
@@ -948,7 +963,6 @@ fun MapScreenPreview() {
     val dummyNavController = rememberNavController()
 
     val dummyUiState = MapsUiState()
-    val dummyListState = ListState()
     val dummySelectedAddress = MutableStateFlow("東京都渋谷区")
 
     MapScreen(
@@ -956,7 +970,6 @@ fun MapScreenPreview() {
         longitude = 139.7671,
         navController = dummyNavController,
         uiState = dummyUiState,
-        listState = dummyListState,
         changeIsFollowing = {},
         changeIsEditPanelOpen = {},
         changeIsPanelOpen = {},
@@ -987,6 +1000,10 @@ fun MapScreenPreview() {
         changeShowMapIntro = {},
         changeShowConfirmDialog = {},
         checkGoogleMapState = {},
+        startDate = null,
+        endDate = null,
+        markerName = null,
+        memo = null,
         googleMapState = MapState.Success(true),
     )
 }

@@ -252,7 +252,8 @@ fun SearchContents(
                                             )
                                         }
                                     },
-                                ).fillMaxWidth(),
+                                )
+                                .fillMaxWidth(),
                     )
 
                     Row(
@@ -493,7 +494,7 @@ fun SearchContents(
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = {
-                            navController.navigate("marker_list?")
+                            navController.navigate("marker_list")
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors =

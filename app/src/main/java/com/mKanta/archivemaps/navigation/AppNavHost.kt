@@ -37,7 +37,10 @@ fun AppNavHost(
                 latitude = latitude,
                 longitude = longitude,
                 uiState = uiState,
-                listState = listState,
+                startDate = listState.startDate ?: "",
+                endDate = listState.endDate ?: "",
+                markerName = listState.markerName ?: "",
+                memo = listState.memo ?: "",
                 changeShowConfirmDialog = { mapViewModel.changeShowConfirmDialog() },
                 changeIsFollowing = { mapViewModel.changeIsFollowing() },
                 changeIsEditPanelOpen = { mapViewModel.changeIsEditPanelOpen() },
@@ -92,7 +95,7 @@ fun AppNavHost(
                 googleMapState = googleMapState,
             )
         }
-        composable("marker_list?") {
+        composable("marker_list") {
             val listUIState by listViewModel.listUIState.collectAsState()
             val embeddingUiState by listViewModel.embeddingUiState.collectAsState()
             MarkerListScreen(
