@@ -22,6 +22,7 @@ data class MapsUiState(
     val editname: String? = null,
     val showMapIntro: Boolean = true,
     val showConfirmDialog: Boolean = false,
+    val googleMapState: MapState = MapState.Loading,
 )
 
 sealed interface MapState {

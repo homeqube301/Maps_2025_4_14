@@ -114,7 +114,6 @@ fun MapScreen(
     changeShowMapIntro: () -> Unit,
     changeShowConfirmDialog: () -> Unit,
     checkGoogleMapState: (Boolean) -> Unit,
-    googleMapState: MapState,
     startDate: String? = null,
     endDate: String? = null,
     markerName: String? = null,
@@ -193,7 +192,7 @@ fun MapScreen(
                     changeSelectedMarker = { changeSelectedMarker(it) },
                 )
 
-                when (googleMapState) {
+                when (uiState.googleMapState) {
                     MapState.Success(true) -> {
                         MapFloatingButtons(
                             modifier =
@@ -257,7 +256,7 @@ fun MapScreen(
                 )
             }
 
-            when (googleMapState) {
+            when (uiState.googleMapState) {
                 MapState.Success(true) -> {
                 }
 
@@ -593,7 +592,8 @@ private fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        ).align(Alignment.Center),
+                        )
+                        .align(Alignment.Center),
             )
         }
 
@@ -1004,6 +1004,5 @@ fun MapScreenPreview() {
         endDate = null,
         markerName = null,
         memo = null,
-        googleMapState = MapState.Success(true),
     )
 }

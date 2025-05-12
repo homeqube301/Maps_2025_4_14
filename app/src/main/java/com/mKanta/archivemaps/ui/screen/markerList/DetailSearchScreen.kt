@@ -111,7 +111,7 @@ private fun DatePicker(
             onDateSelected = { year, month, dayOfMonth ->
                 changeStartDate(
                     String.format(
-                        Locale.US,
+                        Locale.JAPAN,
                         "%04d-%02d-%02d",
                         year,
                         month + 1,
@@ -131,7 +131,7 @@ private fun DatePicker(
             onDateSelected = { year, month, dayOfMonth ->
                 changeEndDate(
                     String.format(
-                        Locale.US,
+                        Locale.JAPAN,
                         "%04d-%02d-%02d",
                         year,
                         month + 1,

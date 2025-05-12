@@ -27,7 +27,6 @@ import com.mKanta.archivemaps.ui.state.MapsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -48,9 +47,6 @@ class MapViewModel
 
         private val _isFollowing = MutableStateFlow(false)
 
-        private val _googleMapState = MutableStateFlow<MapState>(MapState.Loading)
-        val googleMapState: StateFlow<MapState> = _googleMapState.asStateFlow()
-
         private val _permanentMarkers = mutableStateListOf<NamedMarker>()
         val uiState: StateFlow<MapsUiState> = _uiState
         val permanentMarkers: List<NamedMarker>
@@ -68,9 +64,9 @@ class MapViewModel
 
         fun checkGoogleMapState(ready: Boolean) {
             if (ready) {
-                _googleMapState.value = MapState.Success(true)
+                _uiState.update { it.copy(googleMapState = MapState.Success(true)) }
             } else {
-                _googleMapState.value = MapState.Loading
+                _uiState.update { it.copy(googleMapState = MapState.Loading) }
             }
         }
 
@@ -201,7 +197,6 @@ class MapViewModel
             _uiState.update { it.copy(isPanelOpen = isOpen) }
         }
 
-        // 永続マーカーをロード
         fun loadMarkers() {
             viewModelScope.launch {
                 val loaded = markerRepository.loadMarkers()
@@ -210,7 +205,6 @@ class MapViewModel
             }
         }
 
-        // 永続マーカーを保存
         fun saveMarkers() {
             viewModelScope.launch {
                 markerRepository.saveMarkers(_permanentMarkers)
@@ -284,9 +278,8 @@ class MapViewModel
                         val location = result.lastLocation
                         location?.let {
                             val latLng = LatLng(it.latitude, it.longitude)
-                            onLocationUpdate(latLng)
+                            // onLocationUpdate(latLng)
 
-                            // StateFlowの値を使う（現在の追従状態）
                             if (_isFollowing.value) {
                                 cameraPositionState.move(
                                     CameraUpdateFactory.newLatLngZoom(
@@ -299,11 +292,13 @@ class MapViewModel
                     }
                 }
 
-            fusedLocationClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback!!,
-                context.mainLooper,
-            )
+            locationCallback?.let {
+                fusedLocationClient.requestLocationUpdates(
+                    locationRequest,
+                    it,
+                    context.mainLooper,
+                )
+            }
         }
 
         private fun stopLocationUpdates() {
