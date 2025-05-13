@@ -21,7 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -170,7 +172,7 @@ fun MarkerListScreen(
                 text =
                     listUIState.message
                         ?: stringResource(id = R.string.listSc_system_list_error),
-                color = Color.Red,
+                color = Color.White,
                 modifier = Modifier.padding(16.dp),
             )
         }
@@ -200,7 +202,7 @@ fun MarkerListScreen(
                             embeddingUiState.message
                                 ?: stringResource(id = R.string.listSc_system_vector_error),
                         fontSize = 16.sp,
-                        color = Color.Red,
+                        color = Color.White,
                     )
                 }
             }
@@ -223,4 +225,21 @@ fun MarkerListScreen(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewMarkerListScreen() {
+    MarkerListScreen(
+        navController = NavHostController(LocalContext.current),
+        markerName = "",
+        startDate = "",
+        endDate = "",
+        memo = "",
+        embeddingMemo = "",
+        permanetMarkers = emptyList(),
+        similarMarkerIds = emptyList(),
+        listUIState = MarkerListUiState.Success(emptyList()),
+        embeddingUiState = EmbeddingUiState.Error("検索結果が取得できませんでした"),
+    )
 }

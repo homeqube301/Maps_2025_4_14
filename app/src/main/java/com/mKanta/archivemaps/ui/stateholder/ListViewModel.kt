@@ -107,7 +107,7 @@ class ListViewModel
                     val matchedIds = memoRepository.getSimilarMarkerIds(query)
                     if (matchedIds == null) {
                         _embeddingUiState.value =
-                            EmbeddingUiState.Error("検索結果が取得できませんでした。")
+                            EmbeddingUiState.Error("類似するマーカーが見つかりませんでした。")
                         return@launch
                     }
 
