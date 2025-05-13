@@ -25,13 +25,12 @@ suspend fun initializeMapLogic(
     startLocationUpdates: (
         context: Context,
         cameraPositionState: CameraPositionState,
-        onLocationUpdate: (LatLng) -> Unit,
     ) -> Unit,
 ) {
     startLocationUpdates(
         context,
         cameraPositionState,
-    ) { changeUserLocation(it) }
+    )
 
     loadMarkers()
 

@@ -43,7 +43,7 @@ fun MarkerListScreen(
     endDate: String,
     memo: String,
     embeddingMemo: String,
-    permanetMarkers: List<NamedMarker>,
+    permanentMarkers: List<NamedMarker>,
     similarMarkerIds: List<String>,
     changeEmbeddingMemo: (String) -> Unit = {},
     searchSimilarMarkers: () -> Unit = {},
@@ -71,7 +71,7 @@ fun MarkerListScreen(
     val markerListState =
         remember {
             derivedStateOf {
-                permanetMarkers.sortedBy { it.createdAt }
+                permanentMarkers.sortedBy { it.createdAt }
             }
         }
 
@@ -237,7 +237,7 @@ fun PreviewMarkerListScreen() {
         endDate = "",
         memo = "",
         embeddingMemo = "",
-        permanetMarkers = emptyList(),
+        permanentMarkers = emptyList(),
         similarMarkerIds = emptyList(),
         listUIState = MarkerListUiState.Success(emptyList()),
         embeddingUiState = EmbeddingUiState.Error("検索結果が取得できませんでした"),

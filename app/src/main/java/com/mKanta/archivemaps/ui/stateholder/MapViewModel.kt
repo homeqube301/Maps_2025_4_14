@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,10 +46,10 @@ class MapViewModel
 
         private val _isFollowing = MutableStateFlow(false)
 
-        private val _permanentMarkers = mutableStateListOf<NamedMarker>()
+        //        private val _permanentMarkers = mutableStateListOf<NamedMarker>()
         val uiState: StateFlow<MapsUiState> = _uiState
-        val permanentMarkers: List<NamedMarker>
-            get() = _permanentMarkers
+//        val permanentMarkers: List<NamedMarker>
+//            get() = _permanentMarkers
 
         init {
             loadMarkers()
@@ -200,24 +199,29 @@ class MapViewModel
         fun loadMarkers() {
             viewModelScope.launch {
                 val loaded = markerRepository.loadMarkers()
-                _permanentMarkers.clear()
-                _permanentMarkers.addAll(loaded)
+                _uiState.update { it.copy(permanentMarkers = emptyList()) }
+                _uiState.update {
+                    it.copy(permanentMarkers = it.permanentMarkers + loaded)
+                }
             }
         }
 
         fun saveMarkers() {
             viewModelScope.launch {
-                markerRepository.saveMarkers(_permanentMarkers)
+                markerRepository.saveMarkers(uiState.value.permanentMarkers)
             }
         }
 
         // 永続マーカーの更新
         fun updateMarker(updatedMarker: NamedMarker) {
-            val index = _permanentMarkers.indexOfFirst { it.id == updatedMarker.id }
-            if (index != -1) {
-                _permanentMarkers[index] = updatedMarker
-                saveMarkers() // 更新後に保存
+            _uiState.update { currentState ->
+                val updatedList =
+                    currentState.permanentMarkers.map {
+                        if (it.id == updatedMarker.id) updatedMarker else it
+                    }
+                currentState.copy(permanentMarkers = updatedList)
             }
+            saveMarkers()
         }
 
         fun updateMarkerMemoEmbedding(
@@ -225,21 +229,33 @@ class MapViewModel
             newMemo: String,
         ) {
             val updatedMarker = marker.copy(memo = newMemo)
-            val index = _permanentMarkers.indexOfFirst { it.id == updatedMarker.id }
-            if (index != -1) {
-                viewModelScope.launch {
-                    memoRepository.saveMemoEmbedding(marker.id, newMemo)
-                }
+
+            _uiState.update { currentState ->
+                val updatedList =
+                    currentState.permanentMarkers.map {
+                        if (it.id == updatedMarker.id) updatedMarker else it
+                    }
+                currentState.copy(permanentMarkers = updatedList)
+            }
+
+            viewModelScope.launch {
+                memoRepository.saveMemoEmbedding(marker.id, newMemo)
             }
         }
 
         fun addMarker(marker: NamedMarker) {
-            _permanentMarkers.add(marker)
+            _uiState.update { currentState ->
+                val updatedList = currentState.permanentMarkers + marker
+                currentState.copy(permanentMarkers = updatedList)
+            }
             saveMarkers()
         }
 
         fun removeMarker(markerId: String) {
-            _permanentMarkers.removeAll { it.id == markerId }
+            _uiState.update { currentState ->
+                val updatedList = currentState.permanentMarkers.filter { it.id != markerId }
+                currentState.copy(permanentMarkers = updatedList)
+            }
             saveMarkers()
         }
 
@@ -250,7 +266,6 @@ class MapViewModel
         fun startLocationUpdates(
             context: Context,
             cameraPositionState: CameraPositionState,
-            onLocationUpdate: (LatLng) -> Unit,
         ) {
             val hasPermission =
                 ContextCompat.checkSelfPermission(
@@ -278,7 +293,6 @@ class MapViewModel
                         val location = result.lastLocation
                         location?.let {
                             val latLng = LatLng(it.latitude, it.longitude)
-                            // onLocationUpdate(latLng)
 
                             if (_isFollowing.value) {
                                 cameraPositionState.move(
@@ -310,7 +324,6 @@ class MapViewModel
 
         override fun onCleared() {
             super.onCleared()
-            // ViewModelが破棄されるときにも解除
             stopLocationUpdates()
         }
 

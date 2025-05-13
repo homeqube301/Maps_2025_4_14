@@ -69,7 +69,6 @@ fun MapScreen(
     startLocationUpdates: (
         context: Context,
         cameraPositionState: CameraPositionState,
-        onLocationUpdate: (LatLng) -> Unit,
     ) -> Unit,
     fetchAddressForLatLng: (lat: Double, lon: Double) -> Unit,
     updateSearchList: (
@@ -117,8 +116,8 @@ fun MapScreen(
                 setVisibleMarkers = { setVisibleMarkers(it) },
                 changeUserLocation = { changeUserLocation(it) },
                 loadMarkers = { loadMarkers() },
-                startLocationUpdates = { context, camera, onLocationUpdate ->
-                    startLocationUpdates(context, camera, onLocationUpdate)
+                startLocationUpdates = { context, camera ->
+                    startLocationUpdates(context, camera)
                 },
             )
         }
@@ -309,7 +308,7 @@ fun MapScreenPreview() {
         saveMarkers = {},
         updateMarker = {},
         toggleFollowing = {},
-        startLocationUpdates = { _, _, _ -> },
+        startLocationUpdates = { _, _ -> },
         fetchAddressForLatLng = { _, _ -> },
         updateSearchList = { _, _, _ -> },
         selectedAddress = dummySelectedAddress,

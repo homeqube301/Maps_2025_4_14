@@ -19,10 +19,11 @@ data class MapsUiState(
     val titleResults: List<NamedMarker> = emptyList(),
     val memoResults: List<NamedMarker> = emptyList(),
     val visibleMarkers: List<NamedMarker> = emptyList(),
-    val editname: String? = null,
+    val editName: String? = null,
     val showMapIntro: Boolean = true,
     val showConfirmDialog: Boolean = false,
     val googleMapState: MapState = MapState.Loading,
+    val permanentMarkers: List<NamedMarker> = emptyList(),
 )
 
 sealed interface MapState {

@@ -70,11 +70,10 @@ fun AppNavHost(
                 addMarker = { mapViewModel.addMarker(it) },
                 removeMarker = { mapViewModel.removeMarker(it) },
                 toggleFollowing = { mapViewModel.toggleFollowing() },
-                startLocationUpdates = { context, cameraPositionState, onLocationUpdate ->
+                startLocationUpdates = { context, cameraPositionState ->
                     mapViewModel.startLocationUpdates(
                         context,
                         cameraPositionState,
-                        onLocationUpdate,
                     )
                 },
                 fetchAddressForLatLng = { lat, lon ->
@@ -89,7 +88,7 @@ fun AppNavHost(
                     )
                 },
                 selectedAddress = mapViewModel.selectedAddress,
-                permanentMarkers = mapViewModel.permanentMarkers,
+                permanentMarkers = uiState.permanentMarkers,
                 checkGoogleMapState = { mapViewModel.checkGoogleMapState(it) },
             )
         }
@@ -104,7 +103,7 @@ fun AppNavHost(
                 memo = listViewModel.listState.value.memo ?: "",
                 embeddingMemo = listViewModel.listState.value.embeddingMemo ?: "",
                 showListIntro = listViewModel.listState.value.showListIntro,
-                permanetMarkers = mapViewModel.permanentMarkers,
+                permanentMarkers = uiState.permanentMarkers,
                 similarMarkerIds = listViewModel.listState.value.similarMarkerIds,
                 changeEmbeddingMemo = { embeddingMemo ->
                     listViewModel.changeEmbeddingMemo(embeddingMemo)
