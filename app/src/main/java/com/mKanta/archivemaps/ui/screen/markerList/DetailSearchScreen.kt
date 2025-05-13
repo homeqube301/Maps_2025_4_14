@@ -32,6 +32,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -68,6 +69,11 @@ fun DetailSearchScreen(
     listState: ListState,
     changeShowDetailIntro: () -> Unit = {},
 ) {
+    LaunchedEffect(Unit) {
+        changeStartDate("")
+        changeEndDate("")
+    }
+
     DatePicker(
         openStartDatePicker = listState.openStartDatePicker,
         openEndDatePicker = listState.openEndDatePicker,
@@ -526,11 +532,12 @@ fun ComposeDatePickerDialog(
     val darkColorScheme =
         darkColorScheme(
             primary = Color.White,
-            onPrimary = colorResource(id = R.color.background_black),
-            surface = Color.Black,
+            onPrimary = colorResource(id = R.color.secondary_block),
+            surface = colorResource(id = R.color.background_black),
             onSurface = Color.White,
-            background = colorResource(id = R.color.background_black),
+            background = colorResource(id = R.color.secondary_block),
             onBackground = Color.White,
+            surfaceContainerHigh = colorResource(id = R.color.background_black),
         )
 
     Dialog(
@@ -543,7 +550,10 @@ fun ComposeDatePickerDialog(
             Surface(
                 shape = MaterialTheme.shapes.medium,
                 tonalElevation = 8.dp,
-                modifier = Modifier.fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth(),
             ) {
                 Column(
                     modifier =
