@@ -6,6 +6,8 @@ import com.google.android.gms.location.LocationServices
 import com.mKanta.archivemaps.BuildConfig
 import com.mKanta.archivemaps.data.local.MarkerLocalDataSource
 import com.mKanta.archivemaps.data.local.UserPreferences
+import com.mKanta.archivemaps.data.repository.EmbeddingRepository
+import com.mKanta.archivemaps.data.repository.EmbeddingRepositoryImpl
 import com.mKanta.archivemaps.data.repository.MarkerRepository
 import com.mKanta.archivemaps.data.repository.MarkerRepositoryImpl
 import com.mKanta.archivemaps.data.repository.UserPreferencesRepository
@@ -69,4 +71,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindMarkerRepository(markerRepositoryImpl: MarkerRepositoryImpl): MarkerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindEmbeddingRepository(impl: EmbeddingRepositoryImpl): EmbeddingRepository
 }
