@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.mKanta.archivemaps.ui.PermissionDeniedScreen
 import com.mKanta.archivemaps.ui.screen.map.MapScreen
 import com.mKanta.archivemaps.ui.screen.markerList.DetailSearchScreen
 import com.mKanta.archivemaps.ui.screen.markerList.MarkerListScreen
@@ -151,6 +152,9 @@ fun AppNavHost(
                     changeShowDetailIntro = { listViewModel.changeShowDetailIntro() },
                 )
             }
+        }
+        composable("Location_Permission") {
+            PermissionDeniedScreen()
         }
     }
 }

@@ -46,10 +46,7 @@ class MapViewModel
 
         private val _isFollowing = MutableStateFlow(false)
 
-        //        private val _permanentMarkers = mutableStateListOf<NamedMarker>()
         val uiState: StateFlow<MapsUiState> = _uiState
-//        val permanentMarkers: List<NamedMarker>
-//            get() = _permanentMarkers
 
         init {
             loadMarkers()
