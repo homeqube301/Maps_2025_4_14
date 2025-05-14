@@ -21,13 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.mKanta.archivemaps.R
+import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.ui.state.EmbeddingUiState
 import com.mKanta.archivemaps.ui.state.MarkerListUiState
@@ -37,7 +36,10 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun MarkerListScreen(
-    navController: NavHostController,
+    onNavigateToMap: () -> Unit = {},
+    onNavigateToMarker: (LatLngSerializable) -> Unit = {},
+    onNavigateToDetailSearch: () -> Unit = {},
+    onNavigateBack: () -> Unit = {},
     markerName: String,
     startDate: String,
     endDate: String,
@@ -138,7 +140,7 @@ fun MarkerListScreen(
         embeddingUiState is EmbeddingUiState.Loading && embeddingMemo.isNotEmpty() -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 IconButton(
-                    onClick = { navController.popBackStack() },
+                    onClick = onNavigateBack,
                     modifier =
                         Modifier
                             .align(Alignment.TopStart)
@@ -180,7 +182,7 @@ fun MarkerListScreen(
         embeddingUiState is EmbeddingUiState.Error -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 IconButton(
-                    onClick = { navController.popBackStack() },
+                    onClick = onNavigateBack,
                     modifier =
                         Modifier
                             .align(Alignment.TopStart)
@@ -210,7 +212,9 @@ fun MarkerListScreen(
 
         listUIState is MarkerListUiState.Success -> {
             MarkerListContent(
-                navController = navController,
+                onNavigateToMap = onNavigateToMap,
+                onNavigateToMarker = onNavigateToMarker,
+                onNavigateToDetailSearch = onNavigateToDetailSearch,
                 showListIntro = showListIntro,
                 changeShowListIntro = changeShowListIntro,
                 filteredMarkerList = filteredMarkerList,
@@ -231,7 +235,10 @@ fun MarkerListScreen(
 @Composable
 fun PreviewMarkerListScreen() {
     MarkerListScreen(
-        navController = NavHostController(LocalContext.current),
+        onNavigateToMap = {},
+        onNavigateToMarker = {},
+        onNavigateToDetailSearch = {},
+        onNavigateBack = {},
         markerName = "",
         startDate = "",
         endDate = "",

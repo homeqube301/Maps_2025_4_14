@@ -34,8 +34,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.canopas.lib.showcase.IntroShowcase
 import com.canopas.lib.showcase.component.ShowcaseStyle
 import com.mKanta.archivemaps.R
@@ -46,7 +44,9 @@ import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MarkerListContent(
-    navController: NavHostController,
+    onNavigateToMap: () -> Unit = {},
+    onNavigateToMarker: (LatLngSerializable) -> Unit = {},
+    onNavigateToDetailSearch: () -> Unit = {},
     showListIntro: Boolean,
     changeShowListIntro: () -> Unit = {},
     filteredMarkerList: List<NamedMarker>,
@@ -76,7 +76,7 @@ fun MarkerListContent(
                                 navigationIconContentColor = Color.White,
                             ),
                         navigationIcon = {
-                            IconButton(onClick = { navController.navigate("map/{latitude}/{longitude}") }) {
+                            IconButton(onClick = onNavigateToMap) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = stringResource(id = R.string.back),
@@ -85,7 +85,7 @@ fun MarkerListContent(
                         },
                         actions = {
                             IconButton(
-                                onClick = { navController.navigate("detail_search") },
+                                onClick = { onNavigateToDetailSearch },
                                 modifier =
                                     Modifier
                                         .introShowCaseTarget(
@@ -157,7 +157,7 @@ fun MarkerListContent(
                                 MarkerItem(
                                     marker = marker,
                                     onClick = {
-                                        navController.navigate("map/${marker.position.latitude}/${marker.position.longitude}")
+                                        onNavigateToMarker(marker.position)
                                     },
                                 )
                                 HorizontalDivider()
@@ -208,8 +208,6 @@ fun MarkerItem(
 @Preview
 @Composable
 fun PreviewMarkerListContent() {
-    val dummyNavController = rememberNavController()
-
     val dummyMarkers =
         listOf(
             NamedMarker(
@@ -227,7 +225,9 @@ fun PreviewMarkerListContent() {
         )
 
     MarkerListContent(
-        navController = dummyNavController,
+        onNavigateToMap = {},
+        onNavigateToMarker = {},
+        onNavigateToDetailSearch = {},
         showListIntro = false,
         changeShowListIntro = {},
         filteredMarkerList = dummyMarkers,

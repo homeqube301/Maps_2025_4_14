@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.ui.PermissionDeniedScreen
 import com.mKanta.archivemaps.ui.screen.map.MapScreen
 import com.mKanta.archivemaps.ui.screen.markerList.DetailSearchScreen
@@ -115,7 +116,12 @@ fun AppNavHost(
                 val uiState by markerViewModel.uiState.collectAsState()
                 val embeddingUiState by listViewModel.embeddingUiState.collectAsState()
                 MarkerListScreen(
-                    navController = navController,
+                    onNavigateToMap = { navController.navigate("map/{latitude}/{longitude}") },
+                    onNavigateToMarker = { position: LatLngSerializable ->
+                        navController.navigate("map/${position.latitude}/${position.longitude}")
+                    },
+                    onNavigateToDetailSearch = { navController.navigate("detail_search") },
+                    onNavigateBack = { navController.popBackStack() },
                     markerName = listViewModel.listState.value.markerName ?: "",
                     startDate = listViewModel.listState.value.startDate ?: "",
                     endDate = listViewModel.listState.value.endDate ?: "",

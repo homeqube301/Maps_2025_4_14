@@ -17,7 +17,6 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.NamedMarker
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -60,7 +59,6 @@ fun MapView(
         },
         onMapLoaded = {
             coroutineScope.launch {
-                delay(30L)
                 checkGoogleMapState(true)
             }
         },
