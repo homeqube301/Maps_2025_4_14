@@ -16,7 +16,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,14 +24,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.android.gms.maps.model.LatLngBounds
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.ui.state.EmbeddingUiState
 import com.mKanta.archivemaps.ui.state.MarkerListUiState
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun MarkerListScreen(
@@ -54,6 +51,15 @@ fun MarkerListScreen(
     listUIState: MarkerListUiState,
     embeddingUiState: EmbeddingUiState,
     checkListUIState: (List<NamedMarker>) -> Unit = {},
+    filterMarkers: (
+        markers: List<NamedMarker>,
+        bounds: LatLngBounds?,
+        startDate: String?,
+        endDate: String?,
+        markerName: String?,
+        memo: String?,
+        similarMarkerIds: List<String>,
+    ) -> List<NamedMarker> = { _, _, _, _, _, _, _ -> emptyList() },
 ) {
     LaunchedEffect(embeddingMemo) {
         if (embeddingMemo.isNotEmpty()) {
@@ -67,67 +73,17 @@ fun MarkerListScreen(
         "start=$startDate, end=$endDate, name=$markerName, memo=$memo, embeddingMemo=$embeddingMemo",
     )
 
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
-
-    val markerListState =
-        remember {
-            derivedStateOf {
-                permanentMarkers.sortedBy { it.createdAt }
-            }
-        }
-
-    val startDateTime =
-        if (startDate.isNotEmpty()) {
-            try {
-                LocalDate.parse(startDate, formatter)
-            } catch (e: Exception) {
-                Log.e("MarkerListScreen", "startDate の変換に失敗しました: $e")
-                null
-            }
-        } else {
-            null
-        }
-
-    val endDateTime =
-        if (endDate.isNotEmpty()) {
-            try {
-                LocalDate.parse(endDate, formatter)
-            } catch (_: Exception) {
-                null
-            }
-        } else {
-            null
-        }
-
     val filteredMarkerList =
-        markerListState.value.filter { marker ->
-            val markerDate: LocalDate? =
-                try {
-                    val dateTime = LocalDateTime.parse(marker.createdAt, originalFormatter)
-                    dateTime.toLocalDate()
-                } catch (_: Exception) {
-                    Log.e("MarkerListScreen", "marker.createdAtのパースに失敗: ${marker.createdAt}")
-                    null
-                }
-
-            val matchesDate =
-                if (markerDate != null) {
-                    (startDateTime == null || !markerDate.isBefore(startDateTime)) &&
-                        (endDateTime == null || !markerDate.isAfter(endDateTime))
-                } else {
-                    false
-                }
-
-            val matchesName =
-                markerName.isEmpty() || marker.title.contains(markerName, ignoreCase = true)
-            val matchesMemo =
-                memo.isEmpty() || marker.memo?.contains(memo, ignoreCase = true) == true
-
-            val matchesEmbedding =
-                similarMarkerIds.isEmpty() || marker.id in similarMarkerIds
-
-            matchesName && matchesDate && matchesMemo && matchesEmbedding
+        remember(markerName, startDate, endDate, memo, similarMarkerIds, permanentMarkers) {
+            filterMarkers(
+                permanentMarkers,
+                null,
+                startDate.takeIf { it.isNotEmpty() },
+                endDate.takeIf { it.isNotEmpty() },
+                markerName.takeIf { it.isNotEmpty() },
+                memo.takeIf { it.isNotEmpty() },
+                similarMarkerIds,
+            )
         }
 
     checkListUIState(filteredMarkerList)

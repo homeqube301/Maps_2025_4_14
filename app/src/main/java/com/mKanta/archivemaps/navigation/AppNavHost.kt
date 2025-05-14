@@ -101,6 +101,17 @@ fun AppNavHost(
                     selectedAddress = mapViewModel.selectedAddress,
                     permanentMarkers = uiState.permanentMarkers,
                     checkGoogleMapState = { mapViewModel.checkGoogleMapState(it) },
+                    filterMarkers = { markers, bounds, startDate, endDate, markerName, memo, similarMarkerIds ->
+                        markerViewModel.filterMarkers(
+                            markers,
+                            bounds,
+                            startDate,
+                            endDate,
+                            markerName,
+                            memo,
+                            similarMarkerIds,
+                        )
+                    },
                 )
             }
             composable("marker_list") { backStackEntry ->
@@ -140,6 +151,17 @@ fun AppNavHost(
                     },
                     listUIState = listUIState,
                     embeddingUiState = embeddingUiState,
+                    filterMarkers = { markers, bounds, startDate, endDate, markerName, memo, similarMarkerIds ->
+                        listViewModel.filterMarkers(
+                            markers,
+                            bounds,
+                            startDate,
+                            endDate,
+                            markerName,
+                            memo,
+                            similarMarkerIds,
+                        )
+                    },
                 )
             }
             composable("detail_search") {

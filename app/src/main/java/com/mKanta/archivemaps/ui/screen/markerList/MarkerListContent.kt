@@ -85,7 +85,7 @@ fun MarkerListContent(
                         },
                         actions = {
                             IconButton(
-                                onClick = { onNavigateToDetailSearch },
+                                onClick = onNavigateToDetailSearch,
                                 modifier =
                                     Modifier
                                         .introShowCaseTarget(

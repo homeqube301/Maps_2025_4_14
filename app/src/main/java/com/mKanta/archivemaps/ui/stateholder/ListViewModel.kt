@@ -2,6 +2,7 @@ package com.mKanta.archivemaps.ui.stateholder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLngBounds
 import com.mKanta.archivemaps.data.repository.MemoRepository
 import com.mKanta.archivemaps.data.repository.UserPreferencesRepository
 import com.mKanta.archivemaps.domain.model.NamedMarker
@@ -14,6 +15,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -95,6 +99,55 @@ class ListViewModel
         fun changeEndDate(change: String) {
             _listState.value = _listState.value.copy(endDate = change)
         }
+
+        fun filterMarkers(
+            markers: List<NamedMarker>,
+            bounds: LatLngBounds? = null,
+            startDate: String? = null,
+            endDate: String? = null,
+            markerName: String? = null,
+            memo: String? = null,
+            similarMarkerIds: List<String> = emptyList(),
+        ): List<NamedMarker> {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val originalFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")
+
+            val startDateTime =
+                startDate?.let {
+                    runCatching { LocalDate.parse(it, formatter) }.getOrNull()
+                }
+            val endDateTime =
+                endDate?.let {
+                    runCatching { LocalDate.parse(it, formatter) }.getOrNull()
+                }
+
+            return markers.filter { marker ->
+                val markerDate =
+                    runCatching {
+                        LocalDateTime.parse(marker.createdAt, originalFormatter).toLocalDate()
+                    }.getOrNull()
+
+                val matchesDate =
+                    markerDate?.let {
+                        (startDateTime == null || !it.isBefore(startDateTime)) &&
+                                (endDateTime == null || !it.isAfter(endDateTime))
+                    } == true
+
+                val matchesName =
+                    markerName.isNullOrEmpty() || marker.title.contains(markerName, ignoreCase = true)
+
+                val matchesMemo =
+                    memo.isNullOrEmpty() || marker.memo?.contains(memo, ignoreCase = true) == true
+
+                val matchesEmbedding =
+                    similarMarkerIds.isEmpty() || marker.id in similarMarkerIds
+
+                val matchesBounds =
+                    bounds == null || marker.position.toLatLng() in bounds
+
+            matchesDate && matchesName && matchesMemo && matchesEmbedding && matchesBounds
+        }
+    }
 
         fun searchSimilarMarkers() {
             viewModelScope.launch {

@@ -43,10 +43,12 @@ class MapViewModel
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(MapsUiState())
         private var locationCallback: LocationCallback? = null
+        private val _selectedAddress = MutableStateFlow("読み込み中…")
 
         private val _isFollowing = MutableStateFlow(false)
 
         val uiState: StateFlow<MapsUiState> = _uiState
+        val selectedAddress: StateFlow<String> = _selectedAddress
 
         init {
             loadMarkers()
@@ -327,10 +329,6 @@ class MapViewModel
             super.onCleared()
             stopLocationUpdates()
         }
-
-        private val _selectedAddress = MutableStateFlow("読み込み中…")
-
-        val selectedAddress: StateFlow<String> = _selectedAddress
 
         fun fetchAddressForLatLng(
             lat: Double,

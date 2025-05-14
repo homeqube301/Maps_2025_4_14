@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.mKanta.archivemaps.R
@@ -87,6 +88,15 @@ fun MapScreen(
     endDate: String? = null,
     markerName: String? = null,
     memo: String? = null,
+    filterMarkers: (
+        markers: List<NamedMarker>,
+        bounds: LatLngBounds?,
+        startDate: String?,
+        endDate: String?,
+        markerName: String?,
+        memo: String?,
+        similarMarkerIds: List<String>,
+    ) -> List<NamedMarker>,
 ) {
     ArchivemapsTheme {
         val context = LocalContext.current
@@ -117,6 +127,7 @@ fun MapScreen(
                 startLocationUpdates = { context, camera ->
                     startLocationUpdates(context, camera)
                 },
+                filterMarkers = filterMarkers,
             )
         }
 
@@ -320,5 +331,6 @@ fun MapScreenPreview() {
         endDate = null,
         markerName = null,
         memo = null,
+        filterMarkers = { _, _, _, _, _, _, _ -> emptyList() },
     )
 }
