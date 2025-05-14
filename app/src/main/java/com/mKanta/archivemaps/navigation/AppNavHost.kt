@@ -114,72 +114,84 @@ fun AppNavHost(
                     },
                 )
             }
-            composable("marker_list") { backStackEntry ->
-                val parentEntry =
-                    remember(backStackEntry) {
-                        navController.getBackStackEntry("marker")
-                    }
+            navigation(startDestination = "marker_list", route = "list") {
+                composable("marker_list") { backStackEntry ->
+                    val parentEntry =
+                        remember(backStackEntry) {
+                            navController.getBackStackEntry("marker")
+                        }
+                    val listParentEntry =
+                        remember(backStackEntry) {
+                            navController.getBackStackEntry("list")
+                        }
 
-                val markerViewModel: MapViewModel = hiltViewModel(parentEntry)
+                    val markerViewModel: MapViewModel = hiltViewModel(parentEntry)
+                    val listViewModel: ListViewModel = hiltViewModel(listParentEntry)
 
-                val listViewModel: ListViewModel = hiltViewModel()
-                val listUIState by listViewModel.listUIState.collectAsState()
-                val uiState by markerViewModel.uiState.collectAsState()
-                val embeddingUiState by listViewModel.embeddingUiState.collectAsState()
-                MarkerListScreen(
-                    onNavigateToMap = { navController.navigate("map/{latitude}/{longitude}") },
-                    onNavigateToMarker = { position: LatLngSerializable ->
-                        navController.navigate("map/${position.latitude}/${position.longitude}")
-                    },
-                    onNavigateToDetailSearch = { navController.navigate("detail_search") },
-                    onNavigateBack = { navController.popBackStack() },
-                    markerName = listViewModel.listState.value.markerName ?: "",
-                    startDate = listViewModel.listState.value.startDate ?: "",
-                    endDate = listViewModel.listState.value.endDate ?: "",
-                    memo = listViewModel.listState.value.memo ?: "",
-                    embeddingMemo = listViewModel.listState.value.embeddingMemo ?: "",
-                    showListIntro = listViewModel.listState.value.showListIntro,
-                    permanentMarkers = uiState.permanentMarkers,
-                    similarMarkerIds = listViewModel.listState.value.similarMarkerIds,
-                    changeEmbeddingMemo = { embeddingMemo ->
-                        listViewModel.changeEmbeddingMemo(embeddingMemo)
-                    },
-                    searchSimilarMarkers = { listViewModel.searchSimilarMarkers() },
-                    changeShowListIntro = { listViewModel.changeShowListIntro() },
-                    checkListUIState = { filteredMarkerList ->
-                        listViewModel.checkListUIState(filteredMarkerList)
-                    },
-                    listUIState = listUIState,
-                    embeddingUiState = embeddingUiState,
-                    filterMarkers = { markers, bounds, startDate, endDate, markerName, memo, similarMarkerIds ->
-                        listViewModel.filterMarkers(
-                            markers,
-                            bounds,
-                            startDate,
-                            endDate,
-                            markerName,
-                            memo,
-                            similarMarkerIds,
-                        )
-                    },
-                )
-            }
-            composable("detail_search") {
-                val listViewModel: ListViewModel = hiltViewModel()
-                val listState by listViewModel.listState.collectAsState()
-                DetailSearchScreen(
-                    onNavigateBack = { navController.popBackStack() },
-                    onNavigateToMarkerList = { navController.navigate("marker_list") },
-                    listState = listState,
-                    changeStartDatePicker = { listViewModel.changeStartDatePicker() },
-                    changeEndDatePicker = { listViewModel.changeEndDatePicker() },
-                    changeMarkerName = { listViewModel.changeMarkerName(it) },
-                    changeStartDate = { listViewModel.changeStartDate(it) },
-                    changeEndDate = { listViewModel.changeEndDate(it) },
-                    changeEmbeddingMemo = { listViewModel.changeEmbeddingMemo(it) },
-                    changeMemo = { listViewModel.changeMemo(it) },
-                    changeShowDetailIntro = { listViewModel.changeShowDetailIntro() },
-                )
+                    val listUIState by listViewModel.listUIState.collectAsState()
+                    val uiState by markerViewModel.uiState.collectAsState()
+                    val embeddingUiState by listViewModel.embeddingUiState.collectAsState()
+                    MarkerListScreen(
+                        onNavigateToMap = { navController.navigate("map/{latitude}/{longitude}") },
+                        onNavigateToMarker = { position: LatLngSerializable ->
+                            navController.navigate("map/${position.latitude}/${position.longitude}")
+                        },
+                        onNavigateToDetailSearch = { navController.navigate("detail_search") },
+                        onNavigateBack = { navController.popBackStack() },
+                        markerName = listViewModel.listState.value.markerName ?: "",
+                        startDate = listViewModel.listState.value.startDate ?: "",
+                        endDate = listViewModel.listState.value.endDate ?: "",
+                        memo = listViewModel.listState.value.memo ?: "",
+                        embeddingMemo = listViewModel.listState.value.embeddingMemo ?: "",
+                        showListIntro = listViewModel.listState.value.showListIntro,
+                        permanentMarkers = uiState.permanentMarkers,
+                        similarMarkerIds = listViewModel.listState.value.similarMarkerIds,
+                        changeEmbeddingMemo = { embeddingMemo ->
+                            listViewModel.changeEmbeddingMemo(embeddingMemo)
+                        },
+                        searchSimilarMarkers = { listViewModel.searchSimilarMarkers() },
+                        changeShowListIntro = { listViewModel.changeShowListIntro() },
+                        checkListUIState = { filteredMarkerList ->
+                            listViewModel.checkListUIState(filteredMarkerList)
+                        },
+                        listUIState = listUIState,
+                        embeddingUiState = embeddingUiState,
+                        filterMarkers = { markers, bounds, startDate, endDate, markerName, memo, similarMarkerIds ->
+                            listViewModel.filterMarkers(
+                                markers,
+                                bounds,
+                                startDate,
+                                endDate,
+                                markerName,
+                                memo,
+                                similarMarkerIds,
+                            )
+                        },
+                    )
+                }
+                composable("detail_search") { backStackEntry ->
+                    val parentEntry =
+                        remember(backStackEntry) {
+                            navController.getBackStackEntry("list")
+                        }
+
+                    val listViewModel: ListViewModel = hiltViewModel(parentEntry)
+
+                    val listState by listViewModel.listState.collectAsState()
+                    DetailSearchScreen(
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToMarkerList = { navController.navigate("marker_list") },
+                        listState = listState,
+                        changeStartDatePicker = { listViewModel.changeStartDatePicker() },
+                        changeEndDatePicker = { listViewModel.changeEndDatePicker() },
+                        changeMarkerName = { listViewModel.changeMarkerName(it) },
+                        changeStartDate = { listViewModel.changeStartDate(it) },
+                        changeEndDate = { listViewModel.changeEndDate(it) },
+                        changeEmbeddingMemo = { listViewModel.changeEmbeddingMemo(it) },
+                        changeMemo = { listViewModel.changeMemo(it) },
+                        changeShowDetailIntro = { listViewModel.changeShowDetailIntro() },
+                    )
+                }
             }
         }
         composable("Location_Permission") {
