@@ -5,7 +5,6 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.Dns
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -44,7 +43,6 @@ fun provideOpenAiApi(apiKey: String = BuildConfig.OPENAI_API_KEY): OpenAiApi {
     val client =
         OkHttpClient
             .Builder()
-            .dns(Dns.SYSTEM)
             .addInterceptor { chain ->
                 val request =
                     chain

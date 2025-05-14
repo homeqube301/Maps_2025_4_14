@@ -24,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.canopas.lib.showcase.IntroShowcase
 import com.canopas.lib.showcase.component.ShowcaseStyle
 import com.mKanta.archivemaps.R
@@ -38,7 +37,7 @@ fun MapFloatingButtons(
     changeIsFollowing: () -> Unit,
     toggleFollowing: () -> Unit,
     isFollowing: Boolean,
-    navController: NavHostController,
+    onNavigateToMarkerList: () -> Unit,
 ) {
     IntroShowcase(
         showIntroShowCase = showIntroShowCase,
@@ -103,8 +102,7 @@ fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Companion.Center),
+                        ).align(Alignment.Companion.Center),
             )
         }
 
@@ -224,7 +222,7 @@ fun MapFloatingButtons(
             }
 
             FloatingActionButton(
-                onClick = { navController.navigate("marker_list") },
+                onClick = onNavigateToMarkerList,
                 contentColor = Color.Companion.White,
                 containerColor = MaterialTheme.colorScheme.primary,
                 modifier =

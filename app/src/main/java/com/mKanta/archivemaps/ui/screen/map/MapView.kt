@@ -60,7 +60,7 @@ fun MapView(
         },
         onMapLoaded = {
             coroutineScope.launch {
-                delay(3000L)
+                delay(30L)
                 checkGoogleMapState(true)
             }
         },

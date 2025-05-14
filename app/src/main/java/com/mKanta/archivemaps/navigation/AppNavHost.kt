@@ -42,7 +42,7 @@ fun AppNavHost(
                 val uiState by mapViewModel.uiState.collectAsState()
                 val listState by markerViewModel.listState.collectAsState()
                 MapScreen(
-                    navController = navController,
+                    onNavigateToMarkerList = { navController.navigate("marker_list") },
                     latitude = latitude,
                     longitude = longitude,
                     uiState = uiState,

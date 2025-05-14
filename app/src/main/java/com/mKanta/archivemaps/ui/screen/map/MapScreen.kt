@@ -26,8 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraPositionState
@@ -44,9 +42,9 @@ import kotlinx.coroutines.flow.StateFlow
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
+    onNavigateToMarkerList: () -> Unit,
     latitude: Double,
     longitude: Double,
-    navController: NavHostController,
     uiState: MapsUiState,
     changeIsFollowing: () -> Unit,
     changeIsEditPanelOpen: () -> Unit,
@@ -175,7 +173,7 @@ fun MapScreen(
                             changeIsSearchOpen = { changeIsSearchOpen() },
                             changeIsFollowing = { changeIsFollowing() },
                             toggleFollowing = { toggleFollowing() },
-                            navController = navController,
+                            onNavigateToMarkerList = { onNavigateToMarkerList() },
                             isFollowing = uiState.isFollowing,
                         )
                     }
@@ -280,15 +278,13 @@ fun MapScreen(
 @Preview(showBackground = true)
 @Composable
 fun MapScreenPreview() {
-    val dummyNavController = rememberNavController()
-
     val dummyUiState = MapsUiState(googleMapState = MapState.Success(true))
     val dummySelectedAddress = MutableStateFlow("東京都渋谷区")
 
     MapScreen(
         latitude = 35.6812,
         longitude = 139.7671,
-        navController = dummyNavController,
+        onNavigateToMarkerList = {},
         uiState = dummyUiState,
         changeIsFollowing = {},
         changeIsEditPanelOpen = {},
