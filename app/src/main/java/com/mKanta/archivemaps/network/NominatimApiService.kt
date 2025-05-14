@@ -2,7 +2,6 @@ package com.mKanta.archivemaps.network
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -14,9 +13,9 @@ data class NominatimResponse(
 
 interface NominatimApiService {
     @GET("reverse")
-    fun reverseGeocode(
+    suspend fun reverseGeocode(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
         @Query("format") format: String = "json",
-    ): Call<NominatimResponse>
+    ): NominatimResponse
 }

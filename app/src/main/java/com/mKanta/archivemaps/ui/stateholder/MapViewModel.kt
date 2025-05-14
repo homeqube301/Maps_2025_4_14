@@ -20,7 +20,6 @@ import com.mKanta.archivemaps.data.repository.MarkerRepository
 import com.mKanta.archivemaps.data.repository.MemoRepository
 import com.mKanta.archivemaps.data.repository.UserPreferencesRepository
 import com.mKanta.archivemaps.domain.model.NamedMarker
-import com.mKanta.archivemaps.network.NominatimResponse
 import com.mKanta.archivemaps.ui.state.MapState
 import com.mKanta.archivemaps.ui.state.MapsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +27,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.Call
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -340,30 +340,20 @@ class MapViewModel
 
             Log.d("MarkerViewModel", "住所取得リクエスト: lat=$lat, lon=$lon")
 
-            geocodingRepository.reverseGeocode(lat, lon).enqueue(
-                object : retrofit2.Callback<NominatimResponse> {
-                    override fun onResponse(
-                        call: Call<NominatimResponse>,
-                        response: retrofit2.Response<NominatimResponse>,
-                    ) {
-                        _selectedAddress.value =
-                            if (response.isSuccessful) {
-                                Log.e("API", "ステータスコード: ${response.code()}")
-                                Log.e("API", "メッセージ: ${response.message()}")
-                                Log.e("API", "エラー本文: ${response.errorBody()?.string()}")
-                                response.body()?.displayName ?: "住所が見つかりません"
-                            } else {
-                                "住所の取得に失敗"
-                            }
-                    }
-
-                    override fun onFailure(
-                        call: Call<NominatimResponse>,
-                        t: Throwable,
-                    ) {
-                        _selectedAddress.value = "ネットワークエラー: ${t.message}"
-                    }
-                },
-            )
+            viewModelScope.launch {
+                runCatching {
+                    geocodingRepository.reverseGeocode(lat, lon)
+                }.onSuccess { response ->
+                    _selectedAddress.value = response.displayName ?: "住所が見つかりません"
+                }.onFailure { e ->
+                    Log.e("API", "住所取得失敗: ${e.message}")
+                    _selectedAddress.value =
+                        when (e) {
+                            is IOException -> "ネットワークエラー: ${e.message}"
+                            is HttpException -> "サーバーエラー: ${e.code()}"
+                            else -> "予期しないエラー: ${e.message}"
+                        }
+                }
+            }
         }
     }

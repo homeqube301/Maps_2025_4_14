@@ -8,7 +8,7 @@ class GeocodingRepository
     constructor(
         private val apiService: NominatimApiService,
     ) {
-        fun reverseGeocode(
+        suspend fun reverseGeocode(
             lat: Double,
             lon: Double,
         ) = apiService.reverseGeocode(lat, lon)
