@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.canopas.lib.showcase.IntroShowcase
 import com.canopas.lib.showcase.component.ShowcaseStyle
@@ -58,7 +57,8 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailSearchScreen(
-    navController: NavHostController,
+    onNavigateBack: () -> Unit = {},
+    onNavigateToMarkerList: () -> Unit = {},
     changeStartDatePicker: () -> Unit = {},
     changeEndDatePicker: () -> Unit = {},
     changeMarkerName: (String) -> Unit = {},
@@ -84,7 +84,6 @@ fun DetailSearchScreen(
     )
 
     SearchContents(
-        navController = navController,
         markerName = listState.markerName,
         startDate = listState.startDate,
         endDate = listState.endDate,
@@ -97,6 +96,8 @@ fun DetailSearchScreen(
         showDetailIntro = listState.showDetailIntro,
         changeStartDatePicker = changeStartDatePicker,
         changeEndDatePicker = changeEndDatePicker,
+        onNavigateBack = onNavigateBack,
+        onNavigateToMarkerList = onNavigateToMarkerList,
     )
 }
 
@@ -153,7 +154,8 @@ private fun DatePicker(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchContents(
-    navController: NavHostController,
+    onNavigateBack: () -> Unit,
+    onNavigateToMarkerList: () -> Unit,
     markerName: String?,
     startDate: String?,
     endDate: String?,
@@ -187,7 +189,7 @@ fun SearchContents(
                         },
                         colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.tertiary),
                         navigationIcon = {
-                            IconButton(onClick = { navController.popBackStack() }) {
+                            IconButton(onClick = onNavigateBack) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = stringResource(id = R.string.back),
@@ -258,8 +260,7 @@ fun SearchContents(
                                             )
                                         }
                                     },
-                                )
-                                .fillMaxWidth(),
+                                ).fillMaxWidth(),
                     )
 
                     Row(
@@ -499,9 +500,7 @@ fun SearchContents(
 
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = {
-                            navController.navigate("marker_list")
-                        },
+                        onClick = onNavigateToMarkerList,
                         modifier = Modifier.fillMaxWidth(),
                         colors =
                             androidx.compose.material3.ButtonDefaults.buttonColors(
@@ -604,7 +603,8 @@ fun ComposeDatePickerDialog(
 fun DetailSearchScreenPreview() {
     val dummyNavController = rememberNavController()
     DetailSearchScreen(
-        navController = dummyNavController,
+        onNavigateBack = { dummyNavController.popBackStack() },
+        onNavigateToMarkerList = { dummyNavController.navigate("marker_list") },
         changeStartDatePicker = {},
         changeEndDatePicker = {},
         changeMarkerName = {},

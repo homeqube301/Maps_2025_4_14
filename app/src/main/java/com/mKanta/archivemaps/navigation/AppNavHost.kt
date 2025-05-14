@@ -168,7 +168,8 @@ fun AppNavHost(
                 val listViewModel: ListViewModel = hiltViewModel()
                 val listState by listViewModel.listState.collectAsState()
                 DetailSearchScreen(
-                    navController = navController,
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToMarkerList = { navController.navigate("marker_list") },
                     listState = listState,
                     changeStartDatePicker = { listViewModel.changeStartDatePicker() },
                     changeEndDatePicker = { listViewModel.changeEndDatePicker() },

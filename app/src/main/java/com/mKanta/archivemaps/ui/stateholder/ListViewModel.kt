@@ -130,7 +130,7 @@ class ListViewModel
                 val matchesDate =
                     markerDate?.let {
                         (startDateTime == null || !it.isBefore(startDateTime)) &&
-                                (endDateTime == null || !it.isAfter(endDateTime))
+                            (endDateTime == null || !it.isAfter(endDateTime))
                     } == true
 
                 val matchesName =
@@ -145,9 +145,9 @@ class ListViewModel
                 val matchesBounds =
                     bounds == null || marker.position.toLatLng() in bounds
 
-            matchesDate && matchesName && matchesMemo && matchesEmbedding && matchesBounds
+                matchesDate && matchesName && matchesMemo && matchesEmbedding && matchesBounds
+            }
         }
-    }
 
         fun searchSimilarMarkers() {
             viewModelScope.launch {
