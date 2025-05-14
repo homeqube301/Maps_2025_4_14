@@ -123,8 +123,12 @@ class MapViewModel
             val lowerTitle = titleQuery?.lowercase()
             val lowerMemo = memoQuery?.lowercase()
 
-            _uiState.update { it.copy(titleResults = emptyList()) }
-            _uiState.update { it.copy(memoResults = emptyList()) }
+            _uiState.update {
+                it.copy(
+                    titleResults = emptyList(),
+                    memoResults = emptyList(),
+                )
+            }
 
             val titleFiltered =
                 if (!lowerTitle.isNullOrBlank()) {
