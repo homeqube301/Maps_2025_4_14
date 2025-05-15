@@ -8,9 +8,14 @@ import com.mKanta.archivemaps.data.local.MarkerLocalDataSource
 import com.mKanta.archivemaps.data.local.UserPreferences
 import com.mKanta.archivemaps.data.repository.EmbeddingRepository
 import com.mKanta.archivemaps.data.repository.EmbeddingRepositoryImpl
+import com.mKanta.archivemaps.data.repository.GeocodingRepository
+import com.mKanta.archivemaps.data.repository.GeocodingRepositoryImpl
 import com.mKanta.archivemaps.data.repository.MarkerRepository
 import com.mKanta.archivemaps.data.repository.MarkerRepositoryImpl
+import com.mKanta.archivemaps.data.repository.MemoRepository
+import com.mKanta.archivemaps.data.repository.MemoRepositoryImpl
 import com.mKanta.archivemaps.data.repository.UserPreferencesRepository
+import com.mKanta.archivemaps.data.repository.UserPreferencesRepositoryImpl
 import com.mKanta.archivemaps.network.OpenAiApi
 import com.mKanta.archivemaps.network.SupabaseApi
 import com.mKanta.archivemaps.network.provideOpenAiApi
@@ -58,16 +63,23 @@ object AppModule {
     fun provideUserPreferences(
         @ApplicationContext context: Context,
     ): UserPreferences = UserPreferences(context)
-
-    @Provides
-    @Singleton
-    fun provideUserPreferencesRepository(userPreferences: UserPreferences): UserPreferencesRepository =
-        UserPreferencesRepository(userPreferences)
 }
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindGeocodingRepository(impl: GeocodingRepositoryImpl): GeocodingRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserPreferencesRepository(impl: UserPreferencesRepositoryImpl): UserPreferencesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMemoRepository(impl: MemoRepositoryImpl): MemoRepository
+
     @Binds
     @Singleton
     abstract fun bindMarkerRepository(markerRepositoryImpl: MarkerRepositoryImpl): MarkerRepository

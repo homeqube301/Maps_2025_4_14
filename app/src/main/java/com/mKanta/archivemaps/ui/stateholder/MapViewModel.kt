@@ -339,19 +339,19 @@ class MapViewModel
             Log.d("MarkerViewModel", "住所取得リクエスト: lat=$lat, lon=$lon")
 
             viewModelScope.launch {
-                runCatching {
-                    geocodingRepository.reverseGeocode(lat, lon)
-                }.onSuccess { response ->
-                    _selectedAddress.value = response.displayName ?: "住所が見つかりません"
-                }.onFailure { e ->
-                    Log.e("API", "住所取得失敗: ${e.message}")
-                    _selectedAddress.value =
-                        when (e) {
-                            is IOException -> "ネットワークエラー: ${e.message}"
-                            is HttpException -> "サーバーエラー: ${e.code()}"
-                            else -> "予期しないエラー: ${e.message}"
-                        }
-                }
+                geocodingRepository
+                    .reverseGeocode(lat, lon)
+                    .onSuccess { response ->
+                        _selectedAddress.value = response.displayName ?: "住所が見つかりません"
+                    }.onFailure { e ->
+                        Log.e("API", "住所取得失敗: ${e.message}")
+                        _selectedAddress.value =
+                            when (e) {
+                                is IOException -> "ネットワークエラー: ${e.message}"
+                                is HttpException -> "サーバーエラー: ${e.code()}"
+                                else -> "予期しないエラー: ${e.message}"
+                            }
+                    }
             }
         }
     }

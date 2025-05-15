@@ -7,13 +7,22 @@ import com.mKanta.archivemaps.network.SimilarMemoResponse
 import com.mKanta.archivemaps.network.SupabaseApi
 import javax.inject.Inject
 
-class MemoRepository
+interface MemoRepository {
+    suspend fun saveMemoEmbedding(
+        markerId: String,
+        memoText: String,
+    ): Boolean
+
+    suspend fun getSimilarMarkerIds(memoText: String): List<String>?
+}
+
+class MemoRepositoryImpl
     @Inject
     constructor(
         private val supabaseApi: SupabaseApi,
         private val embeddingRepository: EmbeddingRepository,
-    ) {
-        suspend fun saveMemoEmbedding(
+    ) : MemoRepository {
+        override suspend fun saveMemoEmbedding(
             markerId: String,
             memoText: String,
         ): Boolean {
@@ -37,7 +46,7 @@ class MemoRepository
             }
         }
 
-        suspend fun getSimilarMarkerIds(memoText: String): List<String>? {
+        override suspend fun getSimilarMarkerIds(memoText: String): List<String>? {
             val embedding = embeddingRepository.fetchEmbedding(memoText) ?: return null
             val similarMemos = getSimilarMemos(embedding) ?: return null
             return similarMemos.map { it.markerId }

@@ -3,13 +3,30 @@ package com.mKanta.archivemaps.data.repository
 import com.mKanta.archivemaps.network.NominatimApiService
 import javax.inject.Inject
 
-class GeocodingRepository
+data class GeocodingResponse(
+    val displayName: String?,
+)
+
+interface GeocodingRepository {
+    suspend fun reverseGeocode(
+        lat: Double,
+        lon: Double,
+    ): Result<GeocodingResponse>
+}
+
+class GeocodingRepositoryImpl
     @Inject
     constructor(
         private val apiService: NominatimApiService,
-    ) {
-        suspend fun reverseGeocode(
+    ) : GeocodingRepository {
+        override suspend fun reverseGeocode(
             lat: Double,
             lon: Double,
-        ) = apiService.reverseGeocode(lat, lon)
+        ): Result<GeocodingResponse> =
+            runCatching {
+                val response = apiService.reverseGeocode(lat, lon)
+                GeocodingResponse(
+                    displayName = response.displayName,
+                )
+        }
     }
