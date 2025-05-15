@@ -1,6 +1,5 @@
 package com.mKanta.archivemaps.ui.screen.markerList
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -133,11 +133,8 @@ fun MarkerListContent(
                     )
                 },
             ) { padding ->
-
                 Box(
-                    modifier =
-                        Modifier
-                            .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     if (filteredMarkerList.isEmpty()) {
                         Text(
@@ -148,19 +145,20 @@ fun MarkerListContent(
                         )
                     } else {
                         LazyColumn(
-                            modifier =
-                                Modifier
-                                    .padding(padding)
-                                    .padding(16.dp),
+                            modifier = Modifier.padding(padding),
                         ) {
                             items(filteredMarkerList) { marker ->
                                 MarkerItem(
                                     marker = marker,
-                                    onClick = {
-                                        onNavigateToMarker(marker.position)
-                                    },
+                                    onClick = { onNavigateToMarker(marker.position) },
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp),
                                 )
-                                HorizontalDivider()
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 16.dp),
+                                )
                             }
                         }
                     }
@@ -174,34 +172,38 @@ fun MarkerListContent(
 fun MarkerItem(
     marker: NamedMarker,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable { onClick() },
+    Surface(
+        modifier = modifier,
+        color = Color.Transparent,
+        onClick = onClick,
     ) {
-        Text(
-            text = marker.title,
-            style = MaterialTheme.typography.titleLarge,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-        )
-        if (!marker.memo.isNullOrBlank()) {
+        Column(
+            modifier = Modifier.padding(vertical = 12.dp),
+        ) {
             Text(
-                text = marker.memo,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.bodyMedium,
+                text = marker.title,
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            if (!marker.memo.isNullOrBlank()) {
+                Text(
+                    text = marker.memo,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+            Text(
+                text = stringResource(id = R.string.listCn_setTime) + marker.createdAt,
+                color = Color.Gray,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(top = 4.dp),
             )
         }
-        Text(
-            text = stringResource(id = R.string.listCn_setTime) + marker.createdAt,
-            color = Color.Gray,
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(top = 4.dp),
-        )
-        Text(text = "")
     }
 }
 

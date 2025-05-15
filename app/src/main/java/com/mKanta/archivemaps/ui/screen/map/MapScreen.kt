@@ -222,7 +222,6 @@ fun MapScreen(
                         updateMarkerMemoEmbedding(marker, newMemo)
                     },
                     changeShowConfirmDialog = { changeShowConfirmDialog() },
-                    showConfirmDialog = uiState.showConfirmDialog,
                     context = context,
                     selectedAddress = selectedAddress,
                     isPanelOpen = uiState.isPanelOpen,

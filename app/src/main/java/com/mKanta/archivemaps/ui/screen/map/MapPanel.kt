@@ -80,7 +80,6 @@ fun MapPanel(
     updateMarker: (NamedMarker) -> Unit,
     updateMarkerMemoEmbedding: (NamedMarker, String) -> Unit,
     changeShowConfirmDialog: () -> Unit,
-    showConfirmDialog: Boolean,
     context: Context,
     selectedAddress: StateFlow<String>,
     isPanelOpen: Boolean,
@@ -175,13 +174,11 @@ fun MapPanel(
                 },
             ) {
                 SetMarkerPanel(
-                    showConfirmDialog = showConfirmDialog,
                     changeShowConfirmDialog = { changeShowConfirmDialog() },
                     cameraPositionState = cameraPositionState,
                     focusManager = focusManager,
                     tempMarkerPosition = tempMarkerPosition,
                     tempMarkerName = tempMarkerName,
-                    onClose = { changePanelOpen(false) },
                     resetTempMarkers = {
                         changeTempMarkerPosition(null)
                         changeTempMarkerName(null)
@@ -241,7 +238,6 @@ fun MapPanel(
                         changeSelectedMarker(null)
                     },
                     memoEmbedding = updateMarkerMemoEmbedding,
-                    showConfirmDialog = showConfirmDialog,
                     changeShowConfirmDialog = { changeShowConfirmDialog() },
                 )
             }

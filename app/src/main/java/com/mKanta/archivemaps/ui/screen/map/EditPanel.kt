@@ -28,7 +28,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -82,7 +81,6 @@ fun EditPanel(
     context: Context,
     selectedAddress: StateFlow<String>,
     memoEmbedding: (NamedMarker, String) -> Unit,
-    showConfirmDialog: Boolean,
     changeShowConfirmDialog: () -> Unit,
 ) {
     ArchivemapsTheme {
@@ -220,41 +218,7 @@ fun EditPanel(
                 }
             }
         }
-
-//        if (showConfirmDialog) {
-//            ConfirmDialog(
-//                changeShowConfirmDialog = changeShowConfirmDialog,
-//                onPanelClose = onPanelClose,
-//            )
-//        }
     }
-}
-
-@Composable
-private fun ConfirmDialog(
-    changeShowConfirmDialog: () -> Unit,
-    onPanelClose: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = { changeShowConfirmDialog() },
-        title = { Text(stringResource(id = R.string.edit_confirm)) },
-        text = { Text(stringResource(id = R.string.edit_confirm_description)) },
-        confirmButton = {
-            Button(onClick = {
-                changeShowConfirmDialog()
-                onPanelClose()
-            }) {
-                Text(stringResource(id = R.string.edit_confirm_yes))
-            }
-        },
-        dismissButton = {
-            Button(onClick = {
-                changeShowConfirmDialog()
-            }) {
-                Text(stringResource(id = R.string.edit_confirm_no))
-            }
-        },
-    )
 }
 
 @Composable
@@ -329,7 +293,8 @@ private fun MediaSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                ).padding(12.dp),
+                )
+                .padding(12.dp),
     ) {
         OutlinedButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -575,7 +540,6 @@ fun EditPanelPreview() {
         selectedAddress = dummyAddress,
         mapsSaveMarker = {},
         memoEmbedding = { _, _ -> },
-        showConfirmDialog = false,
         changeShowConfirmDialog = {},
     )
 }

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -52,12 +51,10 @@ fun SetMarkerPanel(
     focusManager: FocusManager,
     tempMarkerName: String?,
     tempMarkerPosition: LatLng?,
-    onClose: () -> Unit,
     resetTempMarkers: () -> Unit,
     changeTempMarkerName: (String) -> Unit,
     addVisibleMarker: (NamedMarker) -> Unit,
     addMarker: (NamedMarker) -> Unit,
-    showConfirmDialog: Boolean,
     changeShowConfirmDialog: () -> Unit,
 ) {
     ArchivemapsTheme {
@@ -232,41 +229,6 @@ private fun SetMarkerName(
     )
 }
 
-@Composable
-private fun ConfirmDialog(
-    changeShowConfirmDialog: () -> Unit,
-    onClose: () -> Unit,
-    resetTempMarkers: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = {
-            changeShowConfirmDialog()
-        },
-        title = { Text(stringResource(id = R.string.setMarker_confirm_title)) },
-        text = { Text(stringResource(id = R.string.setMarker_confirm_description)) },
-        confirmButton = {
-            Button(
-                onClick = {
-                    changeShowConfirmDialog()
-                    resetTempMarkers()
-                    onClose()
-                },
-            ) {
-                Text(stringResource(id = R.string.setMarker_confirm_yes))
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = {
-                    changeShowConfirmDialog()
-                },
-            ) {
-                Text(stringResource(id = R.string.setMarker_confirm_no))
-            }
-        },
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 fun PreviewSetMarkerPanel() {
@@ -282,12 +244,10 @@ fun PreviewSetMarkerPanel() {
         focusManager = dummyFocusManager,
         tempMarkerName = "サンプルマーカー",
         tempMarkerPosition = LatLng(35.681236, 139.767125),
-        onClose = {},
         resetTempMarkers = {},
         changeTempMarkerName = {},
         addVisibleMarker = {},
         addMarker = {},
-        showConfirmDialog = false,
         changeShowConfirmDialog = {},
     )
 }
