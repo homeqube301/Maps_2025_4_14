@@ -297,7 +297,8 @@ private fun MemoEditor(
                     if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }.fillMaxWidth()
+                }
+                .fillMaxWidth()
                 .height(150.dp),
         placeholder = { Text(stringResource(id = R.string.edit_memo_hint), color = Color.Gray) },
         singleLine = false,
@@ -328,7 +329,8 @@ private fun MediaSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                ).padding(12.dp),
+                )
+                .padding(12.dp),
     ) {
         OutlinedButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -419,48 +421,37 @@ private fun MarkerColorSelector(
         fontWeight = FontWeight.Bold,
     )
 
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .border(
-                    width = 1.dp,
-                    color = Color.Gray,
-                    shape = RoundedCornerShape(4.dp),
-                ).padding(12.dp),
+    val colorOptions =
+        listOf(
+            BitmapDescriptorFactory.HUE_RED to stringResource(id = R.string.color_red),
+            BitmapDescriptorFactory.HUE_BLUE to stringResource(id = R.string.color_blue),
+            BitmapDescriptorFactory.HUE_GREEN to stringResource(id = R.string.color_green),
+            BitmapDescriptorFactory.HUE_YELLOW to stringResource(id = R.string.color_yellow),
+        )
+
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        val colorOptions =
-            listOf(
-                BitmapDescriptorFactory.HUE_RED to stringResource(id = R.string.color_red),
-                BitmapDescriptorFactory.HUE_BLUE to stringResource(id = R.string.color_blue),
-                BitmapDescriptorFactory.HUE_GREEN to stringResource(id = R.string.color_green),
-                BitmapDescriptorFactory.HUE_YELLOW to stringResource(id = R.string.color_yellow),
-            )
+        colorOptions.forEach { (hue, label) ->
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                RadioButton(
+                    selected = selectedColorHue == hue,
+                    onClick = {
+                        selectedColorHue = hue
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            colorOptions.forEach { (hue, label) ->
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    RadioButton(
-                        selected = selectedColorHue == hue,
-                        onClick = {
-                            selectedColorHue = hue
-
-                            selectedMarker.let { marker ->
-                                val index =
-                                    permanentMarkers.indexOfFirst { it.id == marker.id }
-                                if (index != -1) {
-                                    val updatedMarker =
-                                        marker.copy(colorHue = hue)
-                                    onMarkerUpdate(updatedMarker)
-                                }
+                        selectedMarker.let { marker ->
+                            val index =
+                                permanentMarkers.indexOfFirst { it.id == marker.id }
+                            if (index != -1) {
+                                val updatedMarker =
+                                    marker.copy(colorHue = hue)
+                                onMarkerUpdate(updatedMarker)
                             }
-                        },
-                    )
-                    Text(label, color = Color.White, fontWeight = FontWeight.Bold)
-                }
+                        }
+                    },
+                )
+                Text(label, color = Color.White, fontWeight = FontWeight.Bold)
             }
         }
     }

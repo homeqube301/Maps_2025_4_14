@@ -2,7 +2,6 @@ package com.mKanta.archivemaps.ui.screen.map
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -178,36 +176,24 @@ private fun SetMarkerColor(
         fontWeight = FontWeight.Bold,
     )
 
-    Column(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .border(
-                    width = 1.dp,
-                    color = Color.Gray,
-                    shape = RoundedCornerShape(4.dp),
-                )
-                .padding(12.dp),
+    Row(
+        horizontalArrangement = Arrangement.SpaceAround,
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            val colorOptions =
-                listOf(
-                    BitmapDescriptorFactory.HUE_RED to stringResource(id = R.string.color_red),
-                    BitmapDescriptorFactory.HUE_BLUE to stringResource(id = R.string.color_blue),
-                    BitmapDescriptorFactory.HUE_GREEN to stringResource(id = R.string.color_green),
-                    BitmapDescriptorFactory.HUE_YELLOW to stringResource(id = R.string.color_yellow),
+        val colorOptions =
+            listOf(
+                BitmapDescriptorFactory.HUE_RED to stringResource(id = R.string.color_red),
+                BitmapDescriptorFactory.HUE_BLUE to stringResource(id = R.string.color_blue),
+                BitmapDescriptorFactory.HUE_GREEN to stringResource(id = R.string.color_green),
+                BitmapDescriptorFactory.HUE_YELLOW to stringResource(id = R.string.color_yellow),
+            )
+        colorOptions.forEach { (hue, label) ->
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                RadioButton(
+                    selected = selectedHue == hue,
+                    onClick = { onHueSelected(hue) },
                 )
-            colorOptions.forEach { (hue, label) ->
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    RadioButton(
-                        selected = selectedHue == hue,
-                        onClick = { onHueSelected(hue) },
-                    )
-                    Text(label, color = Color.White, fontWeight = FontWeight.Bold)
-                }
+                Text(label, color = Color.White, fontWeight = FontWeight.Bold)
             }
         }
     }
