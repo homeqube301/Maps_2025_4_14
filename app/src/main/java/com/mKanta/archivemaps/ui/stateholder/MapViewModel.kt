@@ -12,6 +12,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
@@ -314,7 +315,19 @@ class MapViewModel
             locationCallback =
                 object : LocationCallback() {
                     override fun onLocationResult(result: LocationResult) {
-                        // ... 既存のコード ...
+                        val location = result.lastLocation
+                        location?.let {
+                            val latLng = LatLng(it.latitude, it.longitude)
+
+                            if (_isFollowing.value) {
+                                cameraPositionState.move(
+                                    CameraUpdateFactory.newLatLngZoom(
+                                        latLng,
+                                        17f,
+                                    ),
+                                )
+                            }
+                        }
                     }
                 }
 
