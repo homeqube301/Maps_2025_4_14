@@ -1,5 +1,6 @@
 package com.mKanta.archivemaps.ui.screen.markerList
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -51,6 +52,10 @@ fun MarkerListContent(
     changeShowListIntro: () -> Unit = {},
     filteredMarkerList: List<NamedMarker>,
 ) {
+    BackHandler {
+        onNavigateToMap()
+    }
+
     IntroShowcase(
         showIntroShowCase = showListIntro,
         dismissOnClickOutside = true,
