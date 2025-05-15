@@ -1,17 +1,14 @@
 package com.mKanta.archivemaps.data.repository
 
 import com.mKanta.archivemaps.network.NominatimApiService
+import com.mKanta.archivemaps.network.NominatimResponse
 import javax.inject.Inject
-
-data class GeocodingResponse(
-    val displayName: String?,
-)
 
 interface GeocodingRepository {
     suspend fun reverseGeocode(
         lat: Double,
         lon: Double,
-    ): Result<GeocodingResponse>
+    ): Result<NominatimResponse>
 }
 
 class GeocodingRepositoryImpl
@@ -22,11 +19,8 @@ class GeocodingRepositoryImpl
         override suspend fun reverseGeocode(
             lat: Double,
             lon: Double,
-        ): Result<GeocodingResponse> =
+        ): Result<NominatimResponse> =
             runCatching {
-                val response = apiService.reverseGeocode(lat, lon)
-                GeocodingResponse(
-                    displayName = response.displayName,
-                )
-        }
+                apiService.reverseGeocode(lat, lon)
+            }
     }
