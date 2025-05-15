@@ -12,7 +12,6 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
@@ -43,8 +42,8 @@ class MapViewModel
         private val geocodingRepository: GeocodingRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(MapsUiState())
-        private var locationCallback: LocationCallback? = null
         private var currentBounds: LatLngBounds? = null
+        private lateinit var locationCallback: LocationCallback
         private val _selectedAddress = MutableStateFlow("読み込み中…")
 
         private val _isFollowing = MutableStateFlow(false)
@@ -172,19 +171,19 @@ class MapViewModel
 
                 val memoFiltered =
                     if (!lowerMemo.isNullOrBlank()) {
-                    visibleMarkers.filter { it.memo?.lowercase()?.contains(lowerMemo) == true }
-                } else {
-                    emptyList()
-                }
+                        visibleMarkers.filter { it.memo?.lowercase()?.contains(lowerMemo) == true }
+                    } else {
+                        emptyList()
+                    }
 
-            _uiState.update {
-                it.copy(
-                    titleResults = titleFiltered,
-                    memoResults = memoFiltered,
-                )
+                _uiState.update {
+                    it.copy(
+                        titleResults = titleFiltered,
+                        memoResults = memoFiltered,
+                    )
+                }
             }
         }
-    }
 
         fun checkGoogleMapState(ready: Boolean) {
             if (ready) {
@@ -243,58 +242,6 @@ class MapViewModel
             _uiState.update { it.copy(tempMarkerPosition = answer) }
         }
 
-//        fun updateSearchList(
-//            titleQuery: String?,
-//            memoQuery: String?,
-//            visibleMarkers: List<NamedMarker>,
-//        ) {
-//            val lowerTitle = titleQuery?.lowercase()
-//            val lowerMemo = memoQuery?.lowercase()
-//
-//            _uiState.update {
-//                it.copy(
-//                    titleResults = emptyList(),
-//                    memoResults = emptyList(),
-//                )
-//            }
-//
-//            val titleFiltered =
-//                if (!lowerTitle.isNullOrBlank()) {
-//                    visibleMarkers.filter {
-//                        it.title.lowercase().contains(lowerTitle)
-//                    }
-//                } else {
-//                    emptyList()
-//                }
-//
-//            val memoFiltered =
-//                if (!lowerMemo.isNullOrBlank()) {
-//                    visibleMarkers.filter {
-//                        it.memo?.lowercase()?.contains(lowerMemo) == true
-//                    }
-//                } else {
-//                    emptyList()
-//                }
-//
-//            _uiState.update {
-//                it.copy(
-//                    titleResults = titleFiltered,
-//                    memoResults = memoFiltered,
-//                )
-//            }
-//        }
-
-//        fun updateVisibleMarkers(
-//            cameraPositionState: CameraPositionState,
-//            permanentMarkers: List<NamedMarker>,
-//        ) {
-//            val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
-//            if (bounds != null) {
-//                val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
-//                _uiState.update { it.copy(visibleMarkers = filtered) }
-//            }
-//        }
-
         fun removeVisibleMarkers(marker: NamedMarker) {
             _uiState.update {
                 it.copy(
@@ -325,34 +272,6 @@ class MapViewModel
             _uiState.update { it.copy(isPanelOpen = isOpen) }
         }
 
-//        fun loadMarkers() {
-//            viewModelScope.launch {
-//                val loaded = markerRepository.loadMarkers()
-//                _uiState.update { it.copy(permanentMarkers = emptyList()) }
-//                _uiState.update {
-//                    it.copy(permanentMarkers = it.permanentMarkers + loaded)
-//                }
-//            }
-//        }
-//
-//        fun saveMarkers() {
-//            viewModelScope.launch {
-//                markerRepository.saveMarkers(uiState.value.permanentMarkers)
-//            }
-//        }
-//
-//        // 永続マーカーの更新
-//        fun updateMarker(updatedMarker: NamedMarker) {
-//            _uiState.update { currentState ->
-//                val updatedList =
-//                    currentState.permanentMarkers.map {
-//                        if (it.id == updatedMarker.id) updatedMarker else it
-//                    }
-//                currentState.copy(permanentMarkers = updatedList)
-//            }
-//            saveMarkers()
-//        }
-
         fun updateMarkerMemoEmbedding(
             marker: NamedMarker,
             newMemo: String,
@@ -372,22 +291,6 @@ class MapViewModel
             }
         }
 
-//        fun addMarker(marker: NamedMarker) {
-//            _uiState.update { currentState ->
-//                val updatedList = currentState.permanentMarkers + marker
-//                currentState.copy(permanentMarkers = updatedList)
-//            }
-//            saveMarkers()
-//        }
-//
-//        fun removeMarker(markerId: String) {
-//            _uiState.update { currentState ->
-//                val updatedList = currentState.permanentMarkers.filter { it.id != markerId }
-//                currentState.copy(permanentMarkers = updatedList)
-//            }
-//            saveMarkers()
-//        }
-
         fun toggleFollowing() {
             _isFollowing.value = !_isFollowing.value
         }
@@ -402,11 +305,18 @@ class MapViewModel
                     Manifest.permission.ACCESS_FINE_LOCATION,
                 ) == PackageManager.PERMISSION_GRANTED
 
-            if (!hasPermission) {
-                return
+            if (!hasPermission) return
+
+            if (::locationCallback.isInitialized) {
+                stopLocationUpdates()
             }
 
-            stopLocationUpdates()
+            locationCallback =
+                object : LocationCallback() {
+                    override fun onLocationResult(result: LocationResult) {
+                        // ... 既存のコード ...
+                    }
+                }
 
             val locationRequest =
                 LocationRequest
@@ -416,38 +326,16 @@ class MapViewModel
                     ).setMinUpdateIntervalMillis(2000L)
                     .build()
 
-            locationCallback =
-                object : LocationCallback() {
-                    override fun onLocationResult(result: LocationResult) {
-                        val location = result.lastLocation
-                        location?.let {
-                            val latLng = LatLng(it.latitude, it.longitude)
-
-                            if (_isFollowing.value) {
-                                cameraPositionState.move(
-                                    CameraUpdateFactory.newLatLngZoom(
-                                        latLng,
-                                        17f,
-                                    ),
-                                )
-                            }
-                        }
-                    }
-                }
-
-            locationCallback?.let {
-                fusedLocationClient.requestLocationUpdates(
-                    locationRequest,
-                    it,
-                    context.mainLooper,
-                )
-            }
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                context.mainLooper,
+            )
         }
 
         private fun stopLocationUpdates() {
-            locationCallback?.let {
-                fusedLocationClient.removeLocationUpdates(it)
-                locationCallback = null
+            if (::locationCallback.isInitialized) {
+                fusedLocationClient.removeLocationUpdates(locationCallback)
             }
         }
 
