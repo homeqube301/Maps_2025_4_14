@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.canopas.lib.showcase.IntroShowcase
 import com.canopas.lib.showcase.component.ShowcaseStyle
+import com.google.maps.android.compose.CameraPositionState
 import com.mKanta.archivemaps.R
 
 @Composable
@@ -38,6 +39,8 @@ fun MapFloatingButtons(
     toggleFollowing: () -> Unit,
     isFollowing: Boolean,
     onNavigateToMarkerList: () -> Unit,
+    changeLastCameraPosition: (CameraPositionState) -> Unit,
+    cameraPositionState: CameraPositionState,
 ) {
     IntroShowcase(
         showIntroShowCase = showIntroShowCase,
@@ -102,7 +105,8 @@ fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        ).align(Alignment.Companion.Center),
+                        )
+                        .align(Alignment.Companion.Center),
             )
         }
 
@@ -222,7 +226,10 @@ fun MapFloatingButtons(
             }
 
             FloatingActionButton(
-                onClick = onNavigateToMarkerList,
+                onClick = {
+                    changeLastCameraPosition(cameraPositionState)
+                    onNavigateToMarkerList()
+                },
                 contentColor = Color.Companion.White,
                 containerColor = MaterialTheme.colorScheme.primary,
                 modifier =

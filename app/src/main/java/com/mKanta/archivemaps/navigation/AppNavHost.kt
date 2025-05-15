@@ -34,16 +34,22 @@ fun AppNavHost(
                     }
 
                 val markerViewModel: ListViewModel = hiltViewModel(parentEntry)
+                val mapViewModel: MapViewModel = hiltViewModel(parentEntry)
 
-                val mapViewModel: MapViewModel = hiltViewModel()
-                val latitude =
-                    backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull() ?: 0.0
-                val longitude =
-                    backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull() ?: 0.0
+                // val mapViewModel: MapViewModel = hiltViewModel()
                 val uiState by mapViewModel.uiState.collectAsState()
                 val listState by markerViewModel.listState.collectAsState()
+
+                val latitude =
+                    uiState.lastCameraPosition?.target?.latitude
+                        ?: backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull() ?: 0.0
+                val longitude =
+                    uiState.lastCameraPosition?.target?.longitude
+                        ?: backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull() ?: 0.0
+
                 MapScreen(
                     onNavigateToMarkerList = { navController.navigate("marker_list") },
+                    changeLastCameraPosition = { mapViewModel.changeLastCameraPosition(it) },
                     latitude = latitude,
                     longitude = longitude,
                     uiState = uiState,
@@ -101,7 +107,7 @@ fun AppNavHost(
                     },
                     selectedAddress = mapViewModel.selectedAddress,
                     permanentMarkers = uiState.permanentMarkers,
-                    checkGoogleMapState = { mapViewModel.checkGoogleMapState(it) },
+                    changeGoogleMapState = { mapViewModel.changeGoogleMapState(it) },
                     filterMarkers = { markers, bounds, startDate, endDate, markerName, memo, similarMarkerIds ->
                         markerViewModel.filterMarkers(
                             markers,

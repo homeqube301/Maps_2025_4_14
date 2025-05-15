@@ -186,7 +186,11 @@ class MapViewModel
             }
         }
 
-        fun checkGoogleMapState(ready: Boolean) {
+        fun changeLastCameraPosition(position: CameraPositionState) {
+            _uiState.update { it.copy(lastCameraPosition = position.position) }
+        }
+
+        fun changeGoogleMapState(ready: Boolean) {
             if (ready) {
                 _uiState.update { it.copy(googleMapState = MapState.Success(true)) }
             } else {

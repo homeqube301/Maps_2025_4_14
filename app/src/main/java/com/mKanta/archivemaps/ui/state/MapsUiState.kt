@@ -1,5 +1,6 @@
 package com.mKanta.archivemaps.ui.state
 
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.mKanta.archivemaps.domain.model.NamedMarker
 
@@ -25,6 +26,7 @@ data class MapsUiState(
     val googleMapState: MapState = MapState.Loading,
     val permanentMarkers: List<NamedMarker> = emptyList(),
     val tempMarkerMemo: String? = null,
+    val lastCameraPosition: CameraPosition? = null,
 )
 
 sealed interface MapState {

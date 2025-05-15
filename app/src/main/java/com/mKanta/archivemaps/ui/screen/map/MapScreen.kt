@@ -44,6 +44,7 @@ import kotlinx.coroutines.flow.StateFlow
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
+    changeLastCameraPosition: (CameraPositionState) -> Unit,
     onNavigateToMarkerList: () -> Unit,
     latitude: Double,
     longitude: Double,
@@ -85,7 +86,7 @@ fun MapScreen(
     updateMarkerMemoEmbedding: (NamedMarker, String) -> Unit,
     changeShowMapIntro: () -> Unit,
     changeShowConfirmDialog: () -> Unit,
-    checkGoogleMapState: (Boolean) -> Unit,
+    changeGoogleMapState: (Boolean) -> Unit,
     startDate: String? = null,
     endDate: String? = null,
     markerName: String? = null,
@@ -162,7 +163,7 @@ fun MapScreen(
                     tempMarkerPosition = uiState.tempMarkerPosition,
                     changeTempMarkerPosition = { changeTempMarkerPosition(it) },
                     changeIsPanelOpen = { changeIsPanelOpen() },
-                    checkGoogleMapState = { checkGoogleMapState(it) },
+                    changeGoogleMapState = { changeGoogleMapState(it) },
                     fetchAddressForLatLng = { lat, lon -> fetchAddressForLatLng(lat, lon) },
                     context = context,
                     changeIsEditPanelOpen = { changeIsEditPanelOpen() },
@@ -184,6 +185,8 @@ fun MapScreen(
                 when (uiState.googleMapState) {
                     MapState.Success(true) -> {
                         MapFloatingButtons(
+                            changeLastCameraPosition = { changeLastCameraPosition(it) },
+                            cameraPositionState = cameraPositionState,
                             modifier =
                                 Modifier
                                     .align(Alignment.BottomCenter)
@@ -337,11 +340,12 @@ fun MapScreenPreview() {
         updateMarkerMemoEmbedding = { _, _ -> },
         changeShowMapIntro = {},
         changeShowConfirmDialog = {},
-        checkGoogleMapState = {},
+        changeGoogleMapState = {},
         startDate = null,
         endDate = null,
         markerName = null,
         memo = null,
         filterMarkers = { _, _, _, _, _, _, _ -> emptyList() },
+        changeLastCameraPosition = {},
     )
 }

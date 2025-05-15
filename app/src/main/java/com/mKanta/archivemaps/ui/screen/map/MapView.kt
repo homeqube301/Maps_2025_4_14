@@ -27,7 +27,7 @@ fun MapView(
     tempMarkerPosition: LatLng?,
     changeTempMarkerPosition: (LatLng) -> Unit,
     changeIsPanelOpen: () -> Unit,
-    checkGoogleMapState: (Boolean) -> Unit,
+    changeGoogleMapState: (Boolean) -> Unit,
     fetchAddressForLatLng: (lat: Double, lon: Double) -> Unit,
     context: Context,
     changeIsEditPanelOpen: () -> Unit,
@@ -59,7 +59,7 @@ fun MapView(
         },
         onMapLoaded = {
             coroutineScope.launch {
-                checkGoogleMapState(true)
+                changeGoogleMapState(true)
             }
         },
     ) {
