@@ -156,7 +156,12 @@ fun MapPanel(
 
         if (isPanelOpen) {
             ModalBottomSheet(
-                onDismissRequest = { changePanelOpen(false) },
+                onDismissRequest = {
+                    changePanelOpen(false)
+                    changeTempMarkerPosition(null)
+                    changeTempMarkerName(null)
+                    changeTempMarkerMemo(null)
+                },
                 sheetState = setSheetState,
                 containerColor = MaterialTheme.colorScheme.background,
                 dragHandle = {

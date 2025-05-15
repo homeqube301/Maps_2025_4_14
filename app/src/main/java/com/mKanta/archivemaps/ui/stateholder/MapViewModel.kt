@@ -216,7 +216,13 @@ class MapViewModel
         }
 
         fun changeIsPanelOpen() {
-            _uiState.update { it.copy(isPanelOpen = !it.isPanelOpen) }
+            _uiState.update { currentState ->
+                val newPanelState = !currentState.isPanelOpen
+                currentState.copy(
+                    isPanelOpen = newPanelState,
+                    tempMarkerPosition = if (!newPanelState) null else currentState.tempMarkerPosition,
+                )
+            }
         }
 
         fun changeIsSearchOpen() {
