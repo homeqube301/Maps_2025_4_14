@@ -11,26 +11,28 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun PermissionDeniedScreen() {
     Column(
         modifier =
-            Modifier.Companion
+            Modifier
                 .fillMaxSize()
                 .padding(24.dp),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Companion.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            "位置情報権限が無い状態ではアプリを使用できません。",
+            "位置情報へのアクセスが許可されていません。",
             style = MaterialTheme.typography.bodyLarge,
         )
-        Spacer(modifier = Modifier.Companion.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
-            "設定から位置情報のアクセスを許可してください。",
+            "設定から位置情報（正確な位置情報またはおおよその位置情報）のアクセスを許可してください。",
             style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
         )
     }
 }

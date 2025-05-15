@@ -27,19 +27,22 @@ class MainActivity : ComponentActivity() {
     private var isPermissionGranted by mutableStateOf(false)
 
     private val locationPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            isPermissionGranted = granted
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            isPermissionGranted = permissions.entries.any { it.value }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val permission = Manifest.permission.ACCESS_FINE_LOCATION
-        isPermissionGranted = ContextCompat.checkSelfPermission(this, permission) ==
-            PackageManager.PERMISSION_GRANTED
+        isPermissionGranted = hasLocationPermission()
 
         if (!isPermissionGranted) {
-            locationPermissionLauncher.launch(permission)
+            locationPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ),
+            )
         }
 
         setContent {
@@ -64,6 +67,16 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun hasLocationPermission(): Boolean =
+        ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+        ) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
 }
 
 @HiltAndroidApp
