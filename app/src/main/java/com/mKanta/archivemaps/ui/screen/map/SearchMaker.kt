@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -123,52 +121,39 @@ private fun ShowSearchResult(
             modifier = modifier,
         )
     } else {
-        Card(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
-            colors =
-                CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                ),
-            shape = RoundedCornerShape(8.dp),
-            elevation = CardDefaults.cardElevation(4.dp),
+        LazyColumn(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         ) {
-            LazyColumn(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-            ) {
-                items(results) { marker ->
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp)
-                                .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
-                                .clickable {
-                                    if (isSearchingByTitle) {
-                                        onMarkerTapped(marker)
-                                    } else {
-                                        onMemoTapped(marker)
-                                    }
-                                }.padding(16.dp),
-                    ) {
-                        Text(
-                            text =
+            items(results) { marker ->
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .border(1.dp, Color.Gray, RoundedCornerShape(4.dp))
+                            .clickable {
                                 if (isSearchingByTitle) {
-                                    marker.title
+                                    onMarkerTapped(marker)
                                 } else {
-                                    marker.title + (
-                                        stringResource(
-                                            id = R.string.searchMaker_match_memo,
-                                        )
+                                    onMemoTapped(marker)
+                                }
+                            }.padding(16.dp),
+                ) {
+                    Text(
+                        text =
+                            if (isSearchingByTitle) {
+                                marker.title
+                            } else {
+                                marker.title + (
+                                    stringResource(
+                                        id = R.string.searchMaker_match_memo,
                                     )
-                                },
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
+                                )
+                            },
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
         }

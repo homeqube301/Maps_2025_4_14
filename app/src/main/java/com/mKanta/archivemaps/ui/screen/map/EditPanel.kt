@@ -329,8 +329,7 @@ private fun MediaSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                )
-                .padding(12.dp),
+                ).padding(12.dp),
     ) {
         OutlinedButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
