@@ -74,27 +74,14 @@ suspend fun observeCameraAndFilterMarkers(
     ) -> List<NamedMarker>,
 ) {
     delay(300)
-    cameraPositionState.projection?.visibleRegion?.latLngBounds?.let { bounds ->
-        val filtered =
-            filterMarkers(
-                permanentMarkers,
-                bounds,
-                startDate,
-                endDate,
-                markerName,
-                memo,
-                emptyList(),
-            )
-        addAllVisibleMarkers(filtered)
-    }
 
-    snapshotFlow { cameraPositionState.isMoving }.collect { isMoving ->
+    snapshotFlow { cameraPositionState.isMoving to permanentMarkers }.collect { (isMoving, markers) ->
         if (!isMoving) {
             val bounds =
                 cameraPositionState.projection?.visibleRegion?.latLngBounds ?: return@collect
             val filtered =
                 filterMarkers(
-                    permanentMarkers,
+                    markers,
                     bounds,
                     startDate,
                     endDate,

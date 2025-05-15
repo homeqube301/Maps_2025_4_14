@@ -14,6 +14,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
 import com.mKanta.archivemaps.data.repository.GeocodingRepository
 import com.mKanta.archivemaps.data.repository.MarkerRepository
@@ -43,6 +44,7 @@ class MapViewModel
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(MapsUiState())
         private var locationCallback: LocationCallback? = null
+        private var currentBounds: LatLngBounds? = null
         private val _selectedAddress = MutableStateFlow("読み込み中…")
 
         private val _isFollowing = MutableStateFlow(false)
@@ -52,13 +54,137 @@ class MapViewModel
 
         init {
             loadMarkers()
-
             viewModelScope.launch {
                 preferencesRepository.showMapIntroFlow.collect { savedValue ->
                     _uiState.update { it.copy(showMapIntro = savedValue) }
                 }
             }
         }
+
+        private fun updateMarkersVisibility() {
+            currentBounds?.let { bounds ->
+                val visibleMarkers =
+                    _uiState.value.permanentMarkers.filter {
+                        bounds.contains(it.position.toLatLng())
+                    }
+                _uiState.update { it.copy(visibleMarkers = visibleMarkers) }
+            }
+        }
+
+        fun updateVisibleMarkers(
+            cameraPositionState: CameraPositionState,
+            permanentMarkers: List<NamedMarker>,
+        ) {
+            val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
+            if (bounds != null) {
+                _uiState.value.visibleMarkers
+                    .map { it.id }
+                    .toSet()
+
+                val filtered =
+                    permanentMarkers
+                        .filter { marker ->
+                            bounds.contains(marker.position.toLatLng()) &&
+                                _uiState.value.permanentMarkers.any { it.id == marker.id }
+                        }
+
+                _uiState.update { it.copy(visibleMarkers = filtered) }
+            }
+        }
+
+        fun addMarker(marker: NamedMarker) {
+            viewModelScope.launch {
+                _uiState.update { currentState ->
+                    val updatedList = currentState.permanentMarkers + marker
+                    currentState.copy(permanentMarkers = updatedList)
+                }
+                saveMarkers()
+                updateMarkersVisibility()
+            }
+        }
+
+        fun removeMarker(markerId: String) {
+            viewModelScope.launch {
+                _uiState.update { currentState ->
+                    val updatedList = currentState.permanentMarkers.filter { it.id != markerId }
+                    val updatedVisibleList = currentState.visibleMarkers.filter { it.id != markerId }
+                    currentState.copy(
+                        permanentMarkers = updatedList,
+                        visibleMarkers = updatedVisibleList,
+                    )
+                }
+                saveMarkers()
+
+                currentBounds?.let { bounds ->
+                    val filtered =
+                        _uiState.value.permanentMarkers.filter {
+                            bounds.contains(it.position.toLatLng())
+                        }
+                    _uiState.update { it.copy(visibleMarkers = filtered) }
+                }
+            }
+        }
+
+        fun updateMarker(updatedMarker: NamedMarker) {
+            viewModelScope.launch {
+                _uiState.update { currentState ->
+                    val updatedList =
+                        currentState.permanentMarkers.map {
+                            if (it.id == updatedMarker.id) updatedMarker else it
+                        }
+                    currentState.copy(permanentMarkers = updatedList)
+                }
+                saveMarkers()
+                updateMarkersVisibility()
+            }
+        }
+
+        fun loadMarkers() {
+            viewModelScope.launch {
+                val loaded = markerRepository.loadMarkers()
+                _uiState.update { it.copy(permanentMarkers = loaded) }
+
+                updateMarkersVisibility()
+            }
+        }
+
+        fun saveMarkers() {
+            viewModelScope.launch {
+                markerRepository.saveMarkers(_uiState.value.permanentMarkers)
+            }
+        }
+
+        fun updateSearchList(
+            titleQuery: String?,
+            memoQuery: String?,
+            visibleMarkers: List<NamedMarker>,
+        ) {
+            viewModelScope.launch {
+                val lowerTitle = titleQuery?.lowercase()
+                val lowerMemo = memoQuery?.lowercase()
+
+                val titleFiltered =
+                    if (!lowerTitle.isNullOrBlank()) {
+                        visibleMarkers.filter { it.title.lowercase().contains(lowerTitle) }
+                    } else {
+                        emptyList()
+                    }
+
+                val memoFiltered =
+                    if (!lowerMemo.isNullOrBlank()) {
+                    visibleMarkers.filter { it.memo?.lowercase()?.contains(lowerMemo) == true }
+                } else {
+                    emptyList()
+                }
+
+            _uiState.update {
+                it.copy(
+                    titleResults = titleFiltered,
+                    memoResults = memoFiltered,
+                )
+            }
+        }
+    }
 
         fun checkGoogleMapState(ready: Boolean) {
             if (ready) {
@@ -117,57 +243,57 @@ class MapViewModel
             _uiState.update { it.copy(tempMarkerPosition = answer) }
         }
 
-        fun updateSearchList(
-            titleQuery: String?,
-            memoQuery: String?,
-            visibleMarkers: List<NamedMarker>,
-        ) {
-            val lowerTitle = titleQuery?.lowercase()
-            val lowerMemo = memoQuery?.lowercase()
+//        fun updateSearchList(
+//            titleQuery: String?,
+//            memoQuery: String?,
+//            visibleMarkers: List<NamedMarker>,
+//        ) {
+//            val lowerTitle = titleQuery?.lowercase()
+//            val lowerMemo = memoQuery?.lowercase()
+//
+//            _uiState.update {
+//                it.copy(
+//                    titleResults = emptyList(),
+//                    memoResults = emptyList(),
+//                )
+//            }
+//
+//            val titleFiltered =
+//                if (!lowerTitle.isNullOrBlank()) {
+//                    visibleMarkers.filter {
+//                        it.title.lowercase().contains(lowerTitle)
+//                    }
+//                } else {
+//                    emptyList()
+//                }
+//
+//            val memoFiltered =
+//                if (!lowerMemo.isNullOrBlank()) {
+//                    visibleMarkers.filter {
+//                        it.memo?.lowercase()?.contains(lowerMemo) == true
+//                    }
+//                } else {
+//                    emptyList()
+//                }
+//
+//            _uiState.update {
+//                it.copy(
+//                    titleResults = titleFiltered,
+//                    memoResults = memoFiltered,
+//                )
+//            }
+//        }
 
-            _uiState.update {
-                it.copy(
-                    titleResults = emptyList(),
-                    memoResults = emptyList(),
-                )
-            }
-
-            val titleFiltered =
-                if (!lowerTitle.isNullOrBlank()) {
-                    visibleMarkers.filter {
-                        it.title.lowercase().contains(lowerTitle)
-                    }
-                } else {
-                    emptyList()
-                }
-
-            val memoFiltered =
-                if (!lowerMemo.isNullOrBlank()) {
-                    visibleMarkers.filter {
-                        it.memo?.lowercase()?.contains(lowerMemo) == true
-                    }
-                } else {
-                    emptyList()
-                }
-
-            _uiState.update {
-                it.copy(
-                    titleResults = titleFiltered,
-                    memoResults = memoFiltered,
-                )
-            }
-        }
-
-        fun updateVisibleMarkers(
-            cameraPositionState: CameraPositionState,
-            permanentMarkers: List<NamedMarker>,
-        ) {
-            val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
-            if (bounds != null) {
-                val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
-                _uiState.update { it.copy(visibleMarkers = filtered) }
-            }
-        }
+//        fun updateVisibleMarkers(
+//            cameraPositionState: CameraPositionState,
+//            permanentMarkers: List<NamedMarker>,
+//        ) {
+//            val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds
+//            if (bounds != null) {
+//                val filtered = permanentMarkers.filter { bounds.contains(it.position.toLatLng()) }
+//                _uiState.update { it.copy(visibleMarkers = filtered) }
+//            }
+//        }
 
         fun removeVisibleMarkers(marker: NamedMarker) {
             _uiState.update {
@@ -199,33 +325,33 @@ class MapViewModel
             _uiState.update { it.copy(isPanelOpen = isOpen) }
         }
 
-        fun loadMarkers() {
-            viewModelScope.launch {
-                val loaded = markerRepository.loadMarkers()
-                _uiState.update { it.copy(permanentMarkers = emptyList()) }
-                _uiState.update {
-                    it.copy(permanentMarkers = it.permanentMarkers + loaded)
-                }
-            }
-        }
-
-        fun saveMarkers() {
-            viewModelScope.launch {
-                markerRepository.saveMarkers(uiState.value.permanentMarkers)
-            }
-        }
-
-        // 永続マーカーの更新
-        fun updateMarker(updatedMarker: NamedMarker) {
-            _uiState.update { currentState ->
-                val updatedList =
-                    currentState.permanentMarkers.map {
-                        if (it.id == updatedMarker.id) updatedMarker else it
-                    }
-                currentState.copy(permanentMarkers = updatedList)
-            }
-            saveMarkers()
-        }
+//        fun loadMarkers() {
+//            viewModelScope.launch {
+//                val loaded = markerRepository.loadMarkers()
+//                _uiState.update { it.copy(permanentMarkers = emptyList()) }
+//                _uiState.update {
+//                    it.copy(permanentMarkers = it.permanentMarkers + loaded)
+//                }
+//            }
+//        }
+//
+//        fun saveMarkers() {
+//            viewModelScope.launch {
+//                markerRepository.saveMarkers(uiState.value.permanentMarkers)
+//            }
+//        }
+//
+//        // 永続マーカーの更新
+//        fun updateMarker(updatedMarker: NamedMarker) {
+//            _uiState.update { currentState ->
+//                val updatedList =
+//                    currentState.permanentMarkers.map {
+//                        if (it.id == updatedMarker.id) updatedMarker else it
+//                    }
+//                currentState.copy(permanentMarkers = updatedList)
+//            }
+//            saveMarkers()
+//        }
 
         fun updateMarkerMemoEmbedding(
             marker: NamedMarker,
@@ -246,21 +372,21 @@ class MapViewModel
             }
         }
 
-        fun addMarker(marker: NamedMarker) {
-            _uiState.update { currentState ->
-                val updatedList = currentState.permanentMarkers + marker
-                currentState.copy(permanentMarkers = updatedList)
-            }
-            saveMarkers()
-        }
-
-        fun removeMarker(markerId: String) {
-            _uiState.update { currentState ->
-                val updatedList = currentState.permanentMarkers.filter { it.id != markerId }
-                currentState.copy(permanentMarkers = updatedList)
-            }
-            saveMarkers()
-        }
+//        fun addMarker(marker: NamedMarker) {
+//            _uiState.update { currentState ->
+//                val updatedList = currentState.permanentMarkers + marker
+//                currentState.copy(permanentMarkers = updatedList)
+//            }
+//            saveMarkers()
+//        }
+//
+//        fun removeMarker(markerId: String) {
+//            _uiState.update { currentState ->
+//                val updatedList = currentState.permanentMarkers.filter { it.id != markerId }
+//                currentState.copy(permanentMarkers = updatedList)
+//            }
+//            saveMarkers()
+//        }
 
         fun toggleFollowing() {
             _isFollowing.value = !_isFollowing.value
@@ -358,14 +484,4 @@ class MapViewModel
         fun changeTempMarkerMemo(memo: String?) {
             _uiState.update { it.copy(tempMarkerMemo = memo) }
         }
-
-        fun resetTempMarkers() {
-            _uiState.update {
-                it.copy(
-                    tempMarkerName = null,
-                    tempMarkerPosition = null,
-                )
-            }
-            _uiState.update { it.copy(tempMarkerMemo = null) }
-    }
     }

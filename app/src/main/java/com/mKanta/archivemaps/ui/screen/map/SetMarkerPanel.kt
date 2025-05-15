@@ -81,18 +81,18 @@ fun SetMarkerPanel(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            SetMarkerMemo(
-                tempMarkerMemo = tempMarkerMemo,
-                changeTempMarkerMemo = changeTempMarkerMemo,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             var selectedHue by remember { mutableFloatStateOf(BitmapDescriptorFactory.HUE_RED) }
 
             SetMarkerColor(
                 selectedHue = selectedHue,
                 onHueSelected = { selectedHue = it },
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            SetMarkerMemo(
+                tempMarkerMemo = tempMarkerMemo,
+                changeTempMarkerMemo = changeTempMarkerMemo,
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -197,7 +197,8 @@ private fun SetMarkerMemo(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(150.dp),
+                .height(150.dp)
+                .padding(horizontal = 32.dp),
         placeholder = { Text(stringResource(id = R.string.edit_memo_hint), color = Color.Gray) },
         singleLine = false,
         maxLines = 10,
