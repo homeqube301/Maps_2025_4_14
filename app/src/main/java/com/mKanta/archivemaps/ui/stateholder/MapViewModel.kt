@@ -354,4 +354,18 @@ class MapViewModel
                     }
             }
         }
+
+        fun changeTempMarkerMemo(memo: String?) {
+            _uiState.update { it.copy(tempMarkerMemo = memo) }
+        }
+
+        fun resetTempMarkers() {
+            _uiState.update {
+                it.copy(
+                    tempMarkerName = null,
+                    tempMarkerPosition = null,
+                )
+            }
+            _uiState.update { it.copy(tempMarkerMemo = null) }
+    }
     }

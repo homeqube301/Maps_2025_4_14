@@ -60,6 +60,7 @@ fun AppNavHost(
                     changeMemoQuery = { mapViewModel.changeMemoQuery(it) },
                     changeSelectedMarker = { mapViewModel.changeSelectedMarker(it) },
                     changeTempMarkerName = { mapViewModel.changeTempMarkerName(it) },
+                    changeTempMarkerMemo = { mapViewModel.changeTempMarkerMemo(it) },
                     changeTempMarkerPosition = { mapViewModel.changeTempMarkerPosition(it) },
                     changeShowMapIntro = { mapViewModel.changeShowMapIntro() },
                     updateVisibleMarkers = { cameraPositionState, permanentMarkers ->

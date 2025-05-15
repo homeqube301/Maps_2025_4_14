@@ -55,6 +55,7 @@ fun MapScreen(
     changeMemoQuery: (String) -> Unit,
     changeSelectedMarker: (NamedMarker?) -> Unit,
     changeTempMarkerName: (String?) -> Unit,
+    changeTempMarkerMemo: (String?) -> Unit,
     changeTempMarkerPosition: (LatLng?) -> Unit,
     updateVisibleMarkers: (CameraPositionState, List<NamedMarker>) -> Unit,
     removeVisibleMarkers: (NamedMarker) -> Unit,
@@ -232,6 +233,8 @@ fun MapScreen(
                         updateVisibleMarkers(camera, markers)
                     },
                     saveMarkers = { saveMarkers() },
+                    changeTempMarkerMemo = { changeTempMarkerMemo(it) },
+                    tempMarkerMemo = uiState.tempMarkerMemo,
                 )
             }
 
@@ -304,6 +307,7 @@ fun MapScreenPreview() {
         changeMemoQuery = {},
         changeSelectedMarker = {},
         changeTempMarkerName = {},
+        changeTempMarkerMemo = {},
         changeTempMarkerPosition = {},
         updateVisibleMarkers = { _, _ -> },
         removeVisibleMarkers = {},

@@ -56,6 +56,8 @@ fun SetMarkerPanel(
     addVisibleMarker: (NamedMarker) -> Unit,
     addMarker: (NamedMarker) -> Unit,
     changeShowConfirmDialog: () -> Unit,
+    changeTempMarkerMemo: (String) -> Unit,
+    tempMarkerMemo: String?,
 ) {
     ArchivemapsTheme {
         BackHandler(enabled = true) {
@@ -77,6 +79,13 @@ fun SetMarkerPanel(
                 focusManager = focusManager,
             )
 
+            Spacer(modifier = Modifier.height(24.dp))
+
+            SetMarkerMemo(
+                tempMarkerMemo = tempMarkerMemo,
+                changeTempMarkerMemo = changeTempMarkerMemo,
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
             var selectedHue by remember { mutableFloatStateOf(BitmapDescriptorFactory.HUE_RED) }
@@ -92,6 +101,7 @@ fun SetMarkerPanel(
                 cameraPositionState = cameraPositionState,
                 focusManager = focusManager,
                 tempMarkerName = tempMarkerName,
+                tempMarkerMemo = tempMarkerMemo,
                 tempMarkerPosition = tempMarkerPosition,
                 resetTempMarkers = resetTempMarkers,
                 addVisibleMarker = addVisibleMarker,
@@ -108,6 +118,7 @@ private fun SetMarker(
     cameraPositionState: CameraPositionState,
     focusManager: FocusManager,
     tempMarkerName: String?,
+    tempMarkerMemo: String?,
     tempMarkerPosition: LatLng?,
     resetTempMarkers: () -> Unit,
     addVisibleMarker: (NamedMarker) -> Unit,
@@ -128,6 +139,7 @@ private fun SetMarker(
                         NamedMarker(
                             position = LatLngSerializable.from(pos),
                             title = tempMarkerName ?: "",
+                            memo = tempMarkerMemo,
                             createdAt =
                                 LocalDateTime.now().format(
                                     DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"),
@@ -160,6 +172,37 @@ private fun SetMarker(
             )
         }
     }
+}
+
+@Composable
+private fun SetMarkerMemo(
+    tempMarkerMemo: String?,
+    changeTempMarkerMemo: (String) -> Unit,
+) {
+    Text(
+        stringResource(id = R.string.edit_memo_title),
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.Gray,
+        fontWeight = FontWeight.Bold,
+    )
+
+    OutlinedTextField(
+        colors =
+            OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.White,
+                unfocusedTextColor = Color.White,
+            ),
+        value = tempMarkerMemo ?: "",
+        onValueChange = { changeTempMarkerMemo(it) },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(150.dp),
+        placeholder = { Text(stringResource(id = R.string.edit_memo_hint), color = Color.Gray) },
+        singleLine = false,
+        maxLines = 10,
+        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
+    )
 }
 
 @Composable
@@ -249,5 +292,7 @@ fun PreviewSetMarkerPanel() {
         addVisibleMarker = {},
         addMarker = {},
         changeShowConfirmDialog = {},
+        changeTempMarkerMemo = {},
+        tempMarkerMemo = "メモです",
     )
 }

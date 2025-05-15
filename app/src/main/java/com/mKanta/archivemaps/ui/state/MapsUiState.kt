@@ -24,6 +24,7 @@ data class MapsUiState(
     val showConfirmDialog: Boolean = false,
     val googleMapState: MapState = MapState.Loading,
     val permanentMarkers: List<NamedMarker> = emptyList(),
+    val tempMarkerMemo: String? = null,
 )
 
 sealed interface MapState {

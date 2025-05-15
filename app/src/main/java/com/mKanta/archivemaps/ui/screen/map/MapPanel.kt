@@ -88,6 +88,8 @@ fun MapPanel(
     selectedMarker: NamedMarker?,
     updateVisibleMarkers: (CameraPositionState, List<NamedMarker>) -> Unit,
     saveMarkers: () -> Unit,
+    changeTempMarkerMemo: (String?) -> Unit,
+    tempMarkerMemo: String?,
 ) {
     ArchivemapsTheme {
         val focusManager = LocalFocusManager.current
@@ -185,8 +187,10 @@ fun MapPanel(
                         changeIsPanelOpen()
                     },
                     changeTempMarkerName = { changeTempMarkerName(it) },
+                    changeTempMarkerMemo = { changeTempMarkerMemo(it) },
                     addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
                     addMarker = { addMarker(it) },
+                    tempMarkerMemo = tempMarkerMemo,
                 )
             }
         }

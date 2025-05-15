@@ -28,7 +28,7 @@
     <string name="map_marker_tutorial_description2">設置したマーカーをタップするとマーカーを編集できます</string>
 
     <!--//SetMarkerScreen-->
-    <string name="setMarker_set_Button">マーカーを設置する</string>
+    <string name="setMarker_set_Button">設置する</string>
     <string name="setMarker_cancel_Button">閉じる</string>
     <string name="setMarker_set_Color">マーカーの色を選んでください</string>
     <string name="color_red">赤</string>
