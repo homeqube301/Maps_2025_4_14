@@ -117,16 +117,12 @@ fun AppNavHost(
             }
             navigation(startDestination = "marker_list", route = "list") {
                 composable("marker_list") { backStackEntry ->
-                    val parentEntry =
-                        remember(backStackEntry) {
-                            navController.getBackStackEntry("marker")
-                        }
                     val listParentEntry =
                         remember(backStackEntry) {
                             navController.getBackStackEntry("list")
                         }
 
-                    val markerViewModel: MapViewModel = hiltViewModel(parentEntry)
+                    val markerViewModel: MapViewModel = hiltViewModel(listParentEntry)
                     val listViewModel: ListViewModel = hiltViewModel(listParentEntry)
 
                     val listUIState by listViewModel.listUIState.collectAsState()
