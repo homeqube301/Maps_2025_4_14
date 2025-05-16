@@ -192,16 +192,18 @@ fun MarkerItem(
                 style = MaterialTheme.typography.titleLarge,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
-            if (!marker.memo.isNullOrBlank()) {
-                Text(
-                    text = marker.memo,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 4.dp),
-                )
-            }
+
+            Text(
+                text = marker.memo ?: "",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+
             Text(
                 text = stringResource(id = R.string.listCn_setTime) + marker.createdAt,
                 color = Color.Gray,
@@ -218,14 +220,14 @@ fun PreviewMarkerListContent() {
     val dummyMarkers =
         listOf(
             NamedMarker(
-                title = "テストマーカー1",
-                memo = "これはメモ1です",
+                title = "テストマーカー1。テストマーカー1。テストマーカー1。",
+                memo = "これはメモ1です。これはメモ1です。これはメモ1です。これはメモ1です。",
                 createdAt = "2024/04/01 00:00:00",
                 position = LatLngSerializable(35.0, 139.0),
             ),
             NamedMarker(
                 title = "テストマーカー2",
-                memo = "これはメモ2です",
+                // memo = "これはメモ2です",
                 createdAt = "2024/04/05 00:00:00",
                 position = LatLngSerializable(36.0, 140.0),
             ),
