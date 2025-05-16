@@ -22,14 +22,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -57,7 +54,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import coil.compose.AsyncImage
@@ -204,17 +200,17 @@ fun EditPanel(
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        colors = ButtonDefaults.buttonColors(Color.Gray),
-                        modifier =
-                            Modifier
-                                .fillMaxWidth(0.4f),
-                        onClick = {
-                            changeShowConfirmDialog()
-                        },
-                    ) {
-                        Text(stringResource(id = R.string.edit_back), fontWeight = FontWeight.Bold)
-                    }
+//                    Button(
+//                        colors = ButtonDefaults.buttonColors(Color.Gray),
+//                        modifier =
+//                            Modifier
+//                                .fillMaxWidth(0.4f),
+//                        onClick = {
+//                            changeShowConfirmDialog()
+//                        },
+//                    ) {
+//                        Text(stringResource(id = R.string.edit_back), fontWeight = FontWeight.Bold)
+//                    }
                 }
             }
         }
@@ -261,7 +257,8 @@ private fun MemoEditor(
                     if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }.fillMaxWidth()
+                }
+                .fillMaxWidth()
                 .height(150.dp),
         placeholder = { Text(stringResource(id = R.string.edit_memo_hint), color = Color.Gray) },
         singleLine = false,
@@ -292,7 +289,8 @@ private fun MediaSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                ).padding(12.dp),
+                )
+                .padding(12.dp),
     ) {
         OutlinedButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -444,7 +442,18 @@ private fun MarkerNameEditor(
                     unfocusedTextColor = Color.White,
                 ),
             value = editedName,
-            onValueChange = { editedName = it },
+            onValueChange = { newName ->
+                editedName = newName
+                selectedMarker.let { marker ->
+                    val index =
+                        permanentMarkers.indexOfFirst { it.id == marker.id }
+                    if (index != -1) {
+                        val updatedMarker = marker.copy(title = editedName)
+                        onMarkerUpdate(updatedMarker)
+                        mapsSaveMarker()
+                    }
+                }
+            },
             label = { Text(stringResource(id = R.string.edit_name_title), color = Color.Gray) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions =
@@ -460,37 +469,37 @@ private fun MarkerNameEditor(
         )
 
         Spacer(modifier = Modifier.width(8.dp))
-        Button(
-            onClick = {
-                focusManager.clearFocus()
-
-                selectedMarker.let { marker ->
-                    val index =
-                        permanentMarkers.indexOfFirst { it.id == marker.id }
-                    if (index != -1) {
-                        val updatedMarker =
-                            marker.copy(
-                                title = editedName,
-                            )
-                        onMarkerUpdate(updatedMarker)
-                        mapsSaveMarker()
-                    }
-                    onPanelClose()
-                }
-            },
-            modifier =
-                Modifier
-                    .wrapContentWidth()
-                    .fillMaxHeight()
-                    .padding(top = 8.dp),
-            shape = RoundedCornerShape(8.dp),
-        ) {
-            Text(
-                stringResource(id = R.string.edit_name_update),
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-            )
-        }
+//        Button(
+//            onClick = {
+//                focusManager.clearFocus()
+//
+//                selectedMarker.let { marker ->
+//                    val index =
+//                        permanentMarkers.indexOfFirst { it.id == marker.id }
+//                    if (index != -1) {
+//                        val updatedMarker =
+//                            marker.copy(
+//                                title = editedName,
+//                            )
+//                        onMarkerUpdate(updatedMarker)
+//                        mapsSaveMarker()
+//                    }
+//                    onPanelClose()
+//                }
+//            },
+//            modifier =
+//                Modifier
+//                    .wrapContentWidth()
+//                    .fillMaxHeight()
+//                    .padding(top = 8.dp),
+//            shape = RoundedCornerShape(8.dp),
+//        ) {
+//            Text(
+//                stringResource(id = R.string.edit_name_update),
+//                fontWeight = FontWeight.Bold,
+//                fontSize = 14.sp,
+//            )
+//        }
     }
 }
 
