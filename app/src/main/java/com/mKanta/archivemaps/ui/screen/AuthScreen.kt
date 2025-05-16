@@ -24,7 +24,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.ui.stateholder.AuthViewModel
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 
@@ -65,7 +67,12 @@ fun AuthScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email", color = Color.Gray) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.auth_email),
+                            color = Color.Gray,
+                        )
+                    },
                     enabled = !uiState.isLoading,
                 )
 
@@ -80,7 +87,12 @@ fun AuthScreen(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password", color = Color.Gray) },
+                    label = {
+                        Text(
+                            text = stringResource(id = R.string.auth_password),
+                            color = Color.Gray,
+                        )
+                    },
                     enabled = !uiState.isLoading,
                 )
 
@@ -97,7 +109,7 @@ fun AuthScreen(
                             color = MaterialTheme.colorScheme.onPrimary,
                         )
                     } else {
-                        Text("ログイン")
+                        Text(text = stringResource(id = R.string.auth_login))
                     }
                 }
 
@@ -108,7 +120,7 @@ fun AuthScreen(
                     onClick = { viewModel.signUp(email, password) },
                     enabled = !uiState.isLoading,
                 ) {
-                    Text("新規登録")
+                    Text(text = stringResource(id = R.string.auth_signUp))
                 }
 
                 uiState.error?.let {

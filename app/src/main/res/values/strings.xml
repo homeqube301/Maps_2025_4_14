@@ -3,6 +3,27 @@
 
     <string name="back">戻る</string>
 
+    <!--//AuthScreen-->
+    <string name="auth_title">ログイン</string>
+    <string name="auth_email">メールアドレス</string>
+    <string name="auth_password">パスワード</string>
+    <string name="auth_login">ログイン</string>
+    <string name="auth_signUp">新規登録</string>
+    <string name="auth_error">ログイン失敗: パスワード、もしくはメールアドレスが間違っています</string>
+    <string name="auth_mail">メール確認が必要です。メールをチェックしてください。</string>
+    <string name="auth_login_success">ログイン成功！</string>
+    <string name="auth_already">ユーザーがすでに登録されています</string>
+    <string name="auth_signUp_success">登録成功！ユーザーID:</string>
+    <string name="auth_check">登録メールを確認してください</string>
+
+    <!--//Auth Repository Messages-->
+    <string name="auth_signup_success_with_id">登録成功！ユーザーID: %1$s</string>
+    <string name="auth_login_success_with_id">ログイン成功！UID=%1$s</string>
+    <string name="auth_debug_signup_failed">サインアップ失敗</string>
+    <string name="auth_debug_signin_failed">サインイン失敗</string>
+    <string name="auth_debug_signout_failed">サインアウト失敗</string>
+    <string name="auth_debug_auth_check_failed">認証状態の確認に失敗しました</string>
+
     <!--//MapScreen-->
     <string name="map_loading">地図を読み込み中…</string>
     <string name="map_error">予期せぬエラーが発生しました</string>

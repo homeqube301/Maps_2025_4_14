@@ -1,9 +1,12 @@
 package com.mKanta.archivemaps.ui.stateholder
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -21,6 +24,7 @@ class AuthViewModel
     @Inject
     constructor(
         private val authRepository: AuthRepository,
+        @ApplicationContext private val context: Context,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(AuthUiState())
         val uiState: StateFlow<AuthUiState> = _uiState
@@ -37,7 +41,7 @@ class AuthViewModel
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                error = "登録メールを確認してください",
+                                error = context.getString(R.string.auth_check),
                             )
                         }
                     }.onFailure { exception ->
