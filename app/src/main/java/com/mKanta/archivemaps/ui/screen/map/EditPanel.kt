@@ -27,6 +27,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -200,17 +202,20 @@ fun EditPanel(
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-//                    Button(
-//                        colors = ButtonDefaults.buttonColors(Color.Gray),
-//                        modifier =
-//                            Modifier
-//                                .fillMaxWidth(0.4f),
-//                        onClick = {
-//                            changeShowConfirmDialog()
-//                        },
-//                    ) {
-//                        Text(stringResource(id = R.string.edit_back), fontWeight = FontWeight.Bold)
-//                    }
+                    Button(
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth(0.4f),
+                        onClick = {
+                            onPanelClose()
+                        },
+                    ) {
+                        Text(
+                            stringResource(id = R.string.edit_name_update),
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
             }
         }
@@ -257,8 +262,7 @@ private fun MemoEditor(
                     if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }
-                .fillMaxWidth()
+                }.fillMaxWidth()
                 .height(150.dp),
         placeholder = { Text(stringResource(id = R.string.edit_memo_hint), color = Color.Gray) },
         singleLine = false,
@@ -289,8 +293,7 @@ private fun MediaSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                )
-                .padding(12.dp),
+                ).padding(12.dp),
     ) {
         OutlinedButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -469,37 +472,6 @@ private fun MarkerNameEditor(
         )
 
         Spacer(modifier = Modifier.width(8.dp))
-//        Button(
-//            onClick = {
-//                focusManager.clearFocus()
-//
-//                selectedMarker.let { marker ->
-//                    val index =
-//                        permanentMarkers.indexOfFirst { it.id == marker.id }
-//                    if (index != -1) {
-//                        val updatedMarker =
-//                            marker.copy(
-//                                title = editedName,
-//                            )
-//                        onMarkerUpdate(updatedMarker)
-//                        mapsSaveMarker()
-//                    }
-//                    onPanelClose()
-//                }
-//            },
-//            modifier =
-//                Modifier
-//                    .wrapContentWidth()
-//                    .fillMaxHeight()
-//                    .padding(top = 8.dp),
-//            shape = RoundedCornerShape(8.dp),
-//        ) {
-//            Text(
-//                stringResource(id = R.string.edit_name_update),
-//                fontWeight = FontWeight.Bold,
-//                fontSize = 14.sp,
-//            )
-//        }
     }
 }
 
