@@ -7,10 +7,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -25,18 +26,21 @@ import dagger.hilt.android.HiltAndroidApp
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private var isPermissionGranted by mutableStateOf(false)
+    private var isPermissionChecked by mutableStateOf(false)
 
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             isPermissionGranted = permissions.entries.any { it.value }
+            isPermissionChecked = true
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isPermissionGranted = hasLocationPermission()
-
-        if (!isPermissionGranted) {
+        if (hasLocationPermission()) {
+            isPermissionGranted = true
+            isPermissionChecked = true
+        } else {
             locationPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -44,20 +48,28 @@ class MainActivity : ComponentActivity() {
                 ),
             )
         }
-
         setContent {
             ArchivemapsTheme(
                 darkTheme = isSystemInDarkTheme(),
                 dynamicColor = false,
             ) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                ) {
-                    val navController = rememberNavController()
-                    if (isPermissionGranted) {
+                val navController = rememberNavController()
+
+                when {
+                    !isPermissionChecked -> {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.background),
+                        )
+                    }
+
+                    isPermissionGranted -> {
                         AppNavHost(navController = navController)
-                    } else {
+                    }
+
+                    else -> {
                         AppNavHost(
                             navController = navController,
                             startDestination = "Location_Permission",
