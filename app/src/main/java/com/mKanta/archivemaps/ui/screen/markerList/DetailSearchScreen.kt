@@ -169,6 +169,13 @@ fun SearchContents(
     changeStartDatePicker: () -> Unit,
     changeEndDatePicker: () -> Unit,
 ) {
+    val isSearchEnabled =
+        !markerName.isNullOrBlank() ||
+            !startDate.isNullOrBlank() ||
+            !endDate.isNullOrBlank() ||
+            !embeddingMemo.isNullOrBlank() ||
+            !memo.isNullOrBlank()
+
     IntroShowcase(
         showIntroShowCase = showDetailIntro,
         dismissOnClickOutside = true,
@@ -501,6 +508,7 @@ fun SearchContents(
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = onNavigateToMarkerList,
+                        enabled = isSearchEnabled,
                         modifier = Modifier.fillMaxWidth(),
                         colors =
                             androidx.compose.material3.ButtonDefaults.buttonColors(
@@ -615,8 +623,8 @@ fun DetailSearchScreenPreview() {
         listState =
             ListState(
                 markerName = "テストマーカー",
-//                startDate = "2025-01-01",
-//                endDate = "2025-12-31",
+                startDate = "2025-01-01",
+                endDate = "2025-12-31",
                 memo = "これはテスト用メモです",
                 embeddingMemo = "意味的検索用テキスト",
                 openStartDatePicker = false,
