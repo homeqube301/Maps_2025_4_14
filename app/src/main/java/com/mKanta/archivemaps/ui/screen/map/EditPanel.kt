@@ -195,7 +195,7 @@ fun EditPanel(
                         },
                         modifier =
                             Modifier
-                                .fillMaxWidth(0.5f),
+                                .fillMaxWidth(0.4f),
                     ) {
                         Text(
                             stringResource(id = R.string.edit_deleteMarker),
@@ -208,7 +208,7 @@ fun EditPanel(
                         colors = ButtonDefaults.buttonColors(Color.Gray),
                         modifier =
                             Modifier
-                                .fillMaxWidth(0.5f),
+                                .fillMaxWidth(0.4f),
                         onClick = {
                             changeShowConfirmDialog()
                         },
@@ -261,8 +261,7 @@ private fun MemoEditor(
                     if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }
-                .fillMaxWidth()
+                }.fillMaxWidth()
                 .height(150.dp),
         placeholder = { Text(stringResource(id = R.string.edit_memo_hint), color = Color.Gray) },
         singleLine = false,
@@ -293,8 +292,7 @@ private fun MediaSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                )
-                .padding(12.dp),
+                ).padding(12.dp),
     ) {
         OutlinedButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
