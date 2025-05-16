@@ -259,11 +259,10 @@ private fun MemoEditor(
         modifier =
             Modifier
                 .onFocusChanged {
-                    if (!it.isFocused && memoText.isNotBlank()) {
+                    if (!it.isFocused) {
                         memoEmbedding(selectedMarker, memoText)
                     }
-                }
-                .fillMaxWidth()
+                }.fillMaxWidth()
                 .height(150.dp),
         placeholder = { Text(stringResource(id = R.string.edit_memo_hint), color = Color.Gray) },
         singleLine = false,
@@ -294,8 +293,7 @@ private fun MediaSelector(
                     width = 1.dp,
                     color = Color.Gray,
                     shape = RoundedCornerShape(4.dp),
-                )
-                .padding(12.dp),
+                ).padding(12.dp),
     ) {
         OutlinedButton(
             modifier = Modifier.align(Alignment.CenterHorizontally),
