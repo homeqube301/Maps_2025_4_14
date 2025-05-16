@@ -45,7 +45,7 @@
 
     <!--//editPanelScreen-->
     <string name="edit_title">マーカーを編集</string>
-    <string name="edit_deleteMarker">削除する</string>
+    <string name="edit_deleteMarker">マーカーを削除</string>
     <string name="edit_back">戻る</string>
 
     <string name="edit_confirm">編集を終了しますか？</string>

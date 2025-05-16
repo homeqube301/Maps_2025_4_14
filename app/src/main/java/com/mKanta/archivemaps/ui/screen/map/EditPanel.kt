@@ -193,7 +193,7 @@ fun EditPanel(
                         },
                         modifier =
                             Modifier
-                                .fillMaxWidth(0.4f),
+                                .fillMaxWidth(0.5f),
                     ) {
                         Text(
                             stringResource(id = R.string.edit_deleteMarker),
@@ -206,7 +206,7 @@ fun EditPanel(
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                         modifier =
                             Modifier
-                                .fillMaxWidth(0.4f),
+                                .fillMaxWidth(0.5f),
                         onClick = {
                             onPanelClose()
                         },
@@ -259,7 +259,7 @@ private fun MemoEditor(
         modifier =
             Modifier
                 .onFocusChanged {
-                    if (!it.isFocused) {
+                    if (!it.isFocused && memoText.isNotBlank()) {
                         memoEmbedding(selectedMarker, memoText)
                     }
                 }

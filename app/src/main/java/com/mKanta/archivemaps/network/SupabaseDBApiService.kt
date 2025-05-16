@@ -9,8 +9,10 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 data class SimilarMemoRequest(
     @Json(name = "query_embedding")
@@ -42,6 +44,12 @@ interface SupabaseApi {
     suspend fun getSimilarMemos(
         @Body request: SimilarMemoRequest,
     ): Response<List<SimilarMemoResponse>>
+
+    @DELETE("memo_embeddings")
+    suspend fun deleteMemoEmbedding(
+        @Query("marker_id") markerId: String,
+        @Query("select") select: String = "*",
+    ): Response<Unit>
 }
 
 fun provideSupabaseApi(

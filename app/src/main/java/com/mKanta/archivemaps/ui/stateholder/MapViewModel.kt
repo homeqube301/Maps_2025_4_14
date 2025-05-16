@@ -115,6 +115,8 @@ class MapViewModel
                 }
                 saveMarkers()
 
+                memoRepository.deleteMemoEmbedding(markerId)
+
                 currentBounds?.let { bounds ->
                     val filtered =
                         _uiState.value.permanentMarkers.filter {

@@ -14,6 +14,8 @@ interface MemoRepository {
     ): Boolean
 
     suspend fun getSimilarMarkerIds(memoText: String): List<String>?
+
+    suspend fun deleteMemoEmbedding(markerId: String): Boolean
 }
 
 class MemoRepositoryImpl
@@ -66,4 +68,14 @@ class MemoRepositoryImpl
                 Log.e("MemoRepository", "getSimilarMemos: 例外", e)
                 null
             }
+
+        override suspend fun deleteMemoEmbedding(markerId: String): Boolean =
+            try {
+                val response = supabaseApi.deleteMemoEmbedding(markerId)
+                Log.d("Supabase", "マーカーのメモを削除: $markerId")
+                response.isSuccessful
+            } catch (e: Exception) {
+                Log.e("Supabase", "マーカーのメモを削除できませんでした: $markerId", e)
+                false
+        }
     }
