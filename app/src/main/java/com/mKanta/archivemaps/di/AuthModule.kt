@@ -42,4 +42,4 @@ object AuthModule {
         supabaseClient: SupabaseClient,
         sessionStore: SessionStore,
     ): AuthRepository = AuthRepositoryImpl(supabaseClient, sessionStore)
-} 
+}

@@ -89,6 +89,6 @@ class AuthRepositoryImpl
                 }
             } catch (e: Exception) {
                 Log.e("AuthRepository", "認証状態の確認に失敗しました", e)
-            false
-        }
+                false
+            }
     }

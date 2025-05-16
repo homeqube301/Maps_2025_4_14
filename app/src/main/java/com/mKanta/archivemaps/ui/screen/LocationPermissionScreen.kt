@@ -1,4 +1,4 @@
-package com.mKanta.archivemaps.ui
+package com.mKanta.archivemaps.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

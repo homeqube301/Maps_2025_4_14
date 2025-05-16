@@ -10,11 +10,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
-import com.mKanta.archivemaps.ui.PermissionDeniedScreen
 import com.mKanta.archivemaps.ui.screen.AuthScreen
+import com.mKanta.archivemaps.ui.screen.PermissionDeniedScreen
 import com.mKanta.archivemaps.ui.screen.map.MapScreen
 import com.mKanta.archivemaps.ui.screen.markerList.DetailSearchScreen
 import com.mKanta.archivemaps.ui.screen.markerList.MarkerListScreen
+import com.mKanta.archivemaps.ui.stateholder.AuthViewModel
 import com.mKanta.archivemaps.ui.stateholder.ListViewModel
 import com.mKanta.archivemaps.ui.stateholder.MapViewModel
 
@@ -203,12 +204,14 @@ fun AppNavHost(
         }
 
         composable("auth") {
+            val authViewModel: AuthViewModel = hiltViewModel()
             AuthScreen(
                 onLoginSuccess = {
                     navController.navigate("map/0.0/0.0") {
                         popUpTo("auth") { inclusive = true }
                     }
                 },
+                viewModel = authViewModel,
             )
         }
     }
