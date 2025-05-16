@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -126,6 +127,8 @@ private fun SetMarker(
     selectedHue: Float,
     changeShowConfirmDialog: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -138,7 +141,7 @@ private fun SetMarker(
                     val newMarker =
                         NamedMarker(
                             position = LatLngSerializable.from(pos),
-                            title = tempMarkerName ?: "",
+                            title = if (tempMarkerName.isNullOrBlank()) context.getString(R.string.setMarker_noName) else tempMarkerName,
                             memo = tempMarkerMemo,
                             createdAt =
                                 LocalDateTime.now().format(
