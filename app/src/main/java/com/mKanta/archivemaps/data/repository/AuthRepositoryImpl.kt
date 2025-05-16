@@ -4,6 +4,7 @@ import android.util.Log
 import com.mKanta.archivemaps.domain.repository.AuthRepository
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
+import kotlinx.datetime.Clock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -70,5 +71,24 @@ class AuthRepositoryImpl
 
         override suspend fun getCurrentUserId(): String? = supabaseClient.auth.currentUserOrNull()?.id
 
-        override suspend fun isAuthenticated(): Boolean = supabaseClient.auth.currentUserOrNull() != null
+        override suspend fun isAuthenticated(): Boolean =
+            try {
+                val currentUser = supabaseClient.auth.currentUserOrNull()
+                val currentSession = supabaseClient.auth.currentSessionOrNull()
+
+                if (currentUser != null && currentSession != null) {
+                    val now = Clock.System.now()
+                    if (currentSession.expiresAt > now) {
+                        true
+                    } else {
+                        sessionStore.clear()
+                        false
+                    }
+                } else {
+                    false
+                }
+            } catch (e: Exception) {
+                Log.e("AuthRepository", "認証状態の確認に失敗しました", e)
+            false
+        }
     }

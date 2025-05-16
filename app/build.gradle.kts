@@ -63,7 +63,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Google Maps 関連（libs ではなく直書き）
     implementation(libs.play.services.maps)
     implementation(libs.maps.compose)
 
@@ -90,6 +89,14 @@ dependencies {
     implementation("com.canopas.intro-showcase-view:introshowcaseview:2.0.1")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.1.4"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:auth-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+
+    implementation("io.ktor:ktor-client-android:3.1.3")
+    implementation("io.github.jan-tennert.supabase:serializer-moshi:3.1.4")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

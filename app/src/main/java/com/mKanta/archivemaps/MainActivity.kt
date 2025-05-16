@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,22 +12,32 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
+import com.mKanta.archivemaps.domain.repository.AuthRepository
 import com.mKanta.archivemaps.navigation.AppNavHost
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private var isPermissionGranted by mutableStateOf(false)
     private var isPermissionChecked by mutableStateOf(false)
+    private var isLoading by mutableStateOf(true)
+
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -48,31 +59,69 @@ class MainActivity : ComponentActivity() {
                 ),
             )
         }
-        setContent {
-            ArchivemapsTheme(
-                darkTheme = isSystemInDarkTheme(),
-                dynamicColor = false,
-            ) {
-                val navController = rememberNavController()
 
-                when {
-                    !isPermissionChecked -> {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .background(MaterialTheme.colorScheme.background),
-                        )
+        lifecycleScope.launch {
+            try {
+                val isAuthenticated = authRepository.isAuthenticated()
+                isLoading = false
+
+                setContent {
+                    ArchivemapsTheme(
+                        darkTheme = isSystemInDarkTheme(),
+                        dynamicColor = false,
+                    ) {
+                        val navController = rememberNavController()
+
+                        when {
+                            isLoading -> {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .background(MaterialTheme.colorScheme.background),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+
+                            !isPermissionChecked -> {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .background(MaterialTheme.colorScheme.background),
+                                )
+                            }
+
+                            isPermissionGranted -> {
+                                AppNavHost(
+                                    navController = navController,
+                                    startDestination = if (isAuthenticated) "marker" else "auth",
+                                )
+                            }
+
+                            else -> {
+                                AppNavHost(
+                                    navController = navController,
+                                    startDestination = "Location_Permission",
+                                )
+                            }
+                        }
                     }
-
-                    isPermissionGranted -> {
-                        AppNavHost(navController = navController)
-                    }
-
-                    else -> {
+                }
+            } catch (e: Exception) {
+                Log.e("MainActivity", "認証状態の確認に失敗しました", e)
+                isLoading = false
+                setContent {
+                    ArchivemapsTheme(
+                        darkTheme = isSystemInDarkTheme(),
+                        dynamicColor = false,
+                    ) {
+                        val navController = rememberNavController()
                         AppNavHost(
                             navController = navController,
-                            startDestination = "Location_Permission",
+                            startDestination = "auth",
                         )
                     }
                 }

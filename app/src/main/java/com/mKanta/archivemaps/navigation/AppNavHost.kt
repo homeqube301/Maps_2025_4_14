@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.ui.PermissionDeniedScreen
+import com.mKanta.archivemaps.ui.screen.AuthScreen
 import com.mKanta.archivemaps.ui.screen.map.MapScreen
 import com.mKanta.archivemaps.ui.screen.markerList.DetailSearchScreen
 import com.mKanta.archivemaps.ui.screen.markerList.MarkerListScreen
@@ -199,6 +200,16 @@ fun AppNavHost(
         }
         composable("Location_Permission") {
             PermissionDeniedScreen()
+        }
+
+        composable("auth") {
+            AuthScreen(
+                onLoginSuccess = {
+                    navController.navigate("map/0.0/0.0") {
+                        popUpTo("auth") { inclusive = true }
+                    }
+                },
+            )
         }
     }
 }
