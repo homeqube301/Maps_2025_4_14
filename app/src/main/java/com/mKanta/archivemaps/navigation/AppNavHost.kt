@@ -205,6 +205,7 @@ fun AppNavHost(
 
         composable("auth") {
             val authViewModel: AuthViewModel = hiltViewModel()
+            val uiState by authViewModel.uiState.collectAsState()
             AuthScreen(
                 onLoginSuccess = {
                     navController.navigate("map/0.0/0.0") {
@@ -212,6 +213,7 @@ fun AppNavHost(
                     }
                 },
                 viewModel = authViewModel,
+                uiState = uiState,
             )
         }
     }

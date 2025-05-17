@@ -16,7 +16,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,8 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mKanta.archivemaps.R
+import com.mKanta.archivemaps.ui.stateholder.AuthUiState
 import com.mKanta.archivemaps.ui.stateholder.AuthViewModel
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 
@@ -34,11 +35,10 @@ import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 fun AuthScreen(
     onLoginSuccess: () -> Unit,
     viewModel: AuthViewModel,
+    uiState: AuthUiState,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
-    val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(uiState.isAuthenticated) {
         if (uiState.isAuthenticated) {
@@ -134,4 +134,9 @@ fun AuthScreen(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun AuthScreenPreview() {
 }

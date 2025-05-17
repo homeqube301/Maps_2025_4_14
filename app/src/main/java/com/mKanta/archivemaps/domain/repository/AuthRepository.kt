@@ -4,12 +4,12 @@ interface AuthRepository {
     suspend fun signUp(
         email: String,
         password: String,
-    ): Result<String>
+    ): Result<Int>
 
     suspend fun signIn(
         email: String,
         password: String,
-    ): Result<String>
+    ): Result<Int>
 
     suspend fun signOut(): Result<Unit>
 

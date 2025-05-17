@@ -14,8 +14,10 @@ import com.mKanta.archivemaps.data.repository.MarkerRepository
 import com.mKanta.archivemaps.data.repository.MarkerRepositoryImpl
 import com.mKanta.archivemaps.data.repository.MemoRepository
 import com.mKanta.archivemaps.data.repository.MemoRepositoryImpl
+import com.mKanta.archivemaps.data.repository.ResourceProviderImpl
 import com.mKanta.archivemaps.data.repository.UserPreferencesRepository
 import com.mKanta.archivemaps.data.repository.UserPreferencesRepositoryImpl
+import com.mKanta.archivemaps.domain.repository.ResourceProvider
 import com.mKanta.archivemaps.network.OpenAiApi
 import com.mKanta.archivemaps.network.SupabaseApi
 import com.mKanta.archivemaps.network.provideOpenAiApi
@@ -63,6 +65,12 @@ object AppModule {
     fun provideUserPreferences(
         @ApplicationContext context: Context,
     ): UserPreferences = UserPreferences(context)
+
+    @Provides
+    @Singleton
+    fun provideResourceProvider(
+        @ApplicationContext context: Context,
+    ): ResourceProvider = ResourceProviderImpl(context)
 }
 
 @Module

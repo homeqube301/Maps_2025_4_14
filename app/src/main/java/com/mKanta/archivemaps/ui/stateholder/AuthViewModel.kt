@@ -1,12 +1,11 @@
 package com.mKanta.archivemaps.ui.stateholder
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mKanta.archivemaps.R
+import com.mKanta.archivemaps.data.repository.StringResourceException
 import com.mKanta.archivemaps.domain.repository.AuthRepository
+import com.mKanta.archivemaps.domain.repository.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -24,7 +23,7 @@ class AuthViewModel
     @Inject
     constructor(
         private val authRepository: AuthRepository,
-        @ApplicationContext private val context: Context,
+        private val resourceProvider: ResourceProvider,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(AuthUiState())
         val uiState: StateFlow<AuthUiState> = _uiState
@@ -37,18 +36,26 @@ class AuthViewModel
                 _uiState.update { it.copy(isLoading = true, error = null) }
                 authRepository
                     .signUp(email, password)
-                    .onSuccess { message ->
+                    .onSuccess { messageResId ->
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                error = context.getString(R.string.auth_check),
+                                error = resourceProvider.getString(messageResId),
                             )
                         }
                     }.onFailure { exception ->
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                error = exception.message,
+                                error =
+                                    when (exception) {
+                                        is StringResourceException ->
+                                            resourceProvider.getString(
+                                                exception.resourceId,
+                                            )
+
+                                        else -> exception.message
+                                    },
                             )
                         }
                     }
@@ -63,7 +70,7 @@ class AuthViewModel
                 _uiState.update { it.copy(isLoading = true, error = null) }
                 authRepository
                     .signIn(email, password)
-                    .onSuccess { message ->
+                    .onSuccess { messageResId ->
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
@@ -75,7 +82,15 @@ class AuthViewModel
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                error = exception.message,
+                                error =
+                                    when (exception) {
+                                        is StringResourceException ->
+                                            resourceProvider.getString(
+                                                exception.resourceId,
+                                            )
+
+                                        else -> exception.message
+                                    },
                             )
                         }
                     }
@@ -98,7 +113,15 @@ class AuthViewModel
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                error = exception.message,
+                                error =
+                                    when (exception) {
+                                        is StringResourceException ->
+                                            resourceProvider.getString(
+                                                exception.resourceId,
+                                            )
+
+                                        else -> exception.message
+                                    },
                             )
                         }
                     }

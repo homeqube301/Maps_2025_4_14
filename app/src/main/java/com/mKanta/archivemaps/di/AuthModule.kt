@@ -39,8 +39,7 @@ object AuthModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        @ApplicationContext context: Context,
         supabaseClient: SupabaseClient,
         sessionStore: SessionStore,
-    ): AuthRepository = AuthRepositoryImpl(context, supabaseClient, sessionStore)
+    ): AuthRepository = AuthRepositoryImpl(supabaseClient, sessionStore)
 }

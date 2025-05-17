@@ -1,7 +1,7 @@
 package com.mKanta.archivemaps.data.repository
 
-import android.content.Context
 import android.util.Log
+import androidx.annotation.StringRes
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.repository.AuthRepository
 import io.github.jan.supabase.auth.auth
@@ -10,18 +10,21 @@ import kotlinx.datetime.Clock
 import javax.inject.Inject
 import javax.inject.Singleton
 
+class StringResourceException(
+    @StringRes val resourceId: Int,
+) : Exception()
+
 @Singleton
 class AuthRepositoryImpl
     @Inject
     constructor(
-        private val context: Context,
         private val supabaseClient: io.github.jan.supabase.SupabaseClient,
         private val sessionStore: SessionStore,
     ) : AuthRepository {
         override suspend fun signUp(
             email: String,
             password: String,
-        ): Result<String> =
+        ): Result<Int> =
             try {
                 supabaseClient.auth.signUpWith(Email) {
                     this.email = email
@@ -29,21 +32,19 @@ class AuthRepositoryImpl
                 }
                 val user = supabaseClient.auth.currentUserOrNull()
                 if (user != null) {
-                    Result.success(
-                        context.getString(R.string.auth_signup_success_with_id, user.id),
-                    )
+                    Result.success(R.string.auth_check)
                 } else {
-                    Result.failure(Exception(context.getString(R.string.auth_already)))
+                    Result.failure(StringResourceException(R.string.auth_already))
                 }
             } catch (e: Exception) {
-                Log.e("AuthRepository", context.getString(R.string.auth_debug_signup_failed), e)
+                Log.e("AuthRepository", "サインアップ失敗", e)
                 Result.failure(e)
             }
 
         override suspend fun signIn(
             email: String,
             password: String,
-        ): Result<String> =
+        ): Result<Int> =
             try {
                 supabaseClient.auth.signInWith(Email) {
                     this.email = email
@@ -55,13 +56,13 @@ class AuthRepositoryImpl
 
                 if (user != null && session != null) {
                     sessionStore.save(session)
-                    Result.success(context.getString(R.string.auth_login_success_with_id, user.id))
+                    Result.success(R.string.auth_login_success)
                 } else {
-                    Result.failure(Exception(context.getString(R.string.auth_mail)))
+                    Result.failure(StringResourceException(R.string.auth_mail))
                 }
             } catch (e: Exception) {
-                Log.e("AuthRepository", context.getString(R.string.auth_debug_signin_failed), e)
-                Result.failure(Exception(context.getString(R.string.auth_error)))
+                Log.e("AuthRepository", "サインイン失敗", e)
+                Result.failure(StringResourceException(R.string.auth_error))
             }
 
         override suspend fun signOut(): Result<Unit> =
@@ -70,7 +71,7 @@ class AuthRepositoryImpl
                 sessionStore.clear()
                 Result.success(Unit)
             } catch (e: Exception) {
-                Log.e("AuthRepository", context.getString(R.string.auth_debug_signout_failed), e)
+                Log.e("AuthRepository", "サインアウト失敗", e)
                 Result.failure(e)
             }
 
@@ -93,7 +94,7 @@ class AuthRepositoryImpl
                     false
                 }
             } catch (e: Exception) {
-                Log.e("AuthRepository", context.getString(R.string.auth_debug_auth_check_failed), e)
+                Log.e("AuthRepository", "認証状態の確認に失敗しました", e)
                 false
             }
     }
