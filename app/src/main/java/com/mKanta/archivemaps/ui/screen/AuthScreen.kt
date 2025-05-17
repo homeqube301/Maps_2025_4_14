@@ -28,14 +28,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.ui.stateholder.AuthUiState
-import com.mKanta.archivemaps.ui.stateholder.AuthViewModel
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 
 @Composable
 fun AuthScreen(
     onLoginSuccess: () -> Unit,
-    viewModel: AuthViewModel,
     uiState: AuthUiState,
+    signIn: (String, String) -> Unit,
+    signUp: (String, String) -> Unit,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -100,7 +100,7 @@ fun AuthScreen(
 
                 Button(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = { viewModel.signIn(email, password) },
+                    onClick = { signIn(email, password) },
                     enabled = !uiState.isLoading,
                 ) {
                     if (uiState.isLoading) {
@@ -117,7 +117,7 @@ fun AuthScreen(
 
                 Button(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = { viewModel.signUp(email, password) },
+                    onClick = { signUp(email, password) },
                     enabled = !uiState.isLoading,
                 ) {
                     Text(text = stringResource(id = R.string.auth_signUp))
@@ -139,4 +139,10 @@ fun AuthScreen(
 @Preview
 @Composable
 fun AuthScreenPreview() {
+    AuthScreen(
+        onLoginSuccess = {},
+        uiState = AuthUiState(),
+        signIn = { _, _ -> },
+        signUp = { _, _ -> },
+    )
 }

@@ -212,8 +212,9 @@ fun AppNavHost(
                         popUpTo("auth") { inclusive = true }
                     }
                 },
-                viewModel = authViewModel,
                 uiState = uiState,
+                signIn = { email, password -> authViewModel.signIn(email, password) },
+                signUp = { email, password -> authViewModel.signUp(email, password) },
             )
         }
     }
