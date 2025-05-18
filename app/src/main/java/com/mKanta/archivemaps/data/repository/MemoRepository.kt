@@ -63,7 +63,9 @@ class MemoRepositoryImpl
 
         private suspend fun getSimilarMemos(embedding: List<Float>): List<SimilarMemoResponse>? =
             try {
-                val response = supabaseApi.getSimilarMemos(SimilarMemoRequest(embedding))
+                val userId = supabaseClient.auth.currentUserOrNull()?.id ?: return null
+                val response =
+                    supabaseApi.getSimilarMemos(SimilarMemoRequest(embedding, userId))
                 if (response.isSuccessful) {
                     Log.e("MemoRepository", "getSimilarMemos: 成功 ${response.body() ?: "何もないよ"}")
                     response.body()

@@ -393,7 +393,6 @@ fun SearchContents(
                         }
                     }
 
-                    // 意味検索フィールド
                     OutlinedTextField(
                         value = embeddingMemo ?: "",
                         onValueChange = {

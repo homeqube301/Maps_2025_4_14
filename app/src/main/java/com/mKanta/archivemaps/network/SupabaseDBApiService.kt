@@ -18,6 +18,8 @@ import retrofit2.http.QueryMap
 data class SimilarMemoRequest(
     @Json(name = "query_embedding")
     val queryEmbedding: List<Float>,
+    @Json(name = "target_user_id")
+    val targetUserId: String,
 )
 
 data class SimilarMemoResponse(
