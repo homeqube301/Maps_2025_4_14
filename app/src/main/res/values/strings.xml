@@ -34,6 +34,10 @@
     <string name="map_search_tutorial_title">簡易検索ボタン</string>
     <string name="map_search_tutorial_description">タップすると設置したマーカーを簡単な条件で検索できます</string>
 
+    <string name="map_Account_Button">アカウント</string>
+    <string name="map_Account_tutorial_title">アカウントボタン</string>
+    <string name="map_Account_tutorial_description">タップすると自身のアカウント情報を編集できます</string>
+
     <string name="map_follow_Button">追従</string>
     <string name="map_follow_tutorial_title">追従ボタン</string>
     <string name="map_follow_tutorial_description">タップすると一定時間ごとに現在地にカメラが戻ります</string>
@@ -146,5 +150,11 @@
     <string name="detailSc_dialog_cancel">キャンセル</string>
     <string name="detailSc_dialog_OK">OK</string>
 
+    <!--//AccountEditScreen-->
+    <string name="account_edit_title">アカウント設定</string>
+    <string name="account_name_label">アカウント名</string>
+    <string name="account_id_label">アカウントID</string>
+    <string name="sign_out">ログアウト</string>
+    <string name="delete_account">アカウントを削除</string>
 
 </resources>

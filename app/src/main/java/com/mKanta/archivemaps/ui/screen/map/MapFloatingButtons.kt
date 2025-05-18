@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -41,6 +44,7 @@ fun MapFloatingButtons(
     onNavigateToMarkerList: () -> Unit,
     changeLastCameraPosition: (CameraPositionState) -> Unit,
     cameraPositionState: CameraPositionState,
+    onAccountClick: () -> Unit,
 ) {
     IntroShowcase(
         showIntroShowCase = showIntroShowCase,
@@ -59,7 +63,7 @@ fun MapFloatingButtons(
                 modifier =
                     Modifier.Companion
                         .introShowCaseTarget(
-                            index = 3,
+                            index = 4,
                             style =
                                 ShowcaseStyle.Companion.Default.copy(
                                     backgroundColor = Color.Companion.Black,
@@ -108,6 +112,58 @@ fun MapFloatingButtons(
                         )
                         .align(Alignment.Companion.Center),
             )
+
+            FloatingActionButton(
+                onClick = { onAccountClick() },
+                contentColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(80.dp),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 24.dp, top = 32.dp)
+                        .size(64.dp)
+                        .introShowCaseTarget(
+                            index = 3,
+                            style =
+                                ShowcaseStyle.Default.copy(
+                                    backgroundColor = Color.Black,
+                                    backgroundAlpha = 0.95f,
+                                    targetCircleColor = Color.White,
+                                ),
+                            content = {
+                                Column {
+                                    Text(
+                                        text = stringResource(R.string.map_Account_tutorial_title),
+                                        color = Color.White,
+                                        fontSize = 24.sp,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.map_Account_tutorial_description),
+                                        color = Color.White,
+                                        fontSize = 16.sp,
+                                    )
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Icon(
+                                        Icons.Default.Menu,
+                                        contentDescription = null,
+                                        modifier =
+                                            Modifier
+                                                .size(80.dp)
+                                                .align(Alignment.End),
+                                        tint = Color.Transparent,
+                                    )
+                                }
+                            },
+                        ),
+            ) {
+                Icon(
+                    Icons.Default.Person,
+                    contentDescription = stringResource(R.string.map_Account_Button),
+                    modifier = Modifier.size(32.dp),
+                )
+            }
         }
 
         Row(

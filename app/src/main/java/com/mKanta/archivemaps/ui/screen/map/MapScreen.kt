@@ -100,6 +100,10 @@ fun MapScreen(
         memo: String?,
         similarMarkerIds: List<String>,
     ) -> List<NamedMarker>,
+    onAccountSheetOpenChange: (Boolean) -> Unit,
+    onSignOut: () -> Unit,
+    onDeleteAccount: () -> Unit,
+    onAccountNameChange: (String) -> Unit,
 ) {
     ArchivemapsTheme {
         val context = LocalContext.current
@@ -174,6 +178,7 @@ fun MapScreen(
                     isEditPanelOpen = uiState.isEditPanelOpen,
                     isPanelOpen = uiState.isPanelOpen,
                     isSearchOpen = uiState.isSearchOpen,
+                    isAccountSheetOpen = uiState.isAccountSheetOpen,
                     changeShowConfirmDialog = { changeShowConfirmDialog() },
                     showConfirmDialog = uiState.showConfirmDialog,
                     changeIsEditPanelOpen = { changeIsEditPanelOpen() },
@@ -198,6 +203,7 @@ fun MapScreen(
                             toggleFollowing = { toggleFollowing() },
                             onNavigateToMarkerList = { onNavigateToMarkerList() },
                             isFollowing = uiState.isFollowing,
+                            onAccountClick = { onAccountSheetOpenChange(true) },
                         )
                     }
 
@@ -246,6 +252,13 @@ fun MapScreen(
                     saveMarkers = { saveMarkers() },
                     changeTempMarkerMemo = { changeTempMarkerMemo(it) },
                     tempMarkerMemo = uiState.tempMarkerMemo,
+                    isAccountSheetOpen = uiState.isAccountSheetOpen,
+                    onAccountSheetOpenChange = onAccountSheetOpenChange,
+                    onSignOut = onSignOut,
+                    onDeleteAccount = onDeleteAccount,
+                    accountName = uiState.accountName,
+                    accountId = uiState.accountId,
+                    onAccountNameChange = onAccountNameChange,
                 )
             }
 
@@ -347,5 +360,9 @@ fun MapScreenPreview() {
         memo = null,
         filterMarkers = { _, _, _, _, _, _, _ -> emptyList() },
         changeLastCameraPosition = {},
+        onAccountSheetOpenChange = {},
+        onSignOut = {},
+        onDeleteAccount = {},
+        onAccountNameChange = {},
     )
 }

@@ -27,6 +27,9 @@ data class MapsUiState(
     val permanentMarkers: List<NamedMarker> = emptyList(),
     val tempMarkerMemo: String? = null,
     val lastCameraPosition: CameraPosition? = null,
+    val isAccountSheetOpen: Boolean = false,
+    val accountName: String = "",
+    val accountId: String = "",
 )
 
 sealed interface MapState {

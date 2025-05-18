@@ -28,6 +28,26 @@ class AuthViewModel
         private val _uiState = MutableStateFlow(AuthUiState())
         val uiState: StateFlow<AuthUiState> = _uiState
 
+        init {
+            viewModelScope.launch {
+                _uiState.update {
+                    it.copy(isAuthenticated = authRepository.isAuthenticated())
+                }
+            }
+        }
+
+        fun changeAccountName(newAccountName: String) {
+        }
+
+        fun changeAccountPassword() {
+        }
+
+        fun deleteAccount() {
+        }
+
+    fun loadAccountInfo() {
+    }
+
         fun signUp(
             email: String,
             password: String,
@@ -125,14 +145,6 @@ class AuthViewModel
                             )
                         }
                     }
-            }
-        }
-
-        init {
-            viewModelScope.launch {
-                _uiState.update {
-                    it.copy(isAuthenticated = authRepository.isAuthenticated())
-                }
             }
         }
     }

@@ -37,6 +37,7 @@ fun AppNavHost(
 
                 val markerViewModel: ListViewModel = hiltViewModel(parentEntry)
                 val mapViewModel: MapViewModel = hiltViewModel(parentEntry)
+                val authViewModel: AuthViewModel = hiltViewModel(parentEntry)
 
                 // val mapViewModel: MapViewModel = hiltViewModel()
                 val uiState by mapViewModel.uiState.collectAsState()
@@ -121,6 +122,10 @@ fun AppNavHost(
                             similarMarkerIds,
                         )
                     },
+                    onAccountSheetOpenChange = { mapViewModel.changeIsAccountSheetOpen() },
+                    onSignOut = { authViewModel.signOut() },
+                    onDeleteAccount = { authViewModel.deleteAccount() },
+                    onAccountNameChange = { authViewModel.changeAccountName(it) },
                 )
             }
             navigation(startDestination = "marker_list", route = "list") {

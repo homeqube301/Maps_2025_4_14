@@ -28,6 +28,7 @@ fun PanelDismissOverlay(
     isEditPanelOpen: Boolean,
     isPanelOpen: Boolean,
     isSearchOpen: Boolean,
+    isAccountSheetOpen: Boolean,
     changeShowConfirmDialog: () -> Unit,
     showConfirmDialog: Boolean,
     changeIsEditPanelOpen: () -> Unit,
@@ -35,7 +36,7 @@ fun PanelDismissOverlay(
     changeIsSearchOpen: () -> Unit,
     changeSelectedMarker: (NamedMarker?) -> Unit,
 ) {
-    if (isEditPanelOpen || isPanelOpen || isSearchOpen) {
+    if (isEditPanelOpen || isPanelOpen || isSearchOpen || isAccountSheetOpen) {
         DismissOverlay(
             changeShowConfirmDialog = { changeShowConfirmDialog() },
             showConfirmDialog = showConfirmDialog,
@@ -90,12 +91,55 @@ fun MapPanel(
     saveMarkers: () -> Unit,
     changeTempMarkerMemo: (String?) -> Unit,
     tempMarkerMemo: String?,
+    isAccountSheetOpen: Boolean,
+    onAccountSheetOpenChange: (Boolean) -> Unit,
+    onSignOut: () -> Unit,
+    onDeleteAccount: () -> Unit,
+    accountName: String,
+    accountId: String,
+    onAccountNameChange: (String) -> Unit,
 ) {
     ArchivemapsTheme {
         val focusManager = LocalFocusManager.current
         val setSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         val searchSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+
+        if (isAccountSheetOpen) {
+            ModalBottomSheet(
+                onDismissRequest = { onAccountSheetOpenChange(false) },
+                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                containerColor = MaterialTheme.colorScheme.background,
+                dragHandle = {
+                    Box(
+                        modifier =
+                            Modifier
+                                .padding(top = 8.dp, bottom = 16.dp)
+                                .height(4.dp)
+                                .width(36.dp)
+                                .background(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(2.dp),
+                                ),
+                    )
+                },
+            ) {
+                AccountEditSheet(
+                    onDismiss = { onAccountSheetOpenChange(false) },
+                    onSignOut = {
+                        onSignOut()
+                        onAccountSheetOpenChange(false)
+                    },
+                    onDeleteAccount = {
+                        onDeleteAccount()
+                        onAccountSheetOpenChange(false)
+                    },
+                    accountName = accountName,
+                    accountId = accountId,
+                    onAccountNameChange = onAccountNameChange,
+                )
+            }
+        }
 
         if (isSearchOpen) {
             ModalBottomSheet(

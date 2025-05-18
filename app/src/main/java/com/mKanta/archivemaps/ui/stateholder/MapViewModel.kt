@@ -397,4 +397,8 @@ class MapViewModel
         fun changeTempMarkerMemo(memo: String?) {
             _uiState.update { it.copy(tempMarkerMemo = memo) }
         }
+
+        fun changeIsAccountSheetOpen() {
+            _uiState.update { it.copy(isAccountSheetOpen = !it.isAccountSheetOpen) }
+        }
     }
