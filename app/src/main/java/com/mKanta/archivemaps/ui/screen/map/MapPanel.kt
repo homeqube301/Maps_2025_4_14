@@ -240,6 +240,7 @@ fun MapPanel(
                     addVisibleMarker = { addAllVisibleMarkers(listOf(it)) },
                     addMarker = { addMarker(it) },
                     tempMarkerMemo = tempMarkerMemo,
+                    memoEmbedding = updateMarkerMemoEmbedding,
                 )
             }
         }

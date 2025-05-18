@@ -59,6 +59,7 @@ fun SetMarkerPanel(
     changeShowConfirmDialog: () -> Unit,
     changeTempMarkerMemo: (String) -> Unit,
     tempMarkerMemo: String?,
+    memoEmbedding: (NamedMarker, String) -> Unit,
 ) {
     ArchivemapsTheme {
         BackHandler(enabled = true) {
@@ -109,6 +110,7 @@ fun SetMarkerPanel(
                 addMarker = addMarker,
                 selectedHue = selectedHue,
                 changeShowConfirmDialog = changeShowConfirmDialog,
+                memoEmbedding = memoEmbedding,
             )
         }
     }
@@ -126,6 +128,7 @@ private fun SetMarker(
     addMarker: (NamedMarker) -> Unit,
     selectedHue: Float,
     changeShowConfirmDialog: () -> Unit,
+    memoEmbedding: (NamedMarker, String) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -155,6 +158,7 @@ private fun SetMarker(
                     if (bounds != null && bounds.contains(pos)) {
                         addVisibleMarker(newMarker)
                     }
+                    memoEmbedding(newMarker, tempMarkerMemo.toString())
                 }
                 resetTempMarkers()
             },
@@ -298,5 +302,6 @@ fun PreviewSetMarkerPanel() {
         changeShowConfirmDialog = {},
         changeTempMarkerMemo = {},
         tempMarkerMemo = "メモです",
+        memoEmbedding = { _, _ -> },
     )
 }

@@ -28,7 +28,7 @@ import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 
 @Composable
 fun AccountEditSheet(
-    onDismiss: () -> Unit,
+    onDismiss: () -> Unit = {},
     onSignOut: () -> Unit,
     onDeleteAccount: () -> Unit,
     accountName: String,
@@ -93,7 +93,7 @@ fun AccountEditSheet(
                     enabled = !isLoading,
                     colors =
                         ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
+                            containerColor = Color.Gray,
                         ),
                 ) {
                     Text(
@@ -134,14 +134,12 @@ fun AccountEditSheet(
 @Preview
 @Composable
 fun AccountEditSheetPreview(
-    onDismiss: () -> Unit = {},
     onSignOut: () -> Unit = {},
     onDeleteAccount: () -> Unit = {},
     accountName: String = "test",
     accountId: String = "test",
 ) {
     AccountEditSheet(
-        onDismiss = onDismiss,
         onSignOut = onSignOut,
         onDeleteAccount = onDeleteAccount,
         accountName = accountName,
