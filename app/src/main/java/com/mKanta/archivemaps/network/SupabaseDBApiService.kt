@@ -32,6 +32,8 @@ data class MemoEmbeddingInsertRequest(
     val markerId: String,
     val memo: String,
     val embedding: List<Float>,
+    @Json(name = "user_id")
+    val userId: String,
 )
 
 interface SupabaseApi {

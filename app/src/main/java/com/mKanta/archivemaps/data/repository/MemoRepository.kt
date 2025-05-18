@@ -5,6 +5,8 @@ import com.mKanta.archivemaps.network.MemoEmbeddingInsertRequest
 import com.mKanta.archivemaps.network.SimilarMemoRequest
 import com.mKanta.archivemaps.network.SimilarMemoResponse
 import com.mKanta.archivemaps.network.SupabaseApi
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.auth
 import javax.inject.Inject
 
 interface MemoRepository {
@@ -23,18 +25,23 @@ class MemoRepositoryImpl
     constructor(
         private val supabaseApi: SupabaseApi,
         private val embeddingRepository: EmbeddingRepository,
+        private val supabaseClient: SupabaseClient,
     ) : MemoRepository {
         override suspend fun saveMemoEmbedding(
             markerId: String,
             memoText: String,
         ): Boolean {
             val embedding = embeddingRepository.fetchEmbedding(memoText) ?: return false
+            val currentUserId =
+                supabaseClient.auth.currentUserOrNull()?.id
+                    ?: throw Exception("ユーザーが見つかりません")
 
             val request =
                 MemoEmbeddingInsertRequest(
                     markerId = markerId,
                     memo = memoText,
                     embedding = embedding,
+                    userId = currentUserId,
                 )
 
             return try {
