@@ -2,7 +2,9 @@ package com.mKanta.archivemaps.ui.screen.map
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -18,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 
@@ -41,10 +44,28 @@ fun AccountEditSheet(
         ) {
             Text(
                 text = stringResource(R.string.account_edit_title),
-                style = MaterialTheme.typography.titleLarge,
+                // style = MaterialTheme.typography.titleLarge,
                 color = Color.White,
-                modifier = Modifier.padding(bottom = 16.dp),
+                fontSize = 16.sp,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                modifier =
+                    Modifier
+                        .padding(bottom = 16.dp)
+                        .align(Alignment.CenterHorizontally),
             )
+
+            Text(
+                stringResource(R.string.account_id_label),
+                color = Color.Gray,
+                // modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
+            Text(
+                text = accountId,
+                color = Color.Gray,
+                // modifier = Modifier.align(Alignment.CenterHorizontally),
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
                 value = accountName,
@@ -55,22 +76,6 @@ fun AccountEditSheet(
                         .fillMaxWidth()
                         .padding(bottom = 8.dp),
                 enabled = !isLoading,
-                colors =
-                    OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                    ),
-            )
-
-            OutlinedTextField(
-                value = accountId,
-                onValueChange = { },
-                label = { Text(stringResource(R.string.account_id_label), color = Color.Gray) },
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                enabled = false,
                 colors =
                     OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Color.White,

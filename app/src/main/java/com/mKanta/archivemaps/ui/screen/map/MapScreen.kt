@@ -104,6 +104,8 @@ fun MapScreen(
     onSignOut: () -> Unit,
     onDeleteAccount: () -> Unit,
     onAccountNameChange: (String) -> Unit,
+    accountName: String = "",
+    accountId: String = "",
 ) {
     ArchivemapsTheme {
         val context = LocalContext.current
@@ -256,8 +258,8 @@ fun MapScreen(
                     onAccountSheetOpenChange = onAccountSheetOpenChange,
                     onSignOut = onSignOut,
                     onDeleteAccount = onDeleteAccount,
-                    accountName = uiState.accountName,
-                    accountId = uiState.accountId,
+                    accountName = accountName,
+                    accountId = accountId,
                     onAccountNameChange = onAccountNameChange,
                 )
             }

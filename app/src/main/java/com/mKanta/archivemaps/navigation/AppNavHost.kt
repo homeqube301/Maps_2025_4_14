@@ -126,6 +126,8 @@ fun AppNavHost(
                     onSignOut = { authViewModel.signOut() },
                     onDeleteAccount = { authViewModel.deleteAccount() },
                     onAccountNameChange = { authViewModel.changeAccountName(it) },
+                    accountName = authViewModel.uiState.value.accountName,
+                    accountId = authViewModel.uiState.value.accountId,
                 )
             }
             navigation(startDestination = "marker_list", route = "list") {

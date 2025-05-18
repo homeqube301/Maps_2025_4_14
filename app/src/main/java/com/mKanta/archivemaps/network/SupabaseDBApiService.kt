@@ -13,6 +13,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
 
 data class SimilarMemoRequest(
     @Json(name = "query_embedding")
@@ -47,7 +48,7 @@ interface SupabaseApi {
 
     @DELETE("memo_embeddings")
     suspend fun deleteMemoEmbedding(
-        @Query("marker_id") markerId: String,
+        @QueryMap filters: Map<String, String>,
         @Query("select") select: String = "*",
     ): Response<Unit>
 }

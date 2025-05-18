@@ -71,11 +71,14 @@ class MemoRepositoryImpl
 
         override suspend fun deleteMemoEmbedding(markerId: String): Boolean =
             try {
-                val response = supabaseApi.deleteMemoEmbedding(markerId)
+                val response =
+                    supabaseApi.deleteMemoEmbedding(
+                        filters = mapOf("marker_id" to "eq.$markerId"),
+                    )
                 Log.d("Supabase", "マーカーのメモを削除: $markerId")
                 response.isSuccessful
             } catch (e: Exception) {
                 Log.e("Supabase", "マーカーのメモを削除できませんでした: $markerId", e)
                 false
-        }
+            }
     }

@@ -16,4 +16,16 @@ interface AuthRepository {
     suspend fun getCurrentUserId(): String?
 
     suspend fun isAuthenticated(): Boolean
+
+    suspend fun getCurrentUser(): User?
+
+    suspend fun updateUserProfile(displayName: String)
+
+    suspend fun deleteUser()
 }
+
+data class User(
+    val id: String,
+    val email: String?,
+    val userMetadata: Map<String, Any>?,
+)

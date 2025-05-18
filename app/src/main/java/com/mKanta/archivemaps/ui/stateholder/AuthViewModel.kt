@@ -16,6 +16,9 @@ data class AuthUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val isAuthenticated: Boolean = false,
+    val accountName: String = "",
+    val accountId: String = "",
+    val email: String = "",
 )
 
 @HiltViewModel
@@ -33,19 +36,83 @@ class AuthViewModel
                 _uiState.update {
                     it.copy(isAuthenticated = authRepository.isAuthenticated())
                 }
+                if (authRepository.isAuthenticated()) {
+                    loadAccountInfo()
+                }
             }
         }
 
         fun changeAccountName(newAccountName: String) {
-        }
-
-        fun changeAccountPassword() {
+            viewModelScope.launch {
+                _uiState.update { it.copy(isLoading = true) }
+                try {
+                    authRepository.updateUserProfile(newAccountName)
+                    _uiState.update {
+                        it.copy(
+                            accountName = newAccountName,
+                            isLoading = false,
+                        )
+                    }
+                } catch (e: Exception) {
+                    _uiState.update {
+                        it.copy(
+                            error = e.message,
+                            isLoading = false,
+                        )
+                    }
+                }
+            }
         }
 
         fun deleteAccount() {
+            viewModelScope.launch {
+                _uiState.update { it.copy(isLoading = true) }
+                try {
+                    authRepository.deleteUser()
+                    _uiState.update {
+                        it.copy(
+                            isAuthenticated = false,
+                            isLoading = false,
+                            accountName = "",
+                            accountId = "",
+                            email = "",
+                        )
+                    }
+                } catch (e: Exception) {
+                    _uiState.update {
+                        it.copy(
+                            error = e.message,
+                            isLoading = false,
+                        )
+                    }
+                }
+            }
         }
 
-    fun loadAccountInfo() {
+        fun loadAccountInfo() {
+            viewModelScope.launch {
+                _uiState.update { it.copy(isLoading = true) }
+                try {
+                    val user = authRepository.getCurrentUser()
+                    user?.let { currentUser ->
+                        _uiState.update {
+                            it.copy(
+                                accountName = currentUser.userMetadata?.get("name") as? String ?: "",
+                                accountId = currentUser.id,
+                                email = currentUser.email ?: "",
+                                isLoading = false,
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                    _uiState.update {
+                        it.copy(
+                            error = e.message,
+                            isLoading = false,
+                        )
+                }
+            }
+        }
     }
 
         fun signUp(

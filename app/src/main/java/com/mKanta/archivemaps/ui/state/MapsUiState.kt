@@ -28,8 +28,6 @@ data class MapsUiState(
     val tempMarkerMemo: String? = null,
     val lastCameraPosition: CameraPosition? = null,
     val isAccountSheetOpen: Boolean = false,
-    val accountName: String = "",
-    val accountId: String = "",
 )
 
 sealed interface MapState {

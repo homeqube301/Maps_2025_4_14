@@ -4,9 +4,13 @@ import android.util.Log
 import androidx.annotation.StringRes
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.repository.AuthRepository
+import com.mKanta.archivemaps.domain.repository.User
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import kotlinx.datetime.Clock
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,7 +22,7 @@ class StringResourceException(
 class AuthRepositoryImpl
     @Inject
     constructor(
-        private val supabaseClient: io.github.jan.supabase.SupabaseClient,
+        private val supabaseClient: SupabaseClient,
         private val sessionStore: SessionStore,
     ) : AuthRepository {
         override suspend fun signUp(
@@ -97,4 +101,44 @@ class AuthRepositoryImpl
                 Log.e("AuthRepository", "認証状態の確認に失敗しました", e)
                 false
             }
+
+        override suspend fun getCurrentUser(): User? =
+            try {
+                val user = supabaseClient.auth.currentUserOrNull()
+                user?.let {
+                    User(
+                        id = it.id,
+                        email = it.email,
+                        userMetadata = it.userMetadata,
+                    )
+                }
+            } catch (e: Exception) {
+                null
+            }
+
+        override suspend fun updateUserProfile(displayName: String) {
+            try {
+                supabaseClient.auth.updateUser {
+                    data =
+                        buildJsonObject {
+                            put("name", displayName)
+                        }
+                }
+            } catch (e: Exception) {
+                throw Exception("プロフィールの更新に失敗しました")
+            }
+        }
+
+        override suspend fun deleteUser() {
+            try {
+                val currentUserId =
+                    supabaseClient.auth.currentUserOrNull()?.id
+                        ?: throw Exception("ユーザーが見つかりません")
+
+                supabaseClient.auth.signOut()
+                sessionStore.clear()
+        } catch (e: Exception) {
+            throw Exception("アカウントの削除に失敗しました")
+        }
+    }
     }
