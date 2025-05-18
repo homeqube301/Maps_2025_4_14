@@ -10,6 +10,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,7 +46,6 @@ fun AccountEditSheet(
         ) {
             Text(
                 text = stringResource(R.string.account_edit_title),
-                // style = MaterialTheme.typography.titleLarge,
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
@@ -55,14 +56,8 @@ fun AccountEditSheet(
             )
 
             Text(
-                stringResource(R.string.account_id_label),
+                stringResource(R.string.account_id_label) + ": $accountId",
                 color = Color.Gray,
-                // modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
-            Text(
-                text = accountId,
-                color = Color.Gray,
-                // modifier = Modifier.align(Alignment.CenterHorizontally),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -83,40 +78,54 @@ fun AccountEditSheet(
                     ),
             )
 
-            Button(
-                onClick = onSignOut,
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                enabled = !isLoading,
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    ),
-            ) {
-                Text(stringResource(R.string.sign_out))
-            }
+            Spacer(modifier = Modifier.height(40.dp))
 
-            Button(
-                onClick = onDeleteAccount,
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading,
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                    ),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(stringResource(R.string.delete_account))
-            }
-
-            if (isLoading) {
-                CircularProgressIndicator(
+                Button(
+                    onClick = onSignOut,
                     modifier =
                         Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 16.dp),
-                )
+                            .fillMaxWidth(0.5f)
+                            .padding(bottom = 8.dp),
+                    enabled = !isLoading,
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                        ),
+                ) {
+                    Text(
+                        stringResource(R.string.sign_out),
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    )
+                }
+
+                OutlinedButton(
+                    onClick = onDeleteAccount,
+                    modifier = Modifier.fillMaxWidth(0.5f),
+                    enabled = !isLoading,
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                        ),
+                ) {
+                    Text(
+                        stringResource(R.string.delete_account),
+                        color = colorResource(id = R.color.alert_red),
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    )
+                }
+
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier =
+                            Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(top = 16.dp),
+                    )
+                }
             }
         }
     }
