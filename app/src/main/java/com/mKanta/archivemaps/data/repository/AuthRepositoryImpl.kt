@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.repository.AuthRepository
 import com.mKanta.archivemaps.domain.repository.User
+import com.mKanta.archivemaps.network.SupabaseApi
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
@@ -24,6 +25,7 @@ class AuthRepositoryImpl
     constructor(
         private val supabaseClient: SupabaseClient,
         private val sessionStore: SessionStore,
+        private val supabaseApi: SupabaseApi,
     ) : AuthRepository {
         override suspend fun signUp(
             email: String,
@@ -135,10 +137,16 @@ class AuthRepositoryImpl
                     supabaseClient.auth.currentUserOrNull()?.id
                         ?: throw Exception("ユーザーが見つかりません")
 
+                val response = supabaseApi.deleteUserById(mapOf("uid" to currentUserId))
+
+                if (!response.isSuccessful) {
+                    throw Exception("アカウント削除に失敗: ${response.code()}")
+                }
+
                 supabaseClient.auth.signOut()
                 sessionStore.clear()
-        } catch (e: Exception) {
-            throw Exception("アカウントの削除に失敗しました")
+            } catch (e: Exception) {
+                throw Exception("アカウントの削除に失敗しました: ${e.message}")
+            }
         }
-    }
     }

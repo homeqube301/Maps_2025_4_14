@@ -51,6 +51,11 @@ interface SupabaseApi {
         @QueryMap filters: Map<String, String>,
         @Query("select") select: String = "*",
     ): Response<Unit>
+
+    @POST("rpc/delete_user")
+    suspend fun deleteUserById(
+        @Body body: Map<String, String>,
+    ): Response<Unit>
 }
 
 fun provideSupabaseApi(

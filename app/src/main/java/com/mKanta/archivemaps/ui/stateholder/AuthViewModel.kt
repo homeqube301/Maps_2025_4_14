@@ -110,10 +110,10 @@ class AuthViewModel
                             error = e.message,
                             isLoading = false,
                         )
+                    }
                 }
             }
         }
-    }
 
         fun signUp(
             email: String,

@@ -5,6 +5,7 @@ import com.mKanta.archivemaps.BuildConfig
 import com.mKanta.archivemaps.data.repository.AuthRepositoryImpl
 import com.mKanta.archivemaps.data.repository.SessionStore
 import com.mKanta.archivemaps.domain.repository.AuthRepository
+import com.mKanta.archivemaps.network.SupabaseApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,5 +42,6 @@ object AuthModule {
     fun provideAuthRepository(
         supabaseClient: SupabaseClient,
         sessionStore: SessionStore,
-    ): AuthRepository = AuthRepositoryImpl(supabaseClient, sessionStore)
+        supabaseApi: SupabaseApi,
+    ): AuthRepository = AuthRepositoryImpl(supabaseClient, sessionStore, supabaseApi)
 }
