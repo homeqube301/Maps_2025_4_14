@@ -72,6 +72,7 @@ class AuthViewModel
                     _uiState.update {
                         it.copy(
                             isAuthenticated = false,
+                            isSignOut = true,
                             accountName = "",
                             accountId = "",
                             email = "",
@@ -166,9 +167,9 @@ class AuthViewModel
                             it.copy(
                                 isAuthenticated = false,
                                 isSignOut = true,
+                                isLoading = AccountLoadingState.Success(true),
                             )
                         }
-                        setSuccessState()
                     }.onFailure { exception ->
                         setErrorState(
                             when (exception) {

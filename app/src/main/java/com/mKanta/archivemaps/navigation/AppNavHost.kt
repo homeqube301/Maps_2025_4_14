@@ -40,9 +40,9 @@ fun AppNavHost(
                 val mapViewModel: MapViewModel = hiltViewModel(parentEntry)
                 val authViewModel: AuthViewModel = hiltViewModel(parentEntry)
 
-                // val mapViewModel: MapViewModel = hiltViewModel()
                 val uiState by mapViewModel.uiState.collectAsState()
                 val listState by markerViewModel.listState.collectAsState()
+                val authState by authViewModel.uiState.collectAsState()
 
                 val latitude =
                     uiState.lastCameraPosition?.target?.latitude
@@ -127,10 +127,10 @@ fun AppNavHost(
                     onSignOut = { authViewModel.signOut() },
                     onDeleteAccount = { authViewModel.deleteAccount() },
                     onAccountNameChange = { authViewModel.changeAccountName(it) },
-                    isSignOut = authViewModel.uiState.value.isSignOut,
-                    isAccountLoading = authViewModel.uiState.value.isLoading,
-                    accountName = authViewModel.uiState.value.accountName,
-                    accountId = authViewModel.uiState.value.accountId,
+                    isSignOut = authState.isSignOut,
+                    isAccountLoading = authState.isLoading,
+                    accountName = authState.accountName,
+                    accountId = authState.accountId,
                     onNavigateToAuth = {
                         navController.navigate("auth") {
                             {

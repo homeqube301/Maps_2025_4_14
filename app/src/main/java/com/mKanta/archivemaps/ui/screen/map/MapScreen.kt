@@ -340,34 +340,23 @@ fun MapScreen(
                             CircularProgressIndicator(
                                 modifier = Modifier.size(48.dp),
                             )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                text = stringResource(R.string.map_loading),
-                                fontSize = 16.sp,
-                                color = Color.Red,
-                            )
                         }
                     }
                 }
 
                 else -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.background),
                     ) {
-                        Column {
-                            Text(
-                                text = stringResource(R.string.map_error),
-                                color = Color.Red,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = stringResource(R.string.map_error_description),
-                                color = Color.Red,
-                                fontSize = 16.sp,
-                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(48.dp),
                             )
                         }
                     }
