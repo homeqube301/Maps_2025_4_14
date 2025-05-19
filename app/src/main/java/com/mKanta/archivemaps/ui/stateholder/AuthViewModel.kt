@@ -45,7 +45,7 @@ class AuthViewModel
 
         private fun setErrorState(message: String?) {
             _uiState.update { it.copy(isLoading = AccountLoadingState.Error(message)) }
-    }
+        }
 
         fun changeAccountName(newAccountName: String) {
             viewModelScope.launch {
@@ -165,6 +165,7 @@ class AuthViewModel
                         _uiState.update {
                             it.copy(
                                 isAuthenticated = false,
+                                isSignOut = true,
                             )
                         }
                         setSuccessState()

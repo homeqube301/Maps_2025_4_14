@@ -127,6 +127,8 @@ fun AppNavHost(
                     onSignOut = { authViewModel.signOut() },
                     onDeleteAccount = { authViewModel.deleteAccount() },
                     onAccountNameChange = { authViewModel.changeAccountName(it) },
+                    isSignOut = authViewModel.uiState.value.isSignOut,
+                    isAccountLoading = authViewModel.uiState.value.isLoading,
                     accountName = authViewModel.uiState.value.accountName,
                     accountId = authViewModel.uiState.value.accountId,
                     onNavigateToAuth = {

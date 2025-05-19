@@ -2,6 +2,7 @@ package com.mKanta.archivemaps.ui.state
 
 data class AuthUiState(
     val isLoading: AccountLoadingState = AccountLoadingState.Success(loadingReady = true),
+    val isSignOut: Boolean = false,
     val error: String? = null,
     val isAuthenticated: Boolean = false,
     val accountName: String = "",

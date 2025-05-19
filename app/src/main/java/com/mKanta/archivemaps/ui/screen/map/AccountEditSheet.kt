@@ -89,7 +89,6 @@ fun AccountEditSheet(
                     onClick = {
                         onSignOut()
                         onDismiss()
-                        onNavigateToAuth()
                     },
                     modifier =
                         Modifier
@@ -111,7 +110,6 @@ fun AccountEditSheet(
                     onClick = {
                         onDeleteAccount()
                         onDismiss()
-                        onNavigateToAuth()
                     },
                     modifier = Modifier.fillMaxWidth(0.5f),
                     enabled = !isLoading,
