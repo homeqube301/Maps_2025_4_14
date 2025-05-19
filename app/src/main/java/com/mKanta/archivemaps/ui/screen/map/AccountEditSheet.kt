@@ -31,6 +31,7 @@ fun AccountEditSheet(
     onDismiss: () -> Unit = {},
     onSignOut: () -> Unit,
     onDeleteAccount: () -> Unit,
+    onNavigateToAuth: () -> Unit,
     accountName: String,
     accountId: String,
     onAccountNameChange: (String) -> Unit,
@@ -85,7 +86,11 @@ fun AccountEditSheet(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Button(
-                    onClick = { onSignOut() },
+                    onClick = {
+                        onSignOut()
+                        onDismiss()
+                        onNavigateToAuth()
+                    },
                     modifier =
                         Modifier
                             .fillMaxWidth(0.5f)
@@ -103,7 +108,11 @@ fun AccountEditSheet(
                 }
 
                 OutlinedButton(
-                    onClick = onDeleteAccount,
+                    onClick = {
+                        onDeleteAccount()
+                        onDismiss()
+                        onNavigateToAuth()
+                    },
                     modifier = Modifier.fillMaxWidth(0.5f),
                     enabled = !isLoading,
                     colors =
@@ -146,5 +155,6 @@ fun AccountEditSheetPreview(
         accountId = accountId,
         onAccountNameChange = {},
         isLoading = false,
+        onNavigateToAuth = {},
     )
 }

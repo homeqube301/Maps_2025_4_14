@@ -106,6 +106,7 @@ fun MapScreen(
     onAccountNameChange: (String) -> Unit,
     accountName: String = "",
     accountId: String = "",
+    onNavigateToAuth: () -> Unit,
 ) {
     ArchivemapsTheme {
         val context = LocalContext.current
@@ -261,6 +262,7 @@ fun MapScreen(
                     accountName = accountName,
                     accountId = accountId,
                     onAccountNameChange = onAccountNameChange,
+                    onNavigateToAuth = onNavigateToAuth,
                 )
             }
 
@@ -366,5 +368,6 @@ fun MapScreenPreview() {
         onSignOut = {},
         onDeleteAccount = {},
         onAccountNameChange = {},
+        onNavigateToAuth = {},
     )
 }

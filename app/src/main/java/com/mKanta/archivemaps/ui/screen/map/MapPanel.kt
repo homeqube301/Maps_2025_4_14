@@ -98,6 +98,7 @@ fun MapPanel(
     accountName: String,
     accountId: String,
     onAccountNameChange: (String) -> Unit,
+    onNavigateToAuth: () -> Unit,
 ) {
     ArchivemapsTheme {
         val focusManager = LocalFocusManager.current
@@ -128,12 +129,11 @@ fun MapPanel(
                     onDismiss = { onAccountSheetOpenChange(false) },
                     onSignOut = {
                         onSignOut()
-                        onAccountSheetOpenChange(false)
                     },
                     onDeleteAccount = {
                         onDeleteAccount()
-                        onAccountSheetOpenChange(false)
                     },
+                    onNavigateToAuth = onNavigateToAuth,
                     accountName = accountName,
                     accountId = accountId,
                     onAccountNameChange = onAccountNameChange,
