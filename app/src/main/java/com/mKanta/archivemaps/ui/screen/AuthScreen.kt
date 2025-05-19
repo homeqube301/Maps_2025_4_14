@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -26,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.ui.stateholder.AuthUiState
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
@@ -58,6 +63,38 @@ fun AuthScreen(
             Column(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             ) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Map Marker",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier =
+                        Modifier
+                            .size(64.dp)
+                            .align(Alignment.CenterHorizontally),
+                )
+
+//                Image(
+//                    painter = painterResource(id = R.drawable.ic_launcher_round),
+//                    contentDescription = "App Icon",
+//                    modifier = Modifier.size(64.dp).align(Alignment.CenterHorizontally),
+//                )
+
+                Spacer(modifier = Modifier.height(64.dp))
+
+                Text(
+                    text = stringResource(id = R.string.auth_AppTitle),
+                    color = Color.White,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    fontSize = 32.sp,
+                )
+                Text(
+                    text = stringResource(id = R.string.auth_AppDisc) + "\n" + stringResource(id = R.string.auth_AppDisc2),
+                    color = Color.White,
+                    fontSize = 16.sp,
+                )
+
+                Spacer(modifier = Modifier.height(40.dp))
+
                 OutlinedTextField(
                     colors =
                         OutlinedTextFieldDefaults.colors(
@@ -96,12 +133,16 @@ fun AuthScreen(
                     enabled = !uiState.isLoading,
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     onClick = { signIn(email, password) },
                     enabled = !uiState.isLoading,
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.Gray,
+                        ),
                 ) {
                     if (uiState.isLoading) {
                         CircularProgressIndicator(
@@ -109,7 +150,11 @@ fun AuthScreen(
                             color = MaterialTheme.colorScheme.onPrimary,
                         )
                     } else {
-                        Text(text = stringResource(id = R.string.auth_login))
+                        Text(
+                            text = stringResource(id = R.string.auth_login),
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            fontSize = 16.sp,
+                        )
                     }
                 }
 
@@ -120,7 +165,11 @@ fun AuthScreen(
                     onClick = { signUp(email, password) },
                     enabled = !uiState.isLoading,
                 ) {
-                    Text(text = stringResource(id = R.string.auth_signUp))
+                    Text(
+                        text = stringResource(id = R.string.auth_signUp),
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        fontSize = 16.sp,
+                    )
                 }
 
                 uiState.error?.let {

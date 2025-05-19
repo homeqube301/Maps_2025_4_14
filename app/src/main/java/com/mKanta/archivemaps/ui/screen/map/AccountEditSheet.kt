@@ -85,7 +85,7 @@ fun AccountEditSheet(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Button(
-                    onClick = onSignOut,
+                    onClick = { onSignOut() },
                     modifier =
                         Modifier
                             .fillMaxWidth(0.5f)

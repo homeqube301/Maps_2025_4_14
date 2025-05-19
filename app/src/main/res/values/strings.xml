@@ -4,6 +4,9 @@
     <string name="back">戻る</string>
 
     <!--//AuthScreen-->
+    <string name="auth_AppTitle">ArchiveMaps</string>
+    <string name="auth_AppDisc">思いを地図に、</string>
+    <string name="auth_AppDisc2">あなただけのストーリーマップ</string>
     <string name="auth_title">ログイン</string>
     <string name="auth_email">メールアドレス</string>
     <string name="auth_password">パスワード</string>
