@@ -32,7 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mKanta.archivemaps.R
-import com.mKanta.archivemaps.ui.stateholder.AuthUiState
+import com.mKanta.archivemaps.ui.state.AccountLoadingState
+import com.mKanta.archivemaps.ui.state.AuthUiState
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 
 @Composable
@@ -50,6 +51,18 @@ fun AuthScreen(
             onLoginSuccess()
         }
     }
+
+    val isLoading =
+        when (uiState.isLoading) {
+            is AccountLoadingState.Loading -> true
+            else -> false
+        }
+
+    val errorMessage =
+        when (uiState.isLoading) {
+            is AccountLoadingState.Error -> uiState.isLoading.message
+            else -> uiState.error
+        }
 
     ArchivemapsTheme {
         Column(
@@ -110,7 +123,7 @@ fun AuthScreen(
                             color = Color.Gray,
                         )
                     },
-                    enabled = !uiState.isLoading,
+                    enabled = !isLoading,
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -130,7 +143,7 @@ fun AuthScreen(
                             color = Color.Gray,
                         )
                     },
-                    enabled = !uiState.isLoading,
+                    enabled = !isLoading,
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -138,13 +151,13 @@ fun AuthScreen(
                 Button(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     onClick = { signIn(email, password) },
-                    enabled = !uiState.isLoading,
+                    enabled = !isLoading,
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor = Color.Gray,
                         ),
                 ) {
-                    if (uiState.isLoading) {
+                    if (isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
                             color = MaterialTheme.colorScheme.onPrimary,
@@ -163,7 +176,7 @@ fun AuthScreen(
                 Button(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     onClick = onNavigateToSignUp,
-                    enabled = !uiState.isLoading,
+                    enabled = !isLoading,
                 ) {
                     Text(
                         text = stringResource(id = R.string.auth_signUp),
@@ -172,7 +185,7 @@ fun AuthScreen(
                     )
                 }
 
-                uiState.error?.let {
+                errorMessage?.let {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = it,

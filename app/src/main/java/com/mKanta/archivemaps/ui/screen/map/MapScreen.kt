@@ -107,6 +107,7 @@ fun MapScreen(
     accountName: String = "",
     accountId: String = "",
     onNavigateToAuth: () -> Unit,
+//    isAccountLoading: AccountLoadingState = AccountLoadingState.Loading,
 ) {
     ArchivemapsTheme {
         val context = LocalContext.current
@@ -312,6 +313,53 @@ fun MapScreen(
                     }
                 }
             }
+
+//            when (isAccountLoading) {
+//                MapState.Success(true) -> {
+//                }
+//
+//                MapState.Loading -> {
+//                    Box(
+//                        modifier =
+//                            Modifier
+//                                .fillMaxSize()
+//                                .background(MaterialTheme.colorScheme.background),
+//                    ) {
+//                        Column(
+//                            modifier = Modifier.align(Alignment.Center),
+//                            horizontalAlignment = Alignment.CenterHorizontally,
+//                        ) {
+//                            CircularProgressIndicator(
+//                                modifier = Modifier.size(48.dp),
+//                            )
+//                            Spacer(modifier = Modifier.height(12.dp))
+//                            Text(text = stringResource(R.string.map_loading), fontSize = 16.sp)
+//                        }
+//                    }
+//                }
+//
+//                else -> {
+//                    Box(
+//                        modifier = Modifier.fillMaxSize(),
+//                        contentAlignment = Alignment.Center,
+//                    ) {
+//                        Column {
+//                            Text(
+//                                text = stringResource(R.string.map_error),
+//                                color = Color.Red,
+//                                fontSize = 20.sp,
+//                                fontWeight = FontWeight.Bold,
+//                            )
+//                            Spacer(modifier = Modifier.height(16.dp))
+//                            Text(
+//                                text = stringResource(R.string.map_error_description),
+//                                fontSize = 16.sp,
+//                                modifier = Modifier.align(Alignment.CenterHorizontally),
+//                            )
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 }
