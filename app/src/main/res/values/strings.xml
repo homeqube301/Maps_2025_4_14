@@ -7,6 +7,11 @@
     <string name="auth_AppTitle">ArchiveMaps</string>
     <string name="auth_AppDisc">思いを地図に、</string>
     <string name="auth_AppDisc2">あなただけのストーリーマップ</string>
+
+    <string name="auth_signUpTitle">新しく始める</string>
+    <string name="auth_signUpDisc">登録メールに確認用メールが送られます</string>
+    <string name="auth_signUpDisc2">お確かめください</string>
+
     <string name="auth_title">ログイン</string>
     <string name="auth_email">メールアドレス</string>
     <string name="auth_password">パスワード</string>
@@ -15,9 +20,10 @@
     <string name="auth_error">ログイン失敗: パスワード、もしくはメールアドレスが間違っています</string>
     <string name="auth_mail">メール確認が必要です。メールをチェックしてください。</string>
     <string name="auth_login_success">ログイン成功！</string>
-    <string name="auth_already">ユーザーがすでに登録されています</string>
+    <string name="auth_already">ユーザーが登録されています、確認用メールで"Confirm your mail"した上でログイン画面からログインしてください</string>
     <string name="auth_signUp_success">登録成功！ユーザーID:</string>
     <string name="auth_check">登録メールを確認してください</string>
+    <string name="auth_signUp_Password">パスワード（確認）</string>
 
     <!--//Auth Repository Messages-->
     <string name="auth_signup_success_with_id">登録成功！ユーザーID: %1$s</string>

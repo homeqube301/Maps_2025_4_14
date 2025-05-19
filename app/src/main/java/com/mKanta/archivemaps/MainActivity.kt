@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
                             isPermissionGranted -> {
                                 AppNavHost(
                                     navController = navController,
-                                    startDestination = if (isAuthenticated) "marker" else "auth",
+                                    startDestination = if (isAuthenticated) "marker" else "logIn",
                                 )
                             }
 
@@ -121,7 +121,7 @@ class MainActivity : ComponentActivity() {
                         val navController = rememberNavController()
                         AppNavHost(
                             navController = navController,
-                            startDestination = "auth",
+                            startDestination = "logIn",
                         )
                     }
                 }

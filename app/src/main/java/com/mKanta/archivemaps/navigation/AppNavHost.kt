@@ -12,6 +12,7 @@ import androidx.navigation.compose.navigation
 import com.mKanta.archivemaps.domain.model.LatLngSerializable
 import com.mKanta.archivemaps.ui.screen.AuthScreen
 import com.mKanta.archivemaps.ui.screen.PermissionDeniedScreen
+import com.mKanta.archivemaps.ui.screen.SignUpScreen
 import com.mKanta.archivemaps.ui.screen.map.MapScreen
 import com.mKanta.archivemaps.ui.screen.markerList.DetailSearchScreen
 import com.mKanta.archivemaps.ui.screen.markerList.MarkerListScreen
@@ -209,20 +210,46 @@ fun AppNavHost(
         composable("Location_Permission") {
             PermissionDeniedScreen()
         }
-
-        composable("auth") {
-            val authViewModel: AuthViewModel = hiltViewModel()
-            val uiState by authViewModel.uiState.collectAsState()
-            AuthScreen(
-                onLoginSuccess = {
-                    navController.navigate("map/0.0/0.0") {
-                        popUpTo("auth") { inclusive = true }
+        navigation(startDestination = "auth", route = "logIn") {
+            composable("auth") { backStackEntry ->
+                val authParentEntry =
+                    remember(backStackEntry) {
+                        navController.getBackStackEntry("logIn")
                     }
-                },
-                uiState = uiState,
-                signIn = { email, password -> authViewModel.signIn(email, password) },
-                signUp = { email, password -> authViewModel.signUp(email, password) },
-            )
+
+                val logInViewModel: AuthViewModel = hiltViewModel(authParentEntry)
+                val uiState by logInViewModel.uiState.collectAsState()
+                AuthScreen(
+                    onLoginSuccess = {
+                        navController.navigate("map/0.0/0.0") {
+                            popUpTo("auth") { inclusive = true }
+                        }
+                    },
+                    uiState = uiState,
+                    signIn = { email, password -> logInViewModel.signIn(email, password) },
+                    onNavigateToSignUp = { navController.navigate("signUp") },
+                )
+            }
+
+            composable("signUp") { backStackEntry ->
+                val authParentEntry =
+                    remember(backStackEntry) {
+                        navController.getBackStackEntry("logIn")
+                    }
+
+                val logInViewModel: AuthViewModel = hiltViewModel(authParentEntry)
+                val uiState by logInViewModel.uiState.collectAsState()
+                SignUpScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onSignUpSuccess = {
+                        navController.navigate("map/0.0/0.0") {
+                            popUpTo("signUp") { inclusive = true }
+                        }
+                    },
+                    uiState = uiState,
+                    signUp = { email, password -> logInViewModel.signUp(email, password) },
+                )
+            }
         }
     }
 }

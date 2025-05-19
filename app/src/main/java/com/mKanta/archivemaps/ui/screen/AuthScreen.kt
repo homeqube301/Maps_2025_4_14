@@ -38,9 +38,9 @@ import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 @Composable
 fun AuthScreen(
     onLoginSuccess: () -> Unit,
+    onNavigateToSignUp: () -> Unit,
     uiState: AuthUiState,
     signIn: (String, String) -> Unit,
-    signUp: (String, String) -> Unit,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -162,7 +162,7 @@ fun AuthScreen(
 
                 Button(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = { signUp(email, password) },
+                    onClick = onNavigateToSignUp,
                     enabled = !uiState.isLoading,
                 ) {
                     Text(
@@ -190,8 +190,8 @@ fun AuthScreen(
 fun AuthScreenPreview() {
     AuthScreen(
         onLoginSuccess = {},
+        onNavigateToSignUp = {},
         uiState = AuthUiState(),
         signIn = { _, _ -> },
-        signUp = { _, _ -> },
     )
 }
