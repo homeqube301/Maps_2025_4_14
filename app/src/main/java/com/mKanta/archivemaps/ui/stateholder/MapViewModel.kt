@@ -145,9 +145,19 @@ class MapViewModel
 
         fun loadMarkers() {
             viewModelScope.launch {
-                // val loaded = markerRepository.loadMarkers()
+                val localLoaded = markerRepository.loadMarkers()
                 val loaded = markerDBRepository.loadDBMarkers()
-                _uiState.update { it.copy(permanentMarkers = loaded) }
+
+                val mergedMarkers =
+                    loaded.map { dbMarker ->
+                        val localMatch = localLoaded.find { it.id == dbMarker.id }
+                        dbMarker.copy(
+                            imageUri = localMatch?.imageUri,
+                            videoUri = localMatch?.videoUri,
+                        )
+                    }
+
+                _uiState.update { it.copy(permanentMarkers = mergedMarkers) }
 
                 updateMarkersVisibility()
             }
