@@ -83,6 +83,7 @@ fun AccountEditSheet(
                     Text(
                         stringResource(R.string.sign_out),
                         fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        color = Color.White,
                     )
                 }
 

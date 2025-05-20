@@ -34,11 +34,6 @@ suspend fun initializeMapLogic(
         similarMarkerIds: List<String>,
     ) -> List<NamedMarker>,
 ) {
-    startLocationUpdates(
-        context,
-        cameraPositionState,
-    )
-
     loadMarkers()
 
     observeCameraAndFilterMarkers(

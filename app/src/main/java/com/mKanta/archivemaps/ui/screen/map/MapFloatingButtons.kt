@@ -1,5 +1,6 @@
 package com.mKanta.archivemaps.ui.screen.map
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,11 @@ fun MapFloatingButtons(
     isFollowing: Boolean,
     onNavigateToMarkerList: () -> Unit,
     changeLastCameraPosition: (CameraPositionState) -> Unit,
+    context: Context,
+    startLocationUpdates: (
+        context: Context,
+        cameraPositionState: CameraPositionState,
+    ) -> Unit,
     cameraPositionState: CameraPositionState,
     onAccountClick: () -> Unit,
 ) {
@@ -109,8 +115,7 @@ fun MapFloatingButtons(
                                     )
                                 }
                             },
-                        )
-                        .align(Alignment.Companion.Center),
+                        ).align(Alignment.Companion.Center),
             )
 
             FloatingActionButton(
@@ -221,15 +226,10 @@ fun MapFloatingButtons(
 
             FloatingActionButton(
                 onClick = {
-                    toggleFollowing()
+                    startLocationUpdates(context, cameraPositionState)
                     changeIsFollowing()
                 },
-                containerColor =
-                    if (isFollowing) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        Color.Companion.White
-                    },
+                containerColor = MaterialTheme.colorScheme.primary,
                 modifier =
                     Modifier.Companion
                         .size(72.dp)
@@ -272,12 +272,7 @@ fun MapFloatingButtons(
                     painterResource(id = R.drawable.location_searching_24px),
                     modifier = Modifier.Companion.size(32.dp),
                     contentDescription = stringResource(R.string.map_follow_Button),
-                    tint =
-                        if (isFollowing) {
-                            Color.Companion.White
-                        } else {
-                            MaterialTheme.colorScheme.primary
-                        },
+                    tint = Color.Companion.White,
                 )
             }
 
