@@ -70,6 +70,7 @@ fun MarkerListContent(
                         title = {
                             Text(
                                 stringResource(id = R.string.listCn_title),
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                             )
                         },
@@ -194,10 +195,12 @@ fun MarkerItem(
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                color = Color.White,
             )
 
             Text(
                 text = marker.memo ?: "",
+                color = Color.White,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.bodyMedium,

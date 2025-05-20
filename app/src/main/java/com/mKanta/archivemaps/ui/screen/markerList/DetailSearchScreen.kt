@@ -1,5 +1,6 @@
 package com.mKanta.archivemaps.ui.screen.markerList
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -69,6 +70,13 @@ fun DetailSearchScreen(
     listState: ListState,
     changeShowDetailIntro: () -> Unit = {},
 ) {
+    BackHandler {
+        changeMarkerName("")
+        changeEmbeddingMemo("")
+        changeMemo("")
+        onNavigateBack()
+    }
+
     LaunchedEffect(Unit) {
         changeStartDate("")
         changeEndDate("")
@@ -196,7 +204,12 @@ fun SearchContents(
                         },
                         colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.tertiary),
                         navigationIcon = {
-                            IconButton(onClick = onNavigateBack) {
+                            IconButton(onClick = {
+                                changeMarkerName("")
+                                changeEmbeddingMemo("")
+                                changeMemo("")
+                                onNavigateBack()
+                            }) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = stringResource(id = R.string.back),
@@ -267,7 +280,8 @@ fun SearchContents(
                                             )
                                         }
                                     },
-                                ).fillMaxWidth(),
+                                )
+                                .fillMaxWidth(),
                     )
 
                     Row(

@@ -294,7 +294,11 @@ fun MapScreen(
                                 modifier = Modifier.size(48.dp),
                             )
                             Spacer(modifier = Modifier.height(12.dp))
-                            Text(text = stringResource(R.string.map_loading), fontSize = 16.sp)
+                            Text(
+                                text = stringResource(R.string.map_loading),
+                                fontSize = 16.sp,
+                                color = Color.White,
+                            )
                         }
                     }
                 }
@@ -314,6 +318,7 @@ fun MapScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 text = stringResource(R.string.map_error_description),
+                                color = Color.White,
                                 fontSize = 16.sp,
                                 modifier = Modifier.align(Alignment.CenterHorizontally),
                             )
@@ -422,4 +427,3 @@ fun MapScreenPreview() {
         isAccountLoading = AccountLoadingState.Success(true),
     )
 }
-

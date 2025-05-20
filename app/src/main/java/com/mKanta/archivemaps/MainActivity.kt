@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
                 setContent {
                     ArchivemapsTheme(
                         darkTheme = isSystemInDarkTheme(),
-                        dynamicColor = false,
+                        dynamicColor = true,
                     ) {
                         val navController = rememberNavController()
 

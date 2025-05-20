@@ -45,11 +45,14 @@ fun AppNavHost(
                 val authState by authViewModel.uiState.collectAsState()
 
                 val latitude =
-                    uiState.lastCameraPosition?.target?.latitude
-                        ?: backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull() ?: 0.0
+                    backStackEntry.arguments?.getString("latitude")?.toDoubleOrNull()
+                        ?: uiState.lastCameraPosition?.target?.latitude
+                        ?: 0.0
+
                 val longitude =
-                    uiState.lastCameraPosition?.target?.longitude
-                        ?: backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull() ?: 0.0
+                    backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull()
+                        ?: uiState.lastCameraPosition?.target?.longitude
+                        ?: 0.0
 
                 MapScreen(
                     onNavigateToMarkerList = { navController.navigate("marker_list") },

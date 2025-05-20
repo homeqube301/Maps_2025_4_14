@@ -163,7 +163,11 @@ private fun SetMarker(
                 resetTempMarkers()
             },
         ) {
-            Text(stringResource(id = R.string.setMarker_set_Button), fontWeight = FontWeight.Bold)
+            Text(
+                stringResource(id = R.string.setMarker_set_Button),
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+            )
         }
         Spacer(modifier = Modifier.height(8.dp))
         Button(
@@ -176,6 +180,7 @@ private fun SetMarker(
             Text(
                 stringResource(id = R.string.setMarker_cancel_Button),
                 fontWeight = FontWeight.Bold,
+                color = Color.White,
             )
         }
     }

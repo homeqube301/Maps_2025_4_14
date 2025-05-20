@@ -78,8 +78,8 @@
     <string name="setMarker_noName">名前なし</string>
 
     <!--//editPanelScreen-->
-    <string name="edit_title">マーカーを編集</string>
-    <string name="edit_deleteMarker">マーカーを削除</string>
+    <string name="edit_title">マーカー編集</string>
+    <string name="edit_deleteMarker">マーカー削除</string>
     <string name="edit_back">戻る</string>
 
     <string name="edit_confirm">編集を終了しますか？</string>
