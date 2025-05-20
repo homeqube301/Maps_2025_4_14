@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,7 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mKanta.archivemaps.R
-import com.mKanta.archivemaps.ui.stateholder.AuthUiState
+import com.mKanta.archivemaps.ui.state.AccountLoadingState
+import com.mKanta.archivemaps.ui.state.AuthUiState
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,6 +60,18 @@ fun SignUpScreen(
         }
     }
 
+    val isLoading =
+        when (uiState.isLoading) {
+            is AccountLoadingState.Loading -> true
+            else -> false
+        }
+
+    val errorMessage =
+        when (uiState.isLoading) {
+            is AccountLoadingState.Error -> uiState.isLoading.message
+            else -> uiState.error
+        }
+
     ArchivemapsTheme {
         Scaffold(
             topBar = {
@@ -73,7 +86,7 @@ fun SignUpScreen(
                     navigationIcon = {
                         IconButton(onClick = onNavigateBack) {
                             Icon(
-                                Icons.Default.ArrowBack,
+                                Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "戻る",
                                 tint = Color.White,
                             )
@@ -139,7 +152,7 @@ fun SignUpScreen(
                                 color = Color.Gray,
                             )
                         },
-                        enabled = !uiState.isLoading,
+                        enabled = !isLoading,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -159,7 +172,7 @@ fun SignUpScreen(
                                 color = Color.Gray,
                             )
                         },
-                        enabled = !uiState.isLoading,
+                        enabled = !isLoading,
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -179,7 +192,7 @@ fun SignUpScreen(
                                 color = Color.Gray,
                             )
                         },
-                        enabled = !uiState.isLoading,
+                        enabled = !isLoading,
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -191,9 +204,9 @@ fun SignUpScreen(
                                 signUp(email, password)
                             }
                         },
-                        enabled = !uiState.isLoading && password == confirmPassword,
+                        enabled = !isLoading && password == confirmPassword,
                     ) {
-                        if (uiState.isLoading) {
+                        if (isLoading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
                                 color = MaterialTheme.colorScheme.onPrimary,
@@ -207,7 +220,7 @@ fun SignUpScreen(
                         }
                     }
 
-                    uiState.error?.let {
+                    errorMessage?.let {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = it,

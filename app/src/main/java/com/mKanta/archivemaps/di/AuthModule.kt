@@ -2,7 +2,10 @@ package com.mKanta.archivemaps.di
 
 import android.content.Context
 import com.mKanta.archivemaps.BuildConfig
+import com.mKanta.archivemaps.data.local.MarkerMapper
 import com.mKanta.archivemaps.data.repository.AuthRepositoryImpl
+import com.mKanta.archivemaps.data.repository.MarkerDBRepository
+import com.mKanta.archivemaps.data.repository.MarkerDBRepositoryImpl
 import com.mKanta.archivemaps.data.repository.SessionStore
 import com.mKanta.archivemaps.domain.repository.AuthRepository
 import com.mKanta.archivemaps.network.SupabaseApi
@@ -44,4 +47,11 @@ object AuthModule {
         sessionStore: SessionStore,
         supabaseApi: SupabaseApi,
     ): AuthRepository = AuthRepositoryImpl(supabaseClient, sessionStore, supabaseApi)
+
+    @Provides
+    @Singleton
+    fun provideMarkerDBRepository(
+        supabaseClient: SupabaseClient,
+        markerMapper: MarkerMapper,
+    ): MarkerDBRepository = MarkerDBRepositoryImpl(supabaseClient, markerMapper)
 }

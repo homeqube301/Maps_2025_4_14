@@ -5,21 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.mKanta.archivemaps.data.repository.StringResourceException
 import com.mKanta.archivemaps.domain.repository.AuthRepository
 import com.mKanta.archivemaps.domain.repository.ResourceProvider
+import com.mKanta.archivemaps.ui.state.AccountLoadingState
+import com.mKanta.archivemaps.ui.state.AuthUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class AuthUiState(
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val isAuthenticated: Boolean = false,
-    val accountName: String = "",
-    val accountId: String = "",
-    val email: String = "",
-)
 
 @HiltViewModel
 class AuthViewModel
@@ -42,56 +35,59 @@ class AuthViewModel
             }
         }
 
+        private fun setLoadingState() {
+            _uiState.update { it.copy(isLoading = AccountLoadingState.Loading) }
+        }
+
+        private fun setSuccessState() {
+            _uiState.update { it.copy(isLoading = AccountLoadingState.Success(true)) }
+        }
+
+        private fun setErrorState(message: String?) {
+            _uiState.update { it.copy(isLoading = AccountLoadingState.Error(message)) }
+        }
+
         fun changeAccountName(newAccountName: String) {
             viewModelScope.launch {
-                _uiState.update { it.copy(isLoading = true) }
+                setLoadingState()
                 try {
                     authRepository.updateUserProfile(newAccountName)
                     _uiState.update {
                         it.copy(
                             accountName = newAccountName,
-                            isLoading = false,
                         )
                     }
+                    setSuccessState()
                 } catch (e: Exception) {
-                    _uiState.update {
-                        it.copy(
-                            error = e.message,
-                            isLoading = false,
-                        )
-                    }
+                    setErrorState(e.message)
                 }
             }
         }
 
         fun deleteAccount() {
             viewModelScope.launch {
-                _uiState.update { it.copy(isLoading = true) }
+                setLoadingState()
                 try {
                     authRepository.deleteUser()
                     _uiState.update {
                         it.copy(
                             isAuthenticated = false,
-                            isLoading = false,
+                            isSignOut = true,
                             accountName = "",
                             accountId = "",
                             email = "",
                         )
                     }
+                    setSuccessState()
                 } catch (e: Exception) {
-                    _uiState.update {
-                        it.copy(
-                            error = e.message,
-                            isLoading = false,
-                        )
-                    }
+                    setErrorState(e.message)
                 }
             }
         }
 
         fun loadAccountInfo() {
             viewModelScope.launch {
-                _uiState.update { it.copy(isLoading = true) }
+                setLoadingState()
                 try {
                     val user = authRepository.getCurrentUser()
                     user?.let { currentUser ->
@@ -100,17 +96,12 @@ class AuthViewModel
                                 accountName = currentUser.userMetadata?.get("name") as? String ?: "",
                                 accountId = currentUser.id,
                                 email = currentUser.email ?: "",
-                                isLoading = false,
                             )
                         }
+                        setSuccessState()
                     }
                 } catch (e: Exception) {
-                    _uiState.update {
-                        it.copy(
-                            error = e.message,
-                            isLoading = false,
-                        )
-                    }
+                    setErrorState(e.message)
                 }
             }
         }
@@ -120,31 +111,20 @@ class AuthViewModel
             password: String,
         ) {
             viewModelScope.launch {
-                _uiState.update { it.copy(isLoading = true, error = null) }
+                setLoadingState()
                 authRepository
                     .signUp(email, password)
                     .onSuccess { messageResId ->
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error = resourceProvider.getString(messageResId),
-                            )
-                        }
+                        setErrorState(resourceProvider.getString(messageResId))
                     }.onFailure { exception ->
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error =
-                                    when (exception) {
-                                        is StringResourceException ->
-                                            resourceProvider.getString(
-                                                exception.resourceId,
-                                            )
+                        setErrorState(
+                            when (exception) {
+                                is StringResourceException ->
+                                    resourceProvider.getString(exception.resourceId)
 
-                                        else -> exception.message
-                                    },
-                            )
-                        }
+                                else -> exception.message
+                            },
+                        )
                     }
             }
         }
@@ -154,63 +134,51 @@ class AuthViewModel
             password: String,
         ) {
             viewModelScope.launch {
-                _uiState.update { it.copy(isLoading = true, error = null) }
+                setLoadingState()
                 authRepository
                     .signIn(email, password)
                     .onSuccess { messageResId ->
                         _uiState.update {
                             it.copy(
-                                isLoading = false,
                                 isAuthenticated = true,
-                                error = null,
                             )
                         }
+                        setSuccessState()
                     }.onFailure { exception ->
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error =
-                                    when (exception) {
-                                        is StringResourceException ->
-                                            resourceProvider.getString(
-                                                exception.resourceId,
-                                            )
+                        setErrorState(
+                            when (exception) {
+                                is StringResourceException ->
+                                    resourceProvider.getString(exception.resourceId)
 
-                                        else -> exception.message
-                                    },
-                            )
-                        }
+                                else -> exception.message
+                            },
+                        )
                     }
             }
         }
 
         fun signOut() {
             viewModelScope.launch {
-                _uiState.update { it.copy(isLoading = true) }
+                setLoadingState()
                 authRepository
                     .signOut()
                     .onSuccess {
                         _uiState.update {
                             it.copy(
-                                isLoading = false,
                                 isAuthenticated = false,
+                                isSignOut = true,
+                                isLoading = AccountLoadingState.Success(true),
                             )
                         }
                     }.onFailure { exception ->
-                        _uiState.update {
-                            it.copy(
-                                isLoading = false,
-                                error =
-                                    when (exception) {
-                                        is StringResourceException ->
-                                            resourceProvider.getString(
-                                                exception.resourceId,
-                                            )
+                        setErrorState(
+                            when (exception) {
+                                is StringResourceException ->
+                                    resourceProvider.getString(exception.resourceId)
 
-                                        else -> exception.message
-                                    },
-                            )
-                        }
+                                else -> exception.message
+                            },
+                        )
                     }
             }
         }

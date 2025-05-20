@@ -41,3 +41,15 @@ sealed interface MapState {
         val message: String? = null,
     ) : MapState
 }
+
+// sealed interface AccountLoadingState {
+//    data object Loading : AccountLoadingState
+//
+//    data class Success(
+//        val loadingReady: Boolean,
+//    ) : AccountLoadingState
+//
+//    data class Error(
+//        val message: String? = null,
+//    ) : AccountLoadingState
+// }

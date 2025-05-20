@@ -36,6 +36,15 @@ data class MemoEmbeddingInsertRequest(
     val embedding: List<Float>,
     @Json(name = "user_id")
     val userId: String,
+    @Json(name = "position_lat")
+    val positionLat: Double,
+    @Json(name = "position_lng")
+    val positionLng: Double,
+    val title: String,
+    @Json(name = "color_hue")
+    val colorHue: Float,
+    @Json(name = "created_marker")
+    val createdAt: String,
 )
 
 interface SupabaseApi {

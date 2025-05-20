@@ -129,13 +129,6 @@ fun AppNavHost(
                     onAccountNameChange = { authViewModel.changeAccountName(it) },
                     accountName = authViewModel.uiState.value.accountName,
                     accountId = authViewModel.uiState.value.accountId,
-                    onNavigateToAuth = {
-                        navController.navigate("auth") {
-                            {
-                                popUpTo("marker") { inclusive = true }
-                            }
-                        }
-                    },
                 )
             }
             navigation(startDestination = "marker_list", route = "list") {

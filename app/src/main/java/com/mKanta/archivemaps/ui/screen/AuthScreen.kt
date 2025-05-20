@@ -2,6 +2,7 @@ package com.mKanta.archivemaps.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mKanta.archivemaps.R
-import com.mKanta.archivemaps.ui.stateholder.AuthUiState
+import com.mKanta.archivemaps.ui.state.AccountLoadingState
+import com.mKanta.archivemaps.ui.state.AuthUiState
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
 
 @Composable
@@ -51,134 +53,181 @@ fun AuthScreen(
         }
     }
 
+    val isLoading =
+        when (uiState.isLoading) {
+            is AccountLoadingState.Loading -> true
+            else -> false
+        } ||
+            uiState.isAuthenticated
+
+    val errorMessage =
+        when (uiState.isLoading) {
+            is AccountLoadingState.Error -> uiState.isLoading.message
+            else -> uiState.error
+        }
+
     ArchivemapsTheme {
-        Column(
-            modifier =
-                Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxSize()
-                    .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
+        Box(
+            modifier = Modifier.fillMaxSize(),
         ) {
             Column(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
+                modifier =
+                    Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize()
+                        .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
             ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Map Marker",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier =
-                        Modifier
-                            .size(64.dp)
-                            .align(Alignment.CenterHorizontally),
-                )
-
-//                Image(
-//                    painter = painterResource(id = R.drawable.ic_launcher_round),
-//                    contentDescription = "App Icon",
-//                    modifier = Modifier.size(64.dp).align(Alignment.CenterHorizontally),
-//                )
-
-                Spacer(modifier = Modifier.height(64.dp))
-
-                Text(
-                    text = stringResource(id = R.string.auth_AppTitle),
-                    color = Color.White,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                    fontSize = 32.sp,
-                )
-                Text(
-                    text = stringResource(id = R.string.auth_AppDisc) + "\n" + stringResource(id = R.string.auth_AppDisc2),
-                    color = Color.White,
-                    fontSize = 16.sp,
-                )
-
-                Spacer(modifier = Modifier.height(40.dp))
-
-                OutlinedTextField(
-                    colors =
-                        OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                        ),
+                Column(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    value = email,
-                    onValueChange = { email = it },
-                    label = {
-                        Text(
-                            text = stringResource(id = R.string.auth_email),
-                            color = Color.Gray,
-                        )
-                    },
-                    enabled = !uiState.isLoading,
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    colors =
-                        OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                        ),
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    value = password,
-                    onValueChange = { password = it },
-                    label = {
-                        Text(
-                            text = stringResource(id = R.string.auth_password),
-                            color = Color.Gray,
-                        )
-                    },
-                    enabled = !uiState.isLoading,
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Button(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = { signIn(email, password) },
-                    enabled = !uiState.isLoading,
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = Color.Gray,
-                        ),
                 ) {
-                    if (uiState.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                        )
-                    } else {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Map Marker",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier =
+                            Modifier
+                                .size(64.dp)
+                                .align(Alignment.CenterHorizontally),
+                    )
+
+//                    Image(
+//                        painter = painterResource(id = R.drawable.ic_launcher_round),
+//                        contentDescription = "App Icon",
+//                        modifier = Modifier.size(64.dp).align(Alignment.CenterHorizontally),
+//                    )
+
+                    Spacer(modifier = Modifier.height(64.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.auth_AppTitle),
+                        color = Color.White,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        fontSize = 32.sp,
+                    )
+                    Text(
+                        text = stringResource(id = R.string.auth_AppDisc) + "\n" + stringResource(id = R.string.auth_AppDisc2),
+                        color = Color.White,
+                        fontSize = 16.sp,
+                    )
+
+                    Spacer(modifier = Modifier.height(40.dp))
+
+                    OutlinedTextField(
+                        colors =
+                            OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                            ),
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        value = email,
+                        onValueChange = { email = it },
+                        label = {
+                            Text(
+                                text = stringResource(id = R.string.auth_email),
+                                color = Color.Gray,
+                            )
+                        },
+                        enabled = !isLoading,
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        colors =
+                            OutlinedTextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                            ),
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        value = password,
+                        onValueChange = { password = it },
+                        label = {
+                            Text(
+                                text = stringResource(id = R.string.auth_password),
+                                color = Color.Gray,
+                            )
+                        },
+                        enabled = !isLoading,
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        onClick = { signIn(email, password) },
+                        enabled = !isLoading,
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = Color.Gray,
+                            ),
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(id = R.string.auth_login),
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                fontSize = 16.sp,
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Button(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        onClick = onNavigateToSignUp,
+                        enabled = !isLoading,
+                    ) {
                         Text(
-                            text = stringResource(id = R.string.auth_login),
+                            text = stringResource(id = R.string.auth_signUp),
                             fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                             fontSize = 16.sp,
                         )
                     }
+
+                    errorMessage?.let {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = it,
+                            color = Color.White,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                        )
+                    }
                 }
+            }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Button(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = onNavigateToSignUp,
-                    enabled = !uiState.isLoading,
+            if (isLoading) {
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f)),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.auth_signUp),
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                        fontSize = 16.sp,
-                    )
-                }
-
-                uiState.error?.let {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = it,
-                        color = Color.White,
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text =
+                                if (uiState.isAuthenticated) {
+                                    stringResource(R.string.auth_title)
+                                } else {
+                                    stringResource(R.string.auth_error)
+                                },
+                            color = Color.White,
+                            fontSize = 16.sp,
+                        )
+                    }
                 }
             }
         }

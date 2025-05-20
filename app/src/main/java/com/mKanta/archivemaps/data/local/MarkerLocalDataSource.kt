@@ -29,7 +29,7 @@ class MarkerLocalDataSource
             } catch (e: Exception) {
                 Log.e("loadMarkers", "JSONデコードに失敗: ${e.message}")
                 Log.e("loadMarkers", "破損JSON: $json")
-            emptyList()
+                emptyList()
+            }
         }
     }
-}
