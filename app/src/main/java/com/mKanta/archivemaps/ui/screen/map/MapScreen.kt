@@ -216,6 +216,10 @@ fun MapScreen(
                             onNavigateToMarkerList = { onNavigateToMarkerList() },
                             isFollowing = uiState.isFollowing,
                             onAccountClick = { onAccountSheetOpenChange(true) },
+                            context = context,
+                            startLocationUpdates = { context, camera ->
+                                startLocationUpdates(context, camera)
+                            },
                         )
                     }
 

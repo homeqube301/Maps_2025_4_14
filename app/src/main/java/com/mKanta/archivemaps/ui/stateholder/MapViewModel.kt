@@ -337,13 +337,13 @@ class MapViewModel
                 stopLocationUpdates()
             }
 
+            toggleFollowing()
             locationCallback =
                 object : LocationCallback() {
                     override fun onLocationResult(result: LocationResult) {
                         val location = result.lastLocation
                         location?.let {
                             val latLng = LatLng(it.latitude, it.longitude)
-
                             if (_isFollowing.value) {
                                 cameraPositionState.move(
                                     CameraUpdateFactory.newLatLngZoom(
@@ -351,6 +351,7 @@ class MapViewModel
                                         17f,
                                     ),
                                 )
+                                toggleFollowing()
                             }
                         }
                     }
