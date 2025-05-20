@@ -34,6 +34,7 @@ import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.mKanta.archivemaps.R
 import com.mKanta.archivemaps.domain.model.NamedMarker
+import com.mKanta.archivemaps.ui.state.AccountLoadingState
 import com.mKanta.archivemaps.ui.state.MapState
 import com.mKanta.archivemaps.ui.state.MapsUiState
 import com.mKanta.archivemaps.ui.theme.ArchivemapsTheme
@@ -106,6 +107,9 @@ fun MapScreen(
     onAccountNameChange: (String) -> Unit,
     accountName: String = "",
     accountId: String = "",
+    onNavigateToAuth: () -> Unit,
+    isAccountLoading: AccountLoadingState,
+    isSignOut: Boolean = false,
 ) {
     ArchivemapsTheme {
         val context = LocalContext.current
@@ -117,6 +121,12 @@ fun MapScreen(
                     update = CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 16f),
                     durationMs = 1000,
                 )
+            }
+        }
+
+        LaunchedEffect(isAccountLoading, isSignOut) {
+            if (isAccountLoading == AccountLoadingState.Success(true) && isSignOut) {
+                onNavigateToAuth()
             }
         }
 
@@ -261,6 +271,7 @@ fun MapScreen(
                     accountName = accountName,
                     accountId = accountId,
                     onAccountNameChange = onAccountNameChange,
+                    onNavigateToAuth = onNavigateToAuth,
                 )
             }
 
@@ -305,6 +316,47 @@ fun MapScreen(
                                 text = stringResource(R.string.map_error_description),
                                 fontSize = 16.sp,
                                 modifier = Modifier.align(Alignment.CenterHorizontally),
+                            )
+                        }
+                    }
+                }
+            }
+
+            when (isAccountLoading) {
+                AccountLoadingState.Success(true) -> {
+                }
+
+                AccountLoadingState.Loading -> {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.background),
+                    ) {
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(48.dp),
+                            )
+                        }
+                    }
+                }
+
+                else -> {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.background),
+                    ) {
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(48.dp),
                             )
                         }
                     }
@@ -366,5 +418,8 @@ fun MapScreenPreview() {
         onSignOut = {},
         onDeleteAccount = {},
         onAccountNameChange = {},
+        onNavigateToAuth = {},
+        isAccountLoading = AccountLoadingState.Success(true),
     )
 }
+
