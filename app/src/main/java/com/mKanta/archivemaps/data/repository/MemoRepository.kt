@@ -1,6 +1,7 @@
 package com.mKanta.archivemaps.data.repository
 
 import android.util.Log
+import com.mKanta.archivemaps.domain.model.NamedMarker
 import com.mKanta.archivemaps.network.MemoEmbeddingInsertRequest
 import com.mKanta.archivemaps.network.SimilarMemoRequest
 import com.mKanta.archivemaps.network.SimilarMemoResponse
@@ -13,6 +14,7 @@ interface MemoRepository {
     suspend fun saveMemoEmbedding(
         markerId: String,
         memoText: String,
+        marker: NamedMarker,
     ): Boolean
 
     suspend fun getSimilarMarkerIds(memoText: String): List<String>?
@@ -30,6 +32,7 @@ class MemoRepositoryImpl
         override suspend fun saveMemoEmbedding(
             markerId: String,
             memoText: String,
+            marker: NamedMarker,
         ): Boolean {
             val embedding = embeddingRepository.fetchEmbedding(memoText) ?: return false
             val currentUserId =
@@ -42,6 +45,11 @@ class MemoRepositoryImpl
                     memo = memoText,
                     embedding = embedding,
                     userId = currentUserId,
+                    positionLat = marker.position.latitude,
+                    positionLng = marker.position.longitude,
+                    title = marker.title,
+                    colorHue = marker.colorHue,
+                    createdAt = marker.createdAt,
                 )
 
             return try {

@@ -300,7 +300,7 @@ class MapViewModel
             }
 
             viewModelScope.launch {
-                memoRepository.saveMemoEmbedding(marker.id, newMemo)
+                memoRepository.saveMemoEmbedding(marker.id, newMemo, updatedMarker)
             }
         }
 

@@ -11,8 +11,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -59,24 +57,6 @@ fun AccountEditSheet(
             Text(
                 stringResource(R.string.account_id_label) + ": $accountId",
                 color = Color.Gray,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = accountName,
-                onValueChange = onAccountNameChange,
-                label = { Text(stringResource(R.string.account_name_label), color = Color.Gray) },
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                enabled = !isLoading,
-                colors =
-                    OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                    ),
             )
 
             Spacer(modifier = Modifier.height(40.dp))
