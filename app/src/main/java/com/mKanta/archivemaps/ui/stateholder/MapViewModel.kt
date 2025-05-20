@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
 import com.mKanta.archivemaps.data.repository.GeocodingRepository
+import com.mKanta.archivemaps.data.repository.MarkerDBRepository
 import com.mKanta.archivemaps.data.repository.MarkerRepository
 import com.mKanta.archivemaps.data.repository.MemoRepository
 import com.mKanta.archivemaps.data.repository.UserPreferencesRepository
@@ -41,6 +42,7 @@ class MapViewModel
         private val preferencesRepository: UserPreferencesRepository,
         private val fusedLocationClient: FusedLocationProviderClient,
         private val geocodingRepository: GeocodingRepository,
+        private val markerDBRepository: MarkerDBRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(MapsUiState())
         private var currentBounds: LatLngBounds? = null
@@ -143,7 +145,8 @@ class MapViewModel
 
         fun loadMarkers() {
             viewModelScope.launch {
-                val loaded = markerRepository.loadMarkers()
+                // val loaded = markerRepository.loadMarkers()
+                val loaded = markerDBRepository.loadDBMarkers()
                 _uiState.update { it.copy(permanentMarkers = loaded) }
 
                 updateMarkersVisibility()
