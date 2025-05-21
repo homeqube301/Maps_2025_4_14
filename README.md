@@ -7,6 +7,6 @@
 
 # ダウンロード
 DeployGateから配布しております。
-https://dply.me/xd6t9r
+https://dply.me/tex2rn
 
 # アプリ主機能
