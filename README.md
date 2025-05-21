@@ -1,0 +1,13 @@
+# ArchiveMaps 
+#### 「座標も画像も、地球をメモ帳へ」、同期可能高機能メモアプリです。
+
+# 目次
+- [ダウンロード](#ダウンロード)
+- [アプリの主機能](#アプリ主機能)
+
+# ダウンロード
+DeployGateから配布しております。
+[https://dply.me/lkjcwc](https://deploygate.com/organizations/homeqube301/platforms/android/apps/com.mKanta.archivemaps?via=signup)
+
+
+# アプリ主機能
