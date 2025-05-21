@@ -99,6 +99,7 @@ fun MapPanel(
     accountId: String,
     onAccountNameChange: (String) -> Unit,
     onNavigateToAuth: () -> Unit,
+    isGuestMode: Boolean,
 ) {
     ArchivemapsTheme {
         val focusManager = LocalFocusManager.current
@@ -137,6 +138,7 @@ fun MapPanel(
                     accountName = accountName,
                     accountId = accountId,
                     onAccountNameChange = onAccountNameChange,
+                    isGuestMode = isGuestMode,
                 )
             }
         }

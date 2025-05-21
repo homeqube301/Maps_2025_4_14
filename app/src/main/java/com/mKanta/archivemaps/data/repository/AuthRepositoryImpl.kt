@@ -3,7 +3,6 @@ package com.mKanta.archivemaps.data.repository
 import android.util.Log
 import androidx.annotation.StringRes
 import com.mKanta.archivemaps.R
-import com.mKanta.archivemaps.domain.model.GuestUser
 import com.mKanta.archivemaps.domain.model.User
 import com.mKanta.archivemaps.domain.repository.AuthRepository
 import com.mKanta.archivemaps.network.SupabaseApi
@@ -28,8 +27,6 @@ class AuthRepositoryImpl
         private val sessionStore: SessionStore,
         private val supabaseApi: SupabaseApi,
     ) : AuthRepository {
-        private var guestUser: GuestUser? = null
-
         override suspend fun signUp(
             email: String,
             password: String,
@@ -86,10 +83,8 @@ class AuthRepositoryImpl
 
         override suspend fun getCurrentUserId(): String? = supabaseClient.auth.currentUserOrNull()?.id
 
-        override suspend fun isAuthenticated(): Boolean {
-            return try {
-                if (isGuestMode()) return true
-
+        override suspend fun isAuthenticated(): Boolean =
+            try {
                 val currentUser = supabaseClient.auth.currentUserOrNull()
                 val currentSession = supabaseClient.auth.currentSessionOrNull()
 
@@ -108,7 +103,6 @@ class AuthRepositoryImpl
                 Log.e("AuthRepository", "認証状態の確認に失敗しました", e)
                 false
             }
-        }
 
         override suspend fun getCurrentUser(): User? =
             try {
@@ -154,23 +148,5 @@ class AuthRepositoryImpl
             } catch (e: Exception) {
                 throw Exception("アカウントの削除に失敗しました: ${e.message}")
             }
-        }
-
-        override suspend fun startGuestMode(): Result<GuestUser> =
-            try {
-                guestUser = GuestUser()
-                Result.success(guestUser!!)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-
-        override suspend fun isGuestMode(): Boolean = guestUser != null
-
-        override suspend fun exitGuestMode(): Result<Unit> =
-            try {
-                guestUser = null
-                Result.success(Unit)
-            } catch (e: Exception) {
-            Result.failure(e)
         }
     }

@@ -117,7 +117,9 @@ class MapViewModel
                 }
                 saveMarkers()
 
-                memoRepository.deleteMemoEmbedding(markerId)
+                if (!uiState.value.isGuestMode) {
+                    memoRepository.deleteMemoEmbedding(markerId)
+                }
 
                 currentBounds?.let { bounds ->
                     val filtered =
@@ -145,21 +147,29 @@ class MapViewModel
 
         fun loadMarkers() {
             viewModelScope.launch {
-                val localLoaded = markerRepository.loadMarkers()
-                val loaded = markerDBRepository.loadDBMarkers()
+                if (!uiState.value.isGuestMode) {
+                    val localLoaded = markerRepository.loadMarkers()
+                    val loaded = markerDBRepository.loadDBMarkers()
 
-                val mergedMarkers =
-                    loaded.map { dbMarker ->
-                        val localMatch = localLoaded.find { it.id == dbMarker.id }
-                        dbMarker.copy(
-                            imageUri = localMatch?.imageUri,
-                            videoUri = localMatch?.videoUri,
-                        )
-                    }
+                    val mergedMarkers =
+                        loaded.map { dbMarker ->
+                            val localMatch = localLoaded.find { it.id == dbMarker.id }
+                            dbMarker.copy(
+                                imageUri = localMatch?.imageUri,
+                                videoUri = localMatch?.videoUri,
+                            )
+                        }
 
-                _uiState.update { it.copy(permanentMarkers = mergedMarkers) }
+                    _uiState.update { it.copy(permanentMarkers = mergedMarkers) }
 
-                updateMarkersVisibility()
+                    updateMarkersVisibility()
+                } else {
+                    val loaded = markerRepository.loadMarkers()
+
+                    _uiState.update { it.copy(permanentMarkers = loaded) }
+
+                    updateMarkersVisibility()
+                }
             }
         }
 
@@ -312,8 +322,10 @@ class MapViewModel
                 currentState.copy(permanentMarkers = updatedList)
             }
 
-            viewModelScope.launch {
-                memoRepository.saveMemoEmbedding(marker.id, newMemo, updatedMarker)
+            if (!uiState.value.isGuestMode) {
+                viewModelScope.launch {
+                    memoRepository.saveMemoEmbedding(marker.id, newMemo, updatedMarker)
+                }
             }
         }
 
@@ -414,5 +426,9 @@ class MapViewModel
 
         fun changeIsAccountSheetOpen() {
             _uiState.update { it.copy(isAccountSheetOpen = !it.isAccountSheetOpen) }
+        }
+
+        fun changeIsGuestMode(mode: Boolean) {
+            _uiState.update { it.copy(isGuestMode = mode) }
         }
     }

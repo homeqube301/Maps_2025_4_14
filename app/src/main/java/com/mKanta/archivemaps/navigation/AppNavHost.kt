@@ -1,5 +1,6 @@
 package com.mKanta.archivemaps.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,6 +54,13 @@ fun AppNavHost(
                     backStackEntry.arguments?.getString("longitude")?.toDoubleOrNull()
                         ?: uiState.lastCameraPosition?.target?.longitude
                         ?: 0.0
+
+                Log.d("testes", authState.accountId)
+                if (authState.accountId == "") {
+                    mapViewModel.changeIsGuestMode(true)
+                } else {
+                    mapViewModel.changeIsGuestMode(false)
+                }
 
                 MapScreen(
                     onNavigateToMarkerList = { navController.navigate("marker_list") },
@@ -195,12 +203,18 @@ fun AppNavHost(
                     )
                 }
                 composable("detail_search") { backStackEntry ->
-                    val parentEntry =
+                    val listParentEntry =
                         remember(backStackEntry) {
                             navController.getBackStackEntry("list")
                         }
 
-                    val listViewModel: ListViewModel = hiltViewModel(parentEntry)
+                    val parentEntry =
+                        remember(backStackEntry) {
+                            navController.getBackStackEntry("marker")
+                        }
+
+                    val markerViewModel: MapViewModel = hiltViewModel(parentEntry)
+                    val listViewModel: ListViewModel = hiltViewModel(listParentEntry)
 
                     val listState by listViewModel.listState.collectAsState()
                     DetailSearchScreen(
@@ -215,6 +229,7 @@ fun AppNavHost(
                         changeEmbeddingMemo = { listViewModel.changeEmbeddingMemo(it) },
                         changeMemo = { listViewModel.changeMemo(it) },
                         changeShowDetailIntro = { listViewModel.changeShowDetailIntro() },
+                        isGuestMode = markerViewModel.uiState.value.isGuestMode,
                     )
                 }
             }

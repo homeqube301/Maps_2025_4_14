@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,7 +47,6 @@ fun AuthScreen(
     onNavigateToSignUp: () -> Unit,
     uiState: AuthUiState,
     signIn: (String, String) -> Unit,
-    startGuestMode: () -> Unit = {},
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -158,64 +158,77 @@ fun AuthScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    Button(
+                    Column(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        onClick = { signIn(email, password) },
-                        enabled = !isLoading,
-                        colors =
-                            ButtonDefaults.buttonColors(
-                                containerColor = Color.Gray,
-                            ),
                     ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                            )
-                        } else {
+                        Button(
+                            modifier =
+                                Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .fillMaxWidth(0.4f),
+                            onClick = { signIn(email, password) },
+                            enabled = !isLoading,
+                            colors =
+                                ButtonDefaults.buttonColors(
+                                    containerColor = Color.Gray,
+                                ),
+                        ) {
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                )
+                            } else {
+                                Text(
+                                    text = stringResource(id = R.string.auth_login),
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            modifier =
+                                Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .fillMaxWidth(0.4f),
+                            onClick = onNavigateToSignUp,
+                            enabled = !isLoading,
+                        ) {
                             Text(
-                                text = stringResource(id = R.string.auth_login),
+                                text = stringResource(id = R.string.auth_signUp),
                                 fontWeight = FontWeight.Bold,
+                                color = Color.White,
                                 fontSize = 16.sp,
                             )
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                    Button(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        onClick = onNavigateToSignUp,
-                        enabled = !isLoading,
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.auth_signUp),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    OutlinedButton(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        onClick = startGuestMode,
-                        enabled = !isLoading,
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.auth_guest_mode),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                        )
-                    }
-
-                    errorMessage?.let {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = it,
-                            color = Color.White,
+                        OutlinedButton(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
-                        )
+                            onClick = onLoginSuccess,
+                            enabled = !isLoading,
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.auth_guest_mode),
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                                fontSize = 16.sp,
+                            )
+                        }
+
+                        errorMessage?.let {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = it,
+                                color = Color.White,
+                                modifier = Modifier.align(Alignment.CenterHorizontally),
+                            )
+                        }
                     }
                 }
             }
