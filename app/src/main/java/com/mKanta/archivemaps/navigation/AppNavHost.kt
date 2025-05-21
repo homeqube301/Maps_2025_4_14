@@ -58,6 +58,8 @@ fun AppNavHost(
                 Log.d("testes", authState.accountId)
                 if (authState.accountId == "") {
                     mapViewModel.changeIsGuestMode(true)
+                } else {
+                    mapViewModel.changeIsGuestMode(false)
                 }
 
                 MapScreen(
