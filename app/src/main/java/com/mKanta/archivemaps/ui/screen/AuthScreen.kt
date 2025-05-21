@@ -16,6 +16,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +46,7 @@ fun AuthScreen(
     onNavigateToSignUp: () -> Unit,
     uiState: AuthUiState,
     signIn: (String, String) -> Unit,
+    startGuestMode: () -> Unit = {},
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -103,7 +106,7 @@ fun AuthScreen(
                     Text(
                         text = stringResource(id = R.string.auth_AppTitle),
                         color = Color.White,
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        fontWeight = FontWeight.Bold,
                         fontSize = 32.sp,
                     )
                     Text(
@@ -172,7 +175,7 @@ fun AuthScreen(
                         } else {
                             Text(
                                 text = stringResource(id = R.string.auth_login),
-                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
                             )
                         }
@@ -187,7 +190,21 @@ fun AuthScreen(
                     ) {
                         Text(
                             text = stringResource(id = R.string.auth_signUp),
-                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedButton(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        onClick = startGuestMode,
+                        enabled = !isLoading,
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.auth_guest_mode),
+                            fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                         )
                     }
