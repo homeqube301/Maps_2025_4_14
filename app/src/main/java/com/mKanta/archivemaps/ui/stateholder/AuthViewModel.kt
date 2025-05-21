@@ -182,24 +182,4 @@ class AuthViewModel
                     }
             }
         }
-
-        fun startGuestMode() {
-            viewModelScope.launch {
-                setLoadingState()
-                authRepository
-                    .startGuestMode()
-                    .onSuccess { guestUser ->
-                        _uiState.update {
-                            it.copy(
-                                isAuthenticated = true,
-                                isGuestMode = true,
-                                accountId = guestUser.id,
-                            )
-                        }
-                        setSuccessState()
-                    }.onFailure { exception ->
-                        setErrorState(exception.message)
-                }
-        }
-    }
     }

@@ -1,6 +1,5 @@
 package com.mKanta.archivemaps.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,7 +54,6 @@ fun AppNavHost(
                         ?: uiState.lastCameraPosition?.target?.longitude
                         ?: 0.0
 
-                Log.d("testes", authState.accountId)
                 if (authState.accountId == "") {
                     mapViewModel.changeIsGuestMode(true)
                 } else {
@@ -255,7 +253,6 @@ fun AppNavHost(
                     uiState = uiState,
                     signIn = { email, password -> logInViewModel.signIn(email, password) },
                     onNavigateToSignUp = { navController.navigate("signUp") },
-                    startGuestMode = { logInViewModel.startGuestMode() },
                 )
             }
 
