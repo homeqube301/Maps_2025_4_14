@@ -34,6 +34,7 @@ fun AccountEditSheet(
     accountId: String,
     onAccountNameChange: (String) -> Unit,
     isLoading: Boolean = false,
+    isGuestMode: Boolean = false,
 ) {
     ArchivemapsTheme {
         Column(
@@ -87,23 +88,25 @@ fun AccountEditSheet(
                     )
                 }
 
-                OutlinedButton(
-                    onClick = {
-                        onDeleteAccount()
-                        onDismiss()
-                    },
-                    modifier = Modifier.fillMaxWidth(0.5f),
-                    enabled = !isLoading,
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                        ),
-                ) {
-                    Text(
-                        stringResource(R.string.delete_account),
-                        color = colorResource(id = R.color.alert_red),
-                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                    )
+                if (!isGuestMode) {
+                    OutlinedButton(
+                        onClick = {
+                            onDeleteAccount()
+                            onDismiss()
+                        },
+                        modifier = Modifier.fillMaxWidth(0.5f),
+                        enabled = !isLoading,
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.background,
+                            ),
+                    ) {
+                        Text(
+                            stringResource(R.string.delete_account),
+                            color = colorResource(id = R.color.alert_red),
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        )
+                    }
                 }
 
                 if (isLoading) {
@@ -135,5 +138,6 @@ fun AccountEditSheetPreview(
         onAccountNameChange = {},
         isLoading = false,
         onNavigateToAuth = {},
+        isGuestMode = false,
     )
 }

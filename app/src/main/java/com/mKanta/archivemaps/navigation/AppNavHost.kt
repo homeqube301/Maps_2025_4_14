@@ -54,6 +54,8 @@ fun AppNavHost(
                         ?: uiState.lastCameraPosition?.target?.longitude
                         ?: 0.0
 
+                mapViewModel.changeIsGuestMode(authState.isGuestMode)
+
                 MapScreen(
                     onNavigateToMarkerList = { navController.navigate("marker_list") },
                     changeLastCameraPosition = { mapViewModel.changeLastCameraPosition(it) },
@@ -195,12 +197,18 @@ fun AppNavHost(
                     )
                 }
                 composable("detail_search") { backStackEntry ->
-                    val parentEntry =
+                    val listParentEntry =
                         remember(backStackEntry) {
                             navController.getBackStackEntry("list")
                         }
 
-                    val listViewModel: ListViewModel = hiltViewModel(parentEntry)
+                    val parentEntry =
+                        remember(backStackEntry) {
+                            navController.getBackStackEntry("marker")
+                        }
+
+                    val markerViewModel: MapViewModel = hiltViewModel(parentEntry)
+                    val listViewModel: ListViewModel = hiltViewModel(listParentEntry)
 
                     val listState by listViewModel.listState.collectAsState()
                     DetailSearchScreen(
@@ -215,6 +223,7 @@ fun AppNavHost(
                         changeEmbeddingMemo = { listViewModel.changeEmbeddingMemo(it) },
                         changeMemo = { listViewModel.changeMemo(it) },
                         changeShowDetailIntro = { listViewModel.changeShowDetailIntro() },
+                        isGuestMode = markerViewModel.uiState.value.isGuestMode,
                     )
                 }
             }
@@ -241,6 +250,7 @@ fun AppNavHost(
                     signIn = { email, password -> logInViewModel.signIn(email, password) },
                     onNavigateToSignUp = { navController.navigate("signUp") },
                     startGuestMode = { logInViewModel.startGuestMode() },
+                    changeIsGuestMode = { logInViewModel.changeIsGuestMode(it) },
                 )
             }
 

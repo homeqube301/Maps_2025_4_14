@@ -69,6 +69,7 @@ fun DetailSearchScreen(
     changeMemo: (String) -> Unit = {},
     listState: ListState,
     changeShowDetailIntro: () -> Unit = {},
+    isGuestMode: Boolean = false,
 ) {
     BackHandler {
         changeMarkerName("")
@@ -106,6 +107,7 @@ fun DetailSearchScreen(
         changeEndDatePicker = changeEndDatePicker,
         onNavigateBack = onNavigateBack,
         onNavigateToMarkerList = onNavigateToMarkerList,
+        isGuestMode = isGuestMode,
     )
 }
 
@@ -176,6 +178,7 @@ fun SearchContents(
     showDetailIntro: Boolean,
     changeStartDatePicker: () -> Unit,
     changeEndDatePicker: () -> Unit,
+    isGuestMode: Boolean = false,
 ) {
     val isSearchEnabled =
         !markerName.isNullOrBlank() ||
@@ -280,8 +283,7 @@ fun SearchContents(
                                             )
                                         }
                                     },
-                                )
-                                .fillMaxWidth(),
+                                ).fillMaxWidth(),
                     )
 
                     Row(
@@ -423,6 +425,7 @@ fun SearchContents(
                                 focusedTextColor = Color.White,
                                 unfocusedTextColor = Color.White,
                             ),
+                        enabled = !isGuestMode,
                         modifier =
                             Modifier
                                 .fillMaxWidth()

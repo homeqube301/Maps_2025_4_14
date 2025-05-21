@@ -276,6 +276,7 @@ fun MapScreen(
                     accountId = accountId,
                     onAccountNameChange = onAccountNameChange,
                     onNavigateToAuth = onNavigateToAuth,
+                    isGuestMode = uiState.isGuestMode,
                 )
             }
 

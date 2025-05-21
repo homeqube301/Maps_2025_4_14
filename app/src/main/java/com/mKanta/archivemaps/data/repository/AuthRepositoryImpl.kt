@@ -171,6 +171,6 @@ class AuthRepositoryImpl
                 guestUser = null
                 Result.success(Unit)
             } catch (e: Exception) {
-            Result.failure(e)
-        }
+                Result.failure(e)
+            }
     }

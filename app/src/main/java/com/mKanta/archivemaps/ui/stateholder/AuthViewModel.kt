@@ -199,7 +199,11 @@ class AuthViewModel
                         setSuccessState()
                     }.onFailure { exception ->
                         setErrorState(exception.message)
-                }
+                    }
+            }
         }
-    }
+
+        fun changeIsGuestMode(isGuestMode: Boolean) {
+            _uiState.update { it.copy(isGuestMode = isGuestMode) }
+        }
     }
