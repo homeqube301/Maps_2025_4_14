@@ -240,6 +240,7 @@ fun AppNavHost(
                     uiState = uiState,
                     signIn = { email, password -> logInViewModel.signIn(email, password) },
                     onNavigateToSignUp = { navController.navigate("signUp") },
+                    startGuestMode = { logInViewModel.startGuestMode() },
                 )
             }
 

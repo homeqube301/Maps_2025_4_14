@@ -1,5 +1,8 @@
 package com.mKanta.archivemaps.domain.repository
 
+import com.mKanta.archivemaps.domain.model.GuestUser
+import com.mKanta.archivemaps.domain.model.User
+
 interface AuthRepository {
     suspend fun signUp(
         email: String,
@@ -22,10 +25,11 @@ interface AuthRepository {
     suspend fun updateUserProfile(displayName: String)
 
     suspend fun deleteUser()
+
+    suspend fun startGuestMode(): Result<GuestUser>
+
+    suspend fun isGuestMode(): Boolean
+
+    suspend fun exitGuestMode(): Result<Unit>
 }
 
-data class User(
-    val id: String,
-    val email: String?,
-    val userMetadata: Map<String, Any>?,
-)

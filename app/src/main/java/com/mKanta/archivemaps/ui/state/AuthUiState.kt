@@ -8,6 +8,7 @@ data class AuthUiState(
     val accountName: String = "",
     val accountId: String = "",
     val email: String = "",
+    val isGuestMode: Boolean = false,
 )
 
 sealed interface AccountLoadingState {
