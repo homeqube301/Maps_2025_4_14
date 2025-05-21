@@ -7,7 +7,6 @@
 
 # ダウンロード
 DeployGateから配布しております。
-[https://dply.me/lkjcwc](https://deploygate.com/organizations/homeqube301/platforms/android/apps/com.mKanta.archivemaps?via=signup)
-
+https://dply.me/xd6t9r
 
 # アプリ主機能
