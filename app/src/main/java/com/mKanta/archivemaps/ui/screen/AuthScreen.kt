@@ -47,20 +47,12 @@ fun AuthScreen(
     onNavigateToSignUp: () -> Unit,
     uiState: AuthUiState,
     signIn: (String, String) -> Unit,
-    startGuestMode: () -> Unit = {},
-    changeIsGuestMode: (Boolean) -> Unit = {},
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     LaunchedEffect(uiState.isAuthenticated) {
         if (uiState.isAuthenticated) {
-            onLoginSuccess()
-        }
-    }
-
-    LaunchedEffect(uiState.isGuestMode) {
-        if (uiState.isGuestMode) {
             onLoginSuccess()
         }
     }
@@ -218,7 +210,7 @@ fun AuthScreen(
 
                         OutlinedButton(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
-                            onClick = { changeIsGuestMode(true) },
+                            onClick = onLoginSuccess,
                             enabled = !isLoading,
                         ) {
                             Text(

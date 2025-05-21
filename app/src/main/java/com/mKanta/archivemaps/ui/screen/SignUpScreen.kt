@@ -217,6 +217,7 @@ fun SignUpScreen(
                         } else {
                             Text(
                                 text = stringResource(id = R.string.auth_signUp),
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
                             )
