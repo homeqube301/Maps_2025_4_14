@@ -73,6 +73,10 @@ class MapViewModel
             }
         }
 
+        fun changeDbMarkerLoad(load: Boolean) {
+            _uiState.update { it.copy(dbMarkerLoad = load) }
+        }
+
         fun updateVisibleMarkers(
             cameraPositionState: CameraPositionState,
             permanentMarkers: List<NamedMarker>,
@@ -147,7 +151,7 @@ class MapViewModel
 
         fun loadMarkers() {
             viewModelScope.launch {
-                if (!uiState.value.isGuestMode) {
+                if (!uiState.value.isGuestMode && !uiState.value.dbMarkerLoad) {
                     val localLoaded = markerRepository.loadMarkers()
                     val loaded = markerDBRepository.loadDBMarkers()
 
@@ -163,6 +167,7 @@ class MapViewModel
                     _uiState.update { it.copy(permanentMarkers = mergedMarkers) }
 
                     updateMarkersVisibility()
+                    changeDbMarkerLoad(true)
                 } else {
                     val loaded = markerRepository.loadMarkers()
 
