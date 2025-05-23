@@ -115,7 +115,7 @@ fun MarkerListScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = stringResource(id = R.string.listSc_back),
-                                tint = Color.Black,
+                                tint = Color.White,
                             )
                         }
 
