@@ -86,6 +86,7 @@ fun MarkerListContent(
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = stringResource(id = R.string.back),
+                                    tint = Color.White,
                                 )
                             }
                         },
