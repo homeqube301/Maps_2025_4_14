@@ -48,7 +48,7 @@ fun DismissOverlay(
                         changeShowConfirmDialog()
                         onClosePanel()
                     }) {
-                        Text("はい")
+                        Text("はい", color = Color.White)
                     }
                 },
                 dismissButton = {
@@ -58,7 +58,7 @@ fun DismissOverlay(
                             changeShowConfirmDialog()
                         },
                     ) {
-                        Text("いいえ")
+                        Text("いいえ", color = Color.White)
                     }
                 },
             )
