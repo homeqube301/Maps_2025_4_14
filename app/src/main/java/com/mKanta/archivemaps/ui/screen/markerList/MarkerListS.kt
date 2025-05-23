@@ -129,6 +129,7 @@ fun MarkerListScreen(
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = stringResource(id = R.string.listSc_system_searching),
+                                color = Color.White,
                                 fontSize = 16.sp,
                             )
                         }
@@ -190,7 +191,7 @@ fun MarkerListScreen(
                 else -> {
                     Text(
                         text = stringResource(id = R.string.listSc_system_error),
-                        color = Color.Gray,
+                        color = Color.White,
                         modifier = Modifier.padding(16.dp),
                     )
                 }
