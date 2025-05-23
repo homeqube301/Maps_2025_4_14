@@ -77,6 +77,8 @@ https://dply.me/zptl3s
  * [Vector embeddings](https://platform.openai.com/docs/guides/embeddings)  
    検索ワードと保存されたメモ内容をベクトル化し、ユークリッド距離を計算するために使用。
 
+## アーキテクチャ
+<img width="920" alt="技術アーキテク4" src="https://github.com/user-attachments/assets/d1a6c7b4-be01-465f-a13d-e56d58791af1" />
 
 # アピールポイント
  ## クリーンアーキテクチャを意識した構造設計とMVVMの導入
