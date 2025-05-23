@@ -147,13 +147,10 @@ https://dply.me/zptl3s
    * 表示されるすべてのテキストはリソースファイルを通して管理されており、日本語以外への翻訳・切り替えが容易な設計としています。    
 
 これらの工夫により、年齢・言語・視覚特性にかかわらず、誰もが快適にアプリを操作できる体験を実現しました。  
-   
-   
 
-
-
-
-
+ | オンボーディング | ローディング | 拡大文字 |
+|---|---|---|
+|<img src="https://github.com/user-attachments/assets/4d8f7425-0e6b-40ff-81f5-2e93535da6f8" width="240" />|<img src="https://github.com/user-attachments/assets/a17c1784-627f-4663-9762-9d858e4c7bb0" width="240" />|<img src="https://github.com/user-attachments/assets/b67ec606-1380-452b-8ded-e298b0206214" width="240" />|
 
 
 
