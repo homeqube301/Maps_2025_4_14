@@ -9,7 +9,7 @@
 
 ## ダウンロード
 DeployGateから配布しております  
-https://dply.me/tex2rn
+https://dply.me/zptl3s
 
 ## アプリ主機能
 * GoogleMap上へマーカーを設置
