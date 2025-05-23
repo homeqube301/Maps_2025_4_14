@@ -46,7 +46,7 @@
 
     <string name="map_Account_Button">アカウント</string>
     <string name="map_Account_tutorial_title">アカウントボタン</string>
-    <string name="map_Account_tutorial_description">タップすると自身のアカウント情報を編集できます</string>
+    <string name="map_Account_tutorial_description">タップするとアカウント操作ができます</string>
 
     <string name="map_follow_Button">追従</string>
     <string name="map_follow_tutorial_title">追従ボタン</string>
