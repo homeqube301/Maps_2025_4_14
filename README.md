@@ -89,7 +89,7 @@ https://dply.me/zptl3s
    検索ワードと保存されたメモ内容をベクトル化し、ユークリッド距離を計算するために使用。
 
 ## アーキテクチャ
-<img width="920" alt="技術アーキテク4" src="https://github.com/user-attachments/assets/d1a6c7b4-be01-465f-a13d-e56d58791af1" />
+<img width="920" alt="技術アーキテク11" src="https://github.com/user-attachments/assets/ecd4c718-27ef-42a4-88fb-64860952bd80" />
 
 # アプリの特徴
  ## Google推奨アーキテクチャを意識した構造設計
