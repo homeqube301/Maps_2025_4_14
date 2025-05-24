@@ -5,6 +5,7 @@
 - [ダウンロード](#ダウンロード)
 - [アプリの主機能](#アプリ主機能)
 - [技術スタック](#技術スタック)
+- [アーキテクチャ](#アーキテクチャ)
 - [アピールポイント](#アピールポイント)
 
 ## ダウンロード
@@ -77,6 +78,8 @@ https://dply.me/zptl3s
  * [Vector embeddings](https://platform.openai.com/docs/guides/embeddings)  
    検索ワードと保存されたメモ内容をベクトル化し、ユークリッド距離を計算するために使用。
 
+## アーキテクチャ
+<img width="920" alt="技術アーキテク4" src="https://github.com/user-attachments/assets/d1a6c7b4-be01-465f-a13d-e56d58791af1" />
 
 # アピールポイント
  ## クリーンアーキテクチャを意識した構造設計とMVVMの導入
@@ -147,13 +150,10 @@ https://dply.me/zptl3s
    * 表示されるすべてのテキストはリソースファイルを通して管理されており、日本語以外への翻訳・切り替えが容易な設計としています。    
 
 これらの工夫により、年齢・言語・視覚特性にかかわらず、誰もが快適にアプリを操作できる体験を実現しました。  
-   
-   
 
-
-
-
-
+ | オンボーディング | ローディング | 拡大文字 |
+|---|---|---|
+|<img src="https://github.com/user-attachments/assets/4d8f7425-0e6b-40ff-81f5-2e93535da6f8" width="240" />|<img src="https://github.com/user-attachments/assets/a17c1784-627f-4663-9762-9d858e4c7bb0" width="240" />|<img src="https://github.com/user-attachments/assets/b67ec606-1380-452b-8ded-e298b0206214" width="240" />|
 
 
 
