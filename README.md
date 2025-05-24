@@ -4,9 +4,10 @@
 ## 目次
 - [ダウンロード](#ダウンロード)
 - [アプリの主機能](#アプリ主機能)
+- [アプリ画面](#アプリ画面)
 - [技術スタック](#技術スタック)
 - [アーキテクチャ](#アーキテクチャ)
-- [アピールポイント](#アピールポイント)
+- [アプリの特徴](#アプリの特徴)
 
 ## ダウンロード
 DeployGateから配布しております  
@@ -47,6 +48,15 @@ https://dply.me/zptl3s
 * オンボーディング機能
     * アプリ開始時、各操作スクリーンにオンボーディングを用いた視覚的にわかりやすい操作説明
 
+## アプリ画面
+| マップ画面 | マーカーリスト | 簡易検索 |
+|---|---|---|
+|<img src="https://github.com/user-attachments/assets/b288b7c5-eb54-4b64-abb9-3c31e24b23e0" width="240" />|<img src="https://github.com/user-attachments/assets/a1ecd84d-d07e-47fd-be6e-d77e97ed16c0" width="240" />|<img src="https://github.com/user-attachments/assets/2e0dce34-3672-4bf8-a8e3-9e8618553f23" width="240" /> |
+
+| マーカーの編集 | フィルタリング | ログイン画面 |
+|---|---|---|
+|<img src="https://github.com/user-attachments/assets/f72fce0c-aa7d-49dd-8fd3-88b589961bc3" width="240" />|<img src="https://github.com/user-attachments/assets/d1db9d5d-ed54-445c-928f-7a13f4c3b634" width="240" />|<img src="https://github.com/user-attachments/assets/d59bfd90-df4d-4480-a829-425bac47e7e5" width="240" /> |
+
 
 ## 技術スタック
 * Jetpack ライブラリ
@@ -81,7 +91,7 @@ https://dply.me/zptl3s
 ## アーキテクチャ
 <img width="920" alt="技術アーキテク4" src="https://github.com/user-attachments/assets/d1a6c7b4-be01-465f-a13d-e56d58791af1" />
 
-# アピールポイント
+# アプリの特徴
  ## クリーンアーキテクチャを意識した構造設計とMVVMの導入
  本アプリケーションでは、機能の追加・変更がしやすく、テストが容易で、長期的に保守・拡張が可能な構造を実現することを目指しました。  
  
