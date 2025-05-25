@@ -52,13 +52,13 @@ https://dply.me/zptl3s
     * アプリ開始時、各操作スクリーンにオンボーディングを用いた視覚的にわかりやすい操作説明
 
 ## アプリ画面
-| マップ画面 | マーカーリスト | 簡易検索 |
+| マップ画面 | マーカーリスト | マーカー設置 |
 |---|---|---|
-|<img src="https://github.com/user-attachments/assets/b288b7c5-eb54-4b64-abb9-3c31e24b23e0" width="240" />|<img src="https://github.com/user-attachments/assets/a1ecd84d-d07e-47fd-be6e-d77e97ed16c0" width="240" />|<img src="https://github.com/user-attachments/assets/2e0dce34-3672-4bf8-a8e3-9e8618553f23" width="240" /> |
+|<img src="https://github.com/user-attachments/assets/b288b7c5-eb54-4b64-abb9-3c31e24b23e0" width="240" />|<img src="https://github.com/user-attachments/assets/372cf48c-16cf-4ef0-abc4-1480611d7fd4" width="240" />|<img src="https://github.com/user-attachments/assets/182efe53-0e0d-4e20-9c5e-226e769cd688" width="240" /> |
 
 | マーカーの編集 | フィルタリング | ログイン画面 |
 |---|---|---|
-|<img src="https://github.com/user-attachments/assets/f72fce0c-aa7d-49dd-8fd3-88b589961bc3" width="240" />|<img src="https://github.com/user-attachments/assets/d1db9d5d-ed54-445c-928f-7a13f4c3b634" width="240" />|<img src="https://github.com/user-attachments/assets/d59bfd90-df4d-4480-a829-425bac47e7e5" width="240" /> |
+|<img src="https://github.com/user-attachments/assets/f5d96674-f2d4-4dd8-b6c6-ca176fafa6ca" width="240" />|<img src="https://github.com/user-attachments/assets/fda7306c-df88-406c-84dc-b652c0e687b9" width="240" />|<img src="https://github.com/user-attachments/assets/d59bfd90-df4d-4480-a829-425bac47e7e5" width="240" /> |
 
 
 ## 技術スタック
