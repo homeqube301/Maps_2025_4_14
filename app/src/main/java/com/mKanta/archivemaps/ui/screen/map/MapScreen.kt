@@ -117,9 +117,8 @@ fun MapScreen(
 
         LaunchedEffect(latitude, longitude) {
             if (latitude != 0.0 && longitude != 0.0) {
-                cameraPositionState.animate(
-                    update = CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 16f),
-                    durationMs = 1000,
+                cameraPositionState.move(
+                    CameraUpdateFactory.newLatLngZoom(LatLng(latitude, longitude), 17f),
                 )
             }
         }
