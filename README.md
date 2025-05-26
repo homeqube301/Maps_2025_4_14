@@ -14,7 +14,7 @@
 
 ## ダウンロード
 DeployGateから配布しております  
-https://dply.me/vg9rqy
+https://dply.me/p6fbtg
 
 ## アプリ主機能
 * GoogleMap上へマーカーを設置
